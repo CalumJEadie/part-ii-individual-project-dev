@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="C:/Program Files/Java/jogl-1.1.1-windows-i586/lib/gluegen-rt.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Program Files/Java/jogl-1.1.1-windows-i586/lib/jogl.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/framework"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/raytrace"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
