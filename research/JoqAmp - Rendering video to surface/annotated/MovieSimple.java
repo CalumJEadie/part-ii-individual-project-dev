@@ -102,6 +102,15 @@ public class MovieSimple implements GLEventListener, GLMediaEventListener {
     boolean mPlayerScaleOrig;
     GLArrayDataServer interleavedVBO;
 
+	// Mouse controls the video.
+
+	// press - pauses on mouse down, on release starts rotation of video
+	// move - seems to affect a later action
+	// drag - seeks
+	// mouse wheel - adjust zoom
+
+	// Testing on pi only start rotation function is working.
+
     private final MouseListener mouseAction = new MouseAdapter() {
         public void mousePressed(MouseEvent e) {
             if(e.getY()<=winHeight/2 && null!=mPlayer && 1 == e.getClickCount()) {
@@ -146,6 +155,11 @@ public class MovieSimple implements GLEventListener, GLMediaEventListener {
     };
     
     public MovieSimple(URLConnection stream) throws IOException {
+
+		// GLMediaPlayer object created and bound to MovieSimple object ( which impcl. EventListener and MediaEventListener )
+		// stream stored in state of MovieSimple object so expect MediaEventListener interface enforces a contract
+		// between these objects
+
         mPlayerScaleOrig = false;
         mPlayerShared = false;
         mPlayerExternal = false;
@@ -171,6 +185,9 @@ public class MovieSimple implements GLEventListener, GLMediaEventListener {
         mPlayerScaleOrig = v;
     }
     
+
+	// Part of the MediaEventListener contract?
+
     @Override
     public void attributesChanges(GLMediaPlayer mp, int event_mask, long when) {
         System.out.println("attributesChanges: "+mp+", 0x"+Integer.toHexString(event_mask)+", when "+when);        
@@ -204,6 +221,9 @@ public class MovieSimple implements GLEventListener, GLMediaEventListener {
     static final String myTextureLookupName = "myTexture2D";
     
     private void initShader(GL2ES2 gl) {
+
+		// Initialise the vertex and fragment shaders.
+
         // Create & Compile the shader objects
         ShaderCode rsVp = ShaderCode.create(gl, GL2ES2.GL_VERTEX_SHADER, MovieSimple.class, 
                                             "../shader", "../shader/bin", shaderBasename, true);
@@ -511,6 +531,14 @@ public class MovieSimple implements GLEventListener, GLMediaEventListener {
     public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {
     }
 
+	/*
+	 * Exposes options:
+	 * - width
+	 * - height
+	 * - whether to use orthonormal project
+	 * - whether to zoom
+	 * - where to stream video from
+	*/
     public static void main(String[] args) throws IOException, MalformedURLException {
         int width = 640;
         int height = 600;
@@ -534,20 +562,29 @@ public class MovieSimple implements GLEventListener, GLMediaEventListener {
                 url_s = args[i];
             }
         }
+
+		// Create MovieSimple object which implements GLEventListener and GLMediaEventListener.
+
         final MovieSimple ms = new MovieSimple(new URL(url_s).openConnection());
         ms.setScaleOrig(!zoom);
         ms.setOrthoProjection(ortho);
         
         try {
+			// Create a window to render to.
             GLCapabilities caps = new GLCapabilities(GLProfile.getGL2ES2());
             GLWindow window = GLWindow.create(caps);            
 
+			// Assoicate movie object with window.
             window.addGLEventListener(ms);
 
             window.setSize(width, height);
             window.setVisible(true);
+
+			// Associate animation with window and start.
+			// Animator comes from the JOGL utilites package.
             final Animator anim = new Animator(window);
             anim.start();
+
             window.addWindowListener(new WindowAdapter() {
                 public void windowDestroyed(WindowEvent e) {
                     anim.stop();
