@@ -1,0 +1,11 @@
+MANIFEST.in
+NEWS.txt
+README.rst
+setup.py
+src/whitey.egg-info/PKG-INFO
+src/whitey.egg-info/SOURCES.txt
+src/whitey.egg-info/dependency_links.txt
+src/whitey.egg-info/entry_points.txt
+src/whitey.egg-info/not-zip-safe
+src/whitey.egg-info/top_level.txt
+src/yt/__init__.py
