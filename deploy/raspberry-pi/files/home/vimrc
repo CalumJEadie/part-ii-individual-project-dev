@@ -7,7 +7,7 @@ set number
 set mouse=a
 
 " Colors
-" set background=dark
+set background=dark
 " colorscheme solarized
 
 " Turn off swap files
