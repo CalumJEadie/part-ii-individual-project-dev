@@ -1,4 +1,4 @@
-/bin/sh
+#!/bin/sh
 
 base_dir=`dirname $0`
 files_dir=$base_dir/files
