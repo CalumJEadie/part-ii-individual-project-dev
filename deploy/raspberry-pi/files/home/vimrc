@@ -1,0 +1,25 @@
+" Based on:
+" https://github.com/skwp/dotfiles.
+
+" General settings
+syntax on
+set number
+set mouse=a
+
+" Colors
+" set background=dark
+" colorscheme solarized
+
+" Turn off swap files
+set noswapfile
+set nobackup
+set nowb
+
+" Indentation
+set autoindent
+set smartindent
+set smarttab
+set shiftwidth=4
+set softtabstop=4
+set tabstop=4
+

@@ -20,3 +20,4 @@ git config --global core.editor vim
 git config --global merge.tool vimdiff
 git config --global color.ui true
 
+cp $files_dir/home/vimrc $HOME/.vimrc
