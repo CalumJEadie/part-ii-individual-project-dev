@@ -21,3 +21,7 @@ git config --global merge.tool vimdiff
 git config --global color.ui true
 
 cp $files_dir/home/vimrc $HOME/.vimrc
+
+# 128M ARM, 128M GPU
+sudo cp /boot/arm128_start.elf /boot/start.elf 
+

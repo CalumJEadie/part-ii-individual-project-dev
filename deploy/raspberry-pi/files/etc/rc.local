@@ -18,6 +18,6 @@ if [ "$_IP" ]; then
 fi
 
 # Autostart X
-sudo pi -c startx
+su pi -c startx
 
 exit 0
