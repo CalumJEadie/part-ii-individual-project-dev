@@ -4,5 +4,5 @@
 
 ifconfig | grep 'inet addr:' | grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'
 
-n=10
+n=60
 read -p "Waiting for $n seconds..." -t $n var
