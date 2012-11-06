@@ -12,6 +12,7 @@ sudo apt-get install $packages
 # Configure
 sudo mv /boot/boot_enable_ssh.rc /boot/boot.rc
 sudo cp $files_dir/etc/rc.local /etc/rc.local
+sudo cp $files_dir/home/Desktop/get_ip_address.sh $HOME/Desktop
 
 # http://git-scm.com/book/en/Customizing-Git-Git-Configuration
 git config --global user.name "CalumJEadie"

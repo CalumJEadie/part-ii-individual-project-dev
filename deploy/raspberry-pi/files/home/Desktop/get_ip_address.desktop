@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=IP Address
+Exec=lxterminal -e /opt/diss/dev/tools/get_ip_address.sh
+Icon=lxterminal
+Type=Application
