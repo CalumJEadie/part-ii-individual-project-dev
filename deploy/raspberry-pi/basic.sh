@@ -5,6 +5,10 @@ files_dir=$base_dir/files
 
 packages="git-core byobu chromium-browser vim"
 
+# Update
+sudo apt-get update
+sudo apt-get dist-upgrade
+
 # Install
 sudo apt-get update
 sudo apt-get install $packages
