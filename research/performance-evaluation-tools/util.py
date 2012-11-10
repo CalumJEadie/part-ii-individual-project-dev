@@ -75,7 +75,7 @@ def time_function(f):
     end = time.time()
     return end-start
 
-def run_timed_movie_cube(stream_url):
+def run_timed_movie_cube(stream_url,width=1680,height=1050):
     """
     Runs the JoqAmp/JOGL movie cube demo and returns how long it took to execute.
     """
@@ -84,12 +84,12 @@ def run_timed_movie_cube(stream_url):
         proc = subprocess.Popen(["java","-cp",
             "jar/jogl-all.jar:jar/gluegen-rt.jar:/usr/share/java/junit4.jar:jar/jogl-test.jar",
             "com/jogamp/opengl/test/junit/jogl/demos/es2/av/MovieCube",
-            "-time","400000","-width","1980","-height","1080","-url",stream_url],
+            "-width",str(width),"-height",str(height),"-url",stream_url],
             cwd=JOQAMP_DIR)
         proc.wait()
     return time_function(f)
 
-def run_timed_movie_cube_with_timeout(stream_url,timeout):
+def run_timed_movie_cube_with_timeout(stream_url,timeout,width=1680,height=1050):
     """
     Runs the JoqAmp/JOGL movie cube demo and returns how long it took to execute.
 
@@ -100,7 +100,7 @@ def run_timed_movie_cube_with_timeout(stream_url,timeout):
         run_with_timeout(["java","-cp",
             "jar/jogl-all.jar:jar/gluegen-rt.jar:/usr/share/java/junit4.jar:jar/jogl-test.jar",
             "com/jogamp/opengl/test/junit/jogl/demos/es2/av/MovieCube",
-            "-time","400000","-width","1980","-height","1080","-url",stream_url],timeout,
+            "-width",str(width),"-height",str(height),"-url",stream_url],timeout,
             cwd=JOQAMP_DIR)
     return time_function(f)
 
