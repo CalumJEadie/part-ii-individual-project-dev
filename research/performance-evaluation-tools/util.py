@@ -30,11 +30,11 @@ def get_available_formats(web_url):
 	return output.split('\n')[:-1]
 
 def get_streaming_url(web_url,fmt):
-	"""
-	Returns the url to stream a YouTube video using specified format.
-	"""
-	output = subprocess.check_output(["youtube-dl","--get-url","--format",fmt,web_url])
-	return output
+    """
+    Returns the url to stream a YouTube video using specified format.
+    """
+    output = subprocess.check_output(["youtube-dl","--get-url","--format",fmt,web_url])
+    return output[:-1] # Remove new line character.
 
 def run_movie_cube(stream_url):
 	"""
@@ -102,4 +102,14 @@ def run_timed_movie_cube_with_timeout(stream_url,timeout):
             "com/jogamp/opengl/test/junit/jogl/demos/es2/av/MovieCube",
             "-time","400000","-width","1980","-height","1080","-url",stream_url],timeout,
             cwd=JOQAMP_DIR)
+    return time_function(f)
+
+def run_timed_omxplayer(stream_url):
+    """
+    Plays a video using Omxplayer and returns how long it took to execute.
+    """
+
+    def f():
+        #print "omxplayer --refresh \'%s\'" % stream_url
+        subprocess.call(["omxplayer","--refresh",stream_url],stderr=subprocess.STDOUT)
     return time_function(f)

@@ -3,7 +3,7 @@
 """
 Tests the performance of the GPU for different video formats.
 
-Streams YouTube video in different formats and plays using the JOGL Movie Cube demo,
+Streams YouTube video in different formats and plays using Omxplayer,
 which is being used a black box to measure video performance.
 """
 
@@ -30,13 +30,13 @@ def main():
         logger.info("Format: %s, %s" % (fmt,util.YOUTUBE_FORMATS[fmt]))
         streaming_url = util.get_streaming_url(web_url,fmt)
         logger.info("Streaming URL: %s" % streaming_url)
-        run_time = util.run_timed_movie_cube(streaming_url)
+        run_time = util.run_timed_omxplayer(streaming_url)
         logger.info("Run time for [%s,%s]: %s" % (fmt,util.YOUTUBE_FORMATS[fmt],run_time))
 
 def get_logger():
-    logger = logging.getLogger(__name__)
-    handler = logging.FileHandler(__name__+'.log')
-    formatter = logging.Formatter('\n\n%(asctime)s - %(message)s')
+    logger = logging.getLogger(__file__)
+    handler = logging.FileHandler(__file__+'.log')
+    formatter = logging.Formatter('\n%(asctime)s - %(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
