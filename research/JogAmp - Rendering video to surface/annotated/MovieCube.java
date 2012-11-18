@@ -142,8 +142,15 @@ public class MovieCube implements GLEventListener, GLMediaEventListener {
         GL2ES2 gl = drawable.getGL().getGL2ES2();
         System.err.println(JoglVersion.getGLInfo(gl, null));
 
+        // Create media player.
+        // ( ) How is the media player chosen?
         mPlayer = GLMediaPlayerFactory.create();
+        // ( ) How are the MediaPlayer and Cube connected. 
         mPlayer.addEventListener(this);
+        
+        // ( ) Could the cube take multiple inputs?
+        // TextureSequence texSource, boolean innerCube, float zoom0, float rotx, float roty
+        // So mPlayer provides a sequence of textures for the demo.
         cube = new TextureSequenceCubeES2(mPlayer, false, zoom0, rotx, roty);        
         
         if(waitForKey) {
@@ -155,6 +162,7 @@ public class MovieCube implements GLEventListener, GLMediaEventListener {
         }
         try {
             System.out.println("p0 "+mPlayer);
+            // Give the media player the streaming URL.
             mPlayer.initGLStream(gl, stream);
             System.out.println("p1 "+mPlayer);
         } catch (Exception e) { 
@@ -206,7 +214,7 @@ public class MovieCube implements GLEventListener, GLMediaEventListener {
     /*
      * Usage: java -cp jar/jogl-all.jar:jar/gluegen-rt.jar:/usr/share/java/junit4.jar:jar/jogl-test.jar \
 com/jogamp/opengl/test/junit/jogl/demos/es2/av/MovieCube \
--time 400000 -width 1980 -height 1080
+-width 1980 -height 1080 -url ... -wait ...
     */
     
     public static void main(String[] args) throws MalformedURLException, IOException, InterruptedException {
@@ -214,11 +222,11 @@ com/jogamp/opengl/test/junit/jogl/demos/es2/av/MovieCube \
         int height = 300;
         System.err.println("TexCubeES2.run()"); // Leftover code from a class this is based on?
 
-        String url_s="http://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4"; // Streams from this url?        
+        String url_s="http://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4"; // (X) Streams from this url? - default        
         for(int i=0; i<args.length; i++) {
             if(args[i].equals("-width")) {
                 i++;
-                width = MiscUtils.atoi(args[i], width); // Argument to integer?
+                width = MiscUtils.atoi(args[i], width); // (X) Argument to integer? - str -> int with default if can't convert
             } else if(args[i].equals("-height")) {
                 i++;
                 height = MiscUtils.atoi(args[i], height);
@@ -237,6 +245,7 @@ com/jogamp/opengl/test/junit/jogl/demos/es2/av/MovieCube \
         final MovieCube mc = new MovieCube(new URL(url_s).openConnection(), -2.3f, 0f, 0f);
         
         // Create a window to render into.
+        // ( ) Could this be turned into a window managed by Dispman?
         final GLWindow window = GLWindow.create(new GLCapabilities(GLProfile.getGL2ES2()));
         
         // Size OpenGL to Video Surface
