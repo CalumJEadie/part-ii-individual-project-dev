@@ -1,0 +1,3 @@
+[submodule "api/pyomxplayer"]
+	path = api/pyomxplayer
+	url = git@github.com:CalumJEadie/pyomxplayer.git
