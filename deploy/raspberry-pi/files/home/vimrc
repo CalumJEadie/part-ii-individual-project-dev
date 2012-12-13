@@ -27,7 +27,7 @@ set cursorline " Highlight current line
 
 " ================ Style  =================
 
-set background=dark
+" set background=dark
 " colorscheme solarized
 
 " ================ Search Settings  =================
