@@ -2,3 +2,5 @@
 *.pyc
 *.log
 ._.DS_Store
+*.project
+*.pydevproject
