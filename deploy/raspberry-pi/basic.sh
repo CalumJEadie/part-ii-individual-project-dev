@@ -3,7 +3,7 @@
 base_dir=`dirname $0`
 files_dir=$base_dir/files
 
-packages="git-core byobu chromium-browser vim"
+packages="git-core byobu chromium-browser vim subversion"
 
 # Update
 sudo apt-get update

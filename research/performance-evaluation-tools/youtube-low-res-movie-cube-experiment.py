@@ -16,9 +16,10 @@ import util
 
 #TIMEOUT = 60
 FORMATS = [
-    '18', # MP4 H.264/AAC 360x640
-    '43', # WEBM VP8/Vorbis 360x640
-    '5' # FLV H.263/MP3 240x400
+    #'18', # MP4 H.264/AAC 360x640
+    #'43', # WEBM VP8/Vorbis 360x640
+    #'5' # FLV H.263/MP3 240x400
+    '35' # FLV H.264/Main/AAC 480x854
 ]
 WIDTH = 640
 HEIGHT = 360

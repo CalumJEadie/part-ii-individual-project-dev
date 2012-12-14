@@ -1,3 +1,6 @@
 [submodule "research/Python bindings for libvlc/python-vlc"]
 	path = research/Python bindings for libvlc/python-vlc
 	url = git://git.videolan.org/vlc/bindings/python.git
+[submodule "api/pyomxplayer"]
+	path = api/pyomxplayer
+	url = git@github.com:CalumJEadie/pyomxplayer.git
