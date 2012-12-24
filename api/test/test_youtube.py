@@ -1,5 +1,7 @@
 import unittest
 
+import youtube
+
 """
 Unit tests for the YouTube API.
 
