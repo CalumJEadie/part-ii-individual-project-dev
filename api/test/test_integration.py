@@ -1,9 +1,3 @@
-import unittest
-import random
-
-from api import display,ask_yes_no
-from api import youtube,videoplayer
-
 """
 Integration tests for the APIs.
 
@@ -14,6 +8,16 @@ Motivating applications:
 1.  Smart music player - plays related songs or switchs to different types of
     music depending on user interaction.
 """
+
+import unittest
+import random
+import logging
+import logging.config
+
+from api import display,ask_yes_no
+from api import youtube,videoplayer
+
+logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 class SmartMusicPlayer(unittest.TestCase):
 
@@ -92,7 +96,7 @@ class SmartMusicPlayer(unittest.TestCase):
         # Task: Main loop of the program. Play a section of the video. Ask for user
         # feedback and either play a section of a related video or use a new seed.
 
-        while True:
+        for i in range(0,4):
 
             # Task: Show video title and description.
             # 
@@ -113,7 +117,7 @@ class SmartMusicPlayer(unittest.TestCase):
             # generateRandomNumberWithinInterval which would teach users less
             # about specific Python language features?
             
-            clip_duration = 10
+            clip_duration = 1
 
             video_duration = curr_video.duration()
             clip_offset = random.uniform(0, video_duration-clip_duration)
@@ -162,3 +166,6 @@ class SmartMusicPlayer(unittest.TestCase):
             else:
 
                 curr_video = seed_videos.random()
+
+if __name__ == "__main__":
+    unittest.main()
