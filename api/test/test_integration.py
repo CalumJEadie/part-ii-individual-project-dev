@@ -1,6 +1,8 @@
 import unittest
+import random
 
-from api import youtube
+from api import display,ask_yes_no
+from api import youtube,videoplayer
 
 """
 Integration tests for the APIs.
@@ -98,8 +100,8 @@ class SmartMusicPlayer(unittest.TestCase):
             # inputs as well. Add these features as if they were language features
             # like print and raw_input.
             
-            display(text=curr_video.title,duration=2)
-            display(text=curr_video.description,duration=2)
+            display(text=curr_video.title(),duration=2)
+            display(text=curr_video.description(),duration=2)
 
             # Task: Play section of currently selected video.
             #
@@ -111,6 +113,8 @@ class SmartMusicPlayer(unittest.TestCase):
             # generateRandomNumberWithinInterval which would teach users less
             # about specific Python language features?
             
+            clip_duration = 10
+
             video_duration = curr_video.duration()
             clip_offset = random.uniform(0, video_duration-clip_duration)
 
