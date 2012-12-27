@@ -1,1 +1,8 @@
-Major work item 2 - "Developing an API to access the end user programmable functions identified in (1)."
+# API
+
+## Running tests
+
+    cd diss/api
+    nosetests 
+
+    nosetests test.test_youtube:TestVideoGangnam
