@@ -5,7 +5,7 @@ Unit tests for YouTube API.
 import unittest
 import logging
 
-from api import youtube
+from app.api import youtube
 
 logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
