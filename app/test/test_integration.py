@@ -14,7 +14,7 @@ import random
 import logging
 import logging.config
 
-from app.api import display,ask_yes_no
+from app.api.core import display,ask_yes_no
 from app.api import youtube,videoplayer
 
 logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')

@@ -1,9 +1,9 @@
-import logging
-import time
-
 """
 Videoplayer API.
 """
+
+import logging
+import time
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
