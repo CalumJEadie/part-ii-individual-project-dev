@@ -50,6 +50,7 @@ class VideoDefnWidget(QtGui.QWidget):
 
         self.label_4 = QtGui.QLabel(self)
         self.label_4.setText("")
+        
         self.label_4.setPixmap(QtGui.QPixmap("res/video-64-64.png"))
         self.label_4.setObjectName("label_4")
 
