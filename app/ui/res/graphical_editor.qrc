@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="video">
+    <file>video-collection-64-64.png</file>
+    <file>video-64-64.png</file>
+  </qresource>
+</RCC>
