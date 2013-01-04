@@ -28,124 +28,68 @@ class GraphicalEditor(QtGui.QMainWindow):
         
         # Set up layout
 
-        self.centralwidget = QtGui.QWidget(self)
-        self.centralwidget.setObjectName("centralwidget")
+        centralwidget = QtGui.QWidget(self)
 
-        self.horizontalLayout_2 = QtGui.QHBoxLayout(self.centralwidget)
-
-        self.horizontalLayout = QtGui.QHBoxLayout()
+        horizontalLayout = QtGui.QHBoxLayout(centralwidget)
 
         # Add toolbar and editor pane
         
-        self.setupToolbox()
-        self.setupEditorPane()
+        horizontalLayout.addWidget(self.createToolbox(centralwidget))
+        horizontalLayout.addWidget(self.createEditorPane(centralwidget))
+
+        self.setCentralWidget(centralwidget)
+
+    def createToolbox(self,parent):
+        """
+        :type parent: QtGui.QWidget
+        :rtype: QtGui.QWidget
+        """
+
+        toolBox = QtGui.QToolBox(parent)
+        toolBox.setMaximumSize(QtCore.QSize(300, 16777215))
+        # self.toolBox.setCurrentIndex(0)
+
+        # Scenes
+        page_3 = QtGui.QWidget()
+        page_3.setGeometry(QtCore.QRect(0, 0, 300, 438))
+        language.SceneWidget(page_3)
+        toolBox.addItem(page_3, "Scenes")
 
 
+        # Videos and Video Collections
+        page_4 = QtGui.QWidget()
+        page_4.setGeometry(QtCore.QRect(0, 0, 300, 438))
+        widget_3 = language.VideoDefnWidget(page_4)
+        widget_4 = language.VideoCollectionDefnWidget(page_4)
+        toolBox.addItem(page_4, "Videos and Video Collections")
 
+        # Variables
+        page_5 = QtGui.QWidget()
+        verticalLayout = QtGui.QVBoxLayout(page_5)
+        widget = language.SetterWidget(page_5)
+        widget_2 = language.GetterWidget(page_5)
+        verticalLayout.addWidget(widget)
+        verticalLayout.addWidget(widget_2)
+        page_5.setLayout(verticalLayout)
+        toolBox.addItem(page_5, "Variables")
 
+        return toolBox
 
+    def createEditorPane(self,parent):
+        """
+        :type parent: QtGui.QWidget
+        :rtype: QtGui.QWidget
+        """
 
-        
+        scrollArea_2 = QtGui.QScrollArea(parent)
+        scrollArea_2.setWidgetResizable(True)
 
-        self.horizontalLayout_2.addLayout(self.horizontalLayout)
+        scrollAreaWidgetContents_2 = QtGui.QWidget()
+        scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 582, 538))
 
-        self.setCentralWidget(self.centralwidget)
+        scrollArea_2.setWidget(scrollAreaWidgetContents_2)
 
-    def setupToolbox(self):
-
-    
-        self.toolBox = QtGui.QToolBox(self.centralwidget)
-        self.toolBox.setMaximumSize(QtCore.QSize(300, 16777215))
-        self.toolBox.setObjectName("toolBox")
-
-
-
-
-        self.page_3 = QtGui.QWidget()
-        self.page_3.setGeometry(QtCore.QRect(0, 0, 300, 438))
-        self.page_3.setObjectName("page_3")
-
-
-
-
-        self.scrollArea = QtGui.QScrollArea(self.page_3)
-        self.scrollArea.setGeometry(QtCore.QRect(480, 120, 120, 80))
-        self.scrollArea.setWidgetResizable(True)
-        self.scrollArea.setObjectName("scrollArea")
-
-        self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 118, 78))
-        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-
-
-        self.widget_5 = language.SceneWidget(self.page_3)
-        self.toolBox.addItem(self.page_3, "Scenes")
-
-
-
-        self.page_4 = QtGui.QWidget()
-        self.page_4.setGeometry(QtCore.QRect(0, 0, 300, 438))
-        self.page_4.setObjectName("page_4")
-
-        self.widget_3 = language.VideoDefnWidget(self.page_4)
-        self.widget_4 = language.VideoCollectionDefnWidget(self.page_4)
-
-
-        self.toolBox.addItem(self.page_4, "Videos and Video Collections")
-
-
-
-        self.page_5 = QtGui.QWidget()
-        self.page_5.setObjectName("page_5")
-
-
-
-
-        self.toolBox.addItem(self.page_5, "Variables")
-
-
-
-
-        self.horizontalLayout_7 = QtGui.QHBoxLayout(self.page_5)
-        self.horizontalLayout_7.setObjectName("horizontalLayout_7")
-
-        self.verticalLayout = QtGui.QVBoxLayout()
-        self.verticalLayout.setObjectName("verticalLayout")
-
-
-
-        self.widget = language.SetterWidget(self.page_5)
-        self.verticalLayout.addWidget(self.widget)
-
-
-        self.widget_2 = language.GetterWidget()
-        self.verticalLayout.addWidget(self.widget_2)
-
-        self.horizontalLayout_7.addLayout(self.verticalLayout)
-
-
-        self.toolBox.setCurrentIndex(0)
-
-
-
-
-
-        self.horizontalLayout.addWidget(self.toolBox)
-
-    def setupEditorPane(self):
-
-        self.scrollArea_2 = QtGui.QScrollArea(self.centralwidget)
-        self.scrollArea_2.setWidgetResizable(True)
-        self.scrollArea_2.setObjectName("scrollArea_2")
-
-        self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 582, 538))
-        self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
-
-        self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_2)
-
-        self.horizontalLayout.addWidget(self.scrollArea_2)
+        return scrollArea_2
 
     def setupToolbar(self):
 
