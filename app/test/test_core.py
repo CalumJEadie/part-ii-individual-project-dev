@@ -13,10 +13,12 @@ logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(name)s - %(leveln
 
 class Test(unittest.TestCase):
 
+    duration = 3
+
     def test_display(self):
 
         # Test unicode support.
-        core.display("Psy - Gangnam Style Official Music Video [HD] (강남스타일) M/V",1)
+        core.display("Psy - Gangnam Style Official Music Video [HD] (강남스타일) M/V",self.duration)
 
     def test_ask_yes_no(self):
 
