@@ -6,6 +6,7 @@ Unit tests for Core API.
 
 import unittest
 import logging
+from PySide import QtGui
 
 from app.api import core
 
@@ -13,7 +14,10 @@ logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(name)s - %(leveln
 
 class Test(unittest.TestCase):
 
-    duration = 3
+    duration = 1
+
+
+    app = QtGui.QApplication([])
 
     def test_display(self):
 
@@ -25,8 +29,10 @@ class Test(unittest.TestCase):
         # Test type.
         res = core.ask_yes_no("Question (yes/no)? Enter yes.")
         self.assertIsInstance(res,bool)
+        self.assertTrue(res)
         res = core.ask_yes_no("Question (yes/no)? Enter no.")
         self.assertIsInstance(res,bool)
+        self.assertFalse(res)
 
 if __name__ == "__main__":
     unittest.main()

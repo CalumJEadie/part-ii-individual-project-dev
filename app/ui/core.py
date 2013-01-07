@@ -4,30 +4,93 @@ Core UI.
 
 from PySide import QtGui, QtCore
 
-class FullscreenDisplayDialogue(QtGui.QWidget):
+class FullscreenDialog(object):
+
+    def fullscreen(self):
+        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        self.showFullScreen()
+
+class FullscreenDisplayDialog(QtGui.QWidget,FullscreenDialog):
     
     def __init__(self,text):
 
-        super(FullscreenDisplayDialogue, self).__init__()
+        super(FullscreenDisplayDialog, self).__init__()
         self.setupUI(text)
         self.show()
 
     def setupUI(self,text):
 
-        grid = QtGui.QGridLayout(self)
+        grid_layout = QtGui.QGridLayout(self)
 
-        label = QtGui.QLabel(text,self)
-        label.setAlignment(QtCore.Qt.AlignCenter)
-        label.setWordWrap(True)
-        label.setMargin(200)
-        font = QtGui.QFont("serif",40)
-        label.setFont(font)
+        message_label = QtGui.QLabel(text,self)
+        message_label.setAlignment(QtCore.Qt.AlignCenter)
+        message_label.setWordWrap(True)
+        message_label.setMargin(200)
+        font = QtGui.QFont("serif",80)
+        message_label.setFont(font)
 
-        grid.addWidget(label)
+        grid_layout.addWidget(message_label)
 
-        self.setLayout(grid)
+        self.setLayout(grid_layout)
 
         self.setStyleSheet("background: black; color: white;")
 
-        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
-        self.showFullScreen()
+        self.fullscreen()
+
+class FullscreenBooleanDialog(QtGui.QDialog,FullscreenDialog):
+    
+    def __init__(self,text):
+
+        super(FullscreenBooleanDialog, self).__init__()
+        self.setupUI(text)
+        self.show()
+
+    def setupUI(self,text):
+
+        grid_layout = QtGui.QGridLayout(self)
+        self.setLayout(grid_layout)
+
+        self.setStyleSheet("background: black; color: white;")
+        self.fullscreen()        
+
+        # Message
+        message_label = QtGui.QLabel(text,self)
+        message_label.setAlignment(QtCore.Qt.AlignCenter)
+        message_label.setWordWrap(True)
+        message_label.setMargin(200)
+        font = QtGui.QFont("serif",80)
+        message_label.setFont(font)
+
+        grid_layout.addWidget(message_label,0,0,1,2)
+
+        font = QtGui.QFont() # Use default font.
+        font.setPointSize(80) # Use large buttons.
+
+        # Yes button
+        yes_button = QtGui.QPushButton("&Yes",self)
+        yes_button.setFont(font)
+        # Connect clicked signal from button to accept virtual function of the dialog.
+        yes_button.clicked.connect(self.accept)
+        yes_button.setStyleSheet("margin: 100px; padding: 50px; border: 2px solid white;");
+        grid_layout.addWidget(yes_button,1,0)
+
+        # No button
+        no_button = QtGui.QPushButton("&No",self)
+        no_button.setFont(font)
+        no_button.clicked.connect(self.reject)
+        no_button.setStyleSheet("margin: 100px; padding: 50px; border: 2px solid white;");
+        grid_layout.addWidget(no_button,1,1)
+
+    @classmethod
+    def getBoolean(cls,text):
+        """
+        Static convenience method. Modelled after similiar methods in concrete
+        subclasses of QDialog in PySide, such as QInputDialog.getString()
+
+        :rtype: boolean
+        """
+        dialog = cls(text)
+        if dialog.exec_() == QtGui.QDialog.Accepted:
+            return True
+        else:
+            return False
