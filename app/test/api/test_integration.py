@@ -56,7 +56,7 @@ class SmartMusicPlayer(unittest.TestCase):
         # the more general notion of a collection. Will review.
 
         seed_videos = youtube.VideoCollection([
-            # Generate using YouTube Music Top Tracks.
+            # Generated using YouTube Music Top Tracks.
             # Pop
             "http://www.youtube.com/watch?v=9bZkp7q19f0", # PSY - GANGNAM STYLE
             "http://www.youtube.com/watch?v=lJqbaGloVxg", # James Arthur - Impossible - Official Single
