@@ -23,6 +23,7 @@ Function class based on Scala's anonymous functions.
 """
 
 import app.api.youtube
+import collections
 
 def partition_on_last_newline(text):
     """
@@ -136,7 +137,7 @@ class Function3(Expression):
         return code
 
 class InstanceMethod0(Expression):
-    """Abstrat class for a 0-ary instance method application."""
+    """Abstract class for a 0-ary instance method application."""
 
     def __init__(self, instance_expr, method_name):
         """
@@ -153,6 +154,37 @@ class InstanceMethod0(Expression):
         code += "%s.%s()" % (instance_var_name, self._method_name)
         return code
 
+class CommandSequence(collections.Sequence, LanguageComponent):
+    """
+    Implement collections.Sequence abstract class using delegation-composition
+    so only expose neccessary features in interface.
+    """
+
+    def __init__(self, commands=[]):
+        """
+        :type commands: Statement iterable
+        """
+        self._commands = commands
+
+    def __getitem__(self,key):
+        return self._commands.__getitem__(key)
+
+    def __len__(self):
+        return self._commands.__len__()
+
+    def translate(self):
+        """
+        Preconditions:
+        - Will follow a new line.
+        Postconditions:
+        - Will end in a new line.
+        """
+        code = ""
+        for command in self._commands:
+            code += command.translate()
+        code += "\n"
+        return code
+
 class Act(LanguageComponent):
     """
     Highest level container. Analagous to a program.
@@ -164,22 +196,27 @@ class Act(LanguageComponent):
     def translate(self):
         code = ""
         for scene in self._scenes:
-            code += scene.translate()
+            code += "\n" + scene.translate()
+        return code
 
 class Scene(LanguageComponent):
     """
     Analagous to a basic block.
     """
     
-    def __init__(self, title, comment, duration):
+    def __init__(self, title, comment, duration, pre_commands=CommandSequence([]), post_commands=CommandSequence([])):
         """
         :type title: string
         :type comment: string
         :type duration: <:NumberExpression
+        :type pre_commands: CommandSequence
+        :type post_commands: CommandSequence
         """
         self._title = title
         self._comment = comment
         self._duration = duration
+        self._pre_commands = pre_commands
+        self._post_commands = post_commands
 
     def translate(self):
         """
@@ -188,30 +225,46 @@ class Scene(LanguageComponent):
         Postconditions:
         - Will end in a new line.
         """
-        code = ""
-        code += CommentStatement(self._title).translate()
+        code = self.translate_before_content()
+        code += CommentStatement("Scene content.").translate()
+        code += self.translate_content()
+        code += self.translate_after_content()
+        return code
+
+    def translate_before_content(self):
+        code = CommentStatement(self._title).translate()
         if self._comment != "":
             code += CommentStatement("").translate()
             code += CommentStatement(self._comment).translate()
+        code += CommentStatement("Pre commands.").translate()
+        code += self._pre_commands.translate()
+        return code
+
+    def translate_content(self):
+        raise NotImplementedError
+
+    def translate_after_content(self):
+        code = CommentStatement("Post commands.").translate()
+        code += self._post_commands.translate()
         return code
 
 class VideoScene(Scene,Function3):
 
-    def __init__(self, title, comment, duration, offset, source):
+    def __init__(self, title, comment, duration, pre_commands, post_commands, offset, source):
         """
         :type title: string
         :type comment: string
         :type duration: <:NumberExpression
+        :type pre_commands: CommandSequence
+        :type post_commands: CommandSequence
         :type offset: <:NumberExpression
         :type source: <:VideoExpression
         """
-        super(VideoScene, self).__init__(title, comment, duration)
-        Function3.__init__(self, "videoplayer", source, offset, duration)
+        super(VideoScene, self).__init__(title, comment, duration, pre_commands, post_commands)
+        Function3.__init__(self, "videoplayer.play", source, offset, duration)
 
-    def translate(self):
-        code = super(VideoScene, self).translate()
-        code += Function3.translate(self)
-        return code
+    def translate_content(self):
+        return Function3.translate(self) + "\n"
 
 class ImageScene(Scene):
 
@@ -227,7 +280,7 @@ class ImageScene(Scene):
         self._offset = offset
         self._source = source
 
-class TextScene(Scene):
+class TextScene(Scene,Function2):
 
     def __init__(self, title, comment, duration, text):
         """
@@ -237,14 +290,11 @@ class TextScene(Scene):
         :type text: <:TextExpression
         """
         super(TextScene, self).__init__(title, comment, duration)
+        Function2.__init__(self, "display", text, duration)
         self._text = text
 
-    def translate(self):
-        code = super(TextScene, self).translate()
-        text_var_name = get_fresh_variable_name()
-        code += SetVariableStatement(text_var_name,self._text).translate()
-        code += "display(%s,duration)" % text_var_name
-        return code
+    def translate_content(self):
+        return Function2.translate(self) + "\n"
 
 class Statement(LanguageComponent):
 
@@ -279,6 +329,8 @@ class SetVariableStatement(Statement):
         value_code = self._value.translate()
         up_to, last = partition_on_last_newline(value_code)
         code = up_to
+        if up_to != "":
+            code += "\n"
         code += "%s = %s\n" % (self._name,last)
         return code
 
@@ -288,6 +340,7 @@ class GetVariableExpression(LanguageComponent):
         """
         :type name: string
         """
+        self._name = name
 
     def translate(self):
         return self._name

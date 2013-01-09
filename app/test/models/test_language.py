@@ -41,18 +41,26 @@ class SmartMusicPlayerTest(unittest.TestCase):
             text = YoutubeVideoGetDescription(curr_video)
         )
 
-        clip_duration = NumberValue(1)
-        video_duration = YoutubeVideoGetDuration(curr_video)
-        clip_offset = GetRandomNumberBetweenInterval(
-            NumberValue(0), Subtract(video_duration,clip_duration)
-        )
-
         scene3 = VideoScene(
             title = "Play video",
             comment = "",
-            duration = clip_duration,
-            offset = clip_offset,
-            source = curr_video
+            duration = GetVariableExpression("clip_duration"),
+            pre_commands = CommandSequence([
+                SetVariableStatement("clip_duration", NumberValue(1)),
+                SetVariableStatement("video_duration", YoutubeVideoGetDuration(curr_video)),
+                SetVariableStatement("clip_offset",
+                    GetRandomNumberBetweenInterval(
+                        NumberValue(0),
+                        Subtract(
+                            GetVariableExpression("video_duration"),
+                            GetVariableExpression("clip_duration")
+                        )
+                    )
+                )
+            ]),
+            post_commands = CommandSequence([]),
+            offset = GetVariableExpression("clip_offset"),
+            source = GetVariableExpression("curr_video")
         )
 
     def test_translate_inner_loop_scenes(self):
@@ -62,36 +70,47 @@ class SmartMusicPlayerTest(unittest.TestCase):
 
         curr_video = VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0") # PSY - GANGNAM STYLE
 
-        scene1 = TextScene(
-            title = "Show video title",
-            comment = "",
-            duration = NumberValue(2),
-            text = YoutubeVideoGetTitle(curr_video)
-        )
-        print scene1.translate()
+        act1 = Act([
 
-        scene2 = TextScene(
-            title = "Show video description",
-            comment = "",
-            duration = NumberValue(2),
-            text = YoutubeVideoGetDescription(curr_video)
-        )
-        print scene2.translate()
+            TextScene(
+                title = "Show video title",
+                comment = "",
+                duration = NumberValue(2),
+                text = YoutubeVideoGetTitle(curr_video)
+            ),
 
-        clip_duration = NumberValue(1)
-        video_duration = YoutubeVideoGetDuration(curr_video)
-        clip_offset = GetRandomNumberBetweenInterval(
-            NumberValue(0), Subtract(video_duration,clip_duration)
-        )
+            TextScene(
+                title = "Show video description",
+                comment = "",
+                duration = NumberValue(2),
+                text = YoutubeVideoGetDescription(curr_video)
+            ),
 
-        scene3 = VideoScene(
-            title = "Play video",
-            comment = "",
-            duration = clip_duration,
-            offset = clip_offset,
-            source = curr_video
-        )
-        print scene3.translate()
+            VideoScene(
+                title = "Play video",
+                comment = "",
+                duration = GetVariableExpression("clip_duration"),
+                pre_commands = CommandSequence([
+                    SetVariableStatement("clip_duration", NumberValue(1)),
+                    SetVariableStatement("video_duration", YoutubeVideoGetDuration(curr_video)),
+                    SetVariableStatement("clip_offset",
+                        GetRandomNumberBetweenInterval(
+                            NumberValue(0),
+                            Subtract(
+                                GetVariableExpression("video_duration"),
+                                GetVariableExpression("clip_duration")
+                            )
+                        )
+                    )
+                ]),
+                post_commands = CommandSequence([]),
+                offset = GetVariableExpression("clip_offset"),
+                source = GetVariableExpression("curr_video")
+            )
+
+        ])
+
+        print act1.translate()
 
     def test_operators(self):
         """
