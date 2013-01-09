@@ -64,7 +64,7 @@ class ImageScene(Scene):
         :type offset: <:NumberExpression
         :type source: <:VideoExpression
         """
-        super(VideoScene, self).__init__(title, comment, duration)
+        super(ImageScene, self).__init__(title, comment, duration)
         self._offset = offset
         self._source = source
 
@@ -77,7 +77,7 @@ class TextScene(Scene):
         :type duration: <:NumberExpression
         :type text: <:TextExpression
         """
-        super(VideoScene, self).__init__(title, comment, duration)
+        super(TextScene, self).__init__(title, comment, duration)
         self._text = text
 
 class Expression(object):
@@ -144,7 +144,7 @@ class GetRandomNumberBetweenIntervalOperation(NumberExpression):
 
 class SubtractOperation(NumberExpression):
 
-    def __init__(self,number_expr_1,higher_number_expr):
+    def __init__(self,number_expr_1,number_expr_2):
         """
         :type number_expr_1: <:NumberExpression
         :type number_expr_2: <:NumberExpression
