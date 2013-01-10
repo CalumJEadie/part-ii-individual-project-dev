@@ -81,15 +81,41 @@ class GraphicalEditor(QtGui.QMainWindow):
         :rtype: QtGui.QWidget
         """
 
-        scrollArea_2 = QtGui.QScrollArea(parent)
-        scrollArea_2.setWidgetResizable(True)
+        editorPane = QtGui.QWidget(parent)
 
-        scrollAreaWidgetContents_2 = QtGui.QWidget()
-        scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 582, 538))
+        hBoxLayout = QtGui.QHBoxLayout(editorPane)
+        editorPane.setLayout(hBoxLayout)
 
-        scrollArea_2.setWidget(scrollAreaWidgetContents_2)
+        scrollArea = QtGui.QScrollArea(editorPane)
+        hBoxLayout.addStretch(50) # Create stretchable space either side of act.
+        hBoxLayout.addWidget(scrollArea)
+        hBoxLayout.addStretch(50) # Create stretchable space either side of act.
 
-        return scrollArea_2
+        actWidget = QtGui.QWidget(scrollArea)
+        actWidget.setMinimumSize(400,400)
+        scrollArea.setWidget(actWidget)
+        # scrollArea.setWidget(language.SceneWidget())
+        # return editorPane
+
+        vBoxLayout = QtGui.QVBoxLayout(actWidget)
+        actWidget.setLayout(vBoxLayout)
+
+        for i in range(0,20):
+            # sw = language.SceneWidget(actWidget)
+            # vBoxLayout.addWidget(sw)
+            vBoxLayout.addWidget(QtGui.QLabel("test %s" % i))
+
+        return editorPane
+
+        # scrollArea_2 = QtGui.QScrollArea(parent)
+        # scrollArea_2.setWidgetResizable(True)
+
+        # scrollAreaWidgetContents_2 = QtGui.QWidget()
+        # scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 582, 538))
+
+        # scrollArea_2.setWidget(scrollAreaWidgetContents_2)
+
+        # return scrollArea_2
 
     def setupToolbar(self):
 
