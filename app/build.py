@@ -14,6 +14,6 @@ def view_apidoc():
     """
     View API documentation.
     """
-    subprocess.call(["open","apidocs/index.html"])
+    subprocess.call(["open","apidoc/index.html"])
 
 build(sys.modules[__name__], sys.argv[1:])
