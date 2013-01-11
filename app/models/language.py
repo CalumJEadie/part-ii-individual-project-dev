@@ -24,6 +24,11 @@ Function class based on Scala's anonymous functions.
 
 import app.api.youtube
 import collections
+import logging
+import show
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 def partition_on_last_newline(text):
     """
@@ -46,6 +51,9 @@ get_fresh_variable_name.count = 0
 
 class LanguageComponent(object):
     """Base class for all components of the language."""
+
+    def __init__(self):
+        self._children = []
     
     def translate(self):
         """
@@ -59,7 +67,25 @@ class LanguageComponent(object):
         """
         raise NotImplementedError
 
+    def get_live_variables(self):
+        """
+        Returns list of variable names for variable that are live on entrance
+        to the language component.
 
+        Analysis will **overestimate** for safety and returns variables that
+        **may be** live.
+
+        :rtype: string set
+        """
+        # Implement naive recursive strategy.
+        # This assumes all variables are defined in leaves and that leaves
+        # implement the base case.
+        live_variables = set()
+        logger.debug(self)
+        logger.debug(self._children)
+        for child in self._children:
+           live_variables |= child.get_live_variables()
+        return live_variables
 
 class Expression(LanguageComponent):
     """Base class for all expressions in the language."""
@@ -72,6 +98,8 @@ class Operator2(Expression):
         self._operator_name = operator_name
         self._operand1 = operand1
         self._operand2 = operand2
+        # Use extend as implementing class may already have children.
+        self._children.extend([self._operand1,self._operand2])
 
     def translate(self):
         code = ""
@@ -89,6 +117,7 @@ class Function1(Expression):
     def __init__(self, function_name, operand1):
         self._function_name = function_name
         self._operand1 = operand1
+        self._children.extend([self._operand1])
 
     def translate(self):
         code = ""
@@ -104,6 +133,7 @@ class Function2(Expression):
         self._function_name = function_name
         self._operand1 = operand1
         self._operand2 = operand2
+        self._children.extend([self._operand1,self._operand2])
 
     def translate(self):
         code = ""
@@ -123,6 +153,7 @@ class Function3(Expression):
         self._operand1 = operand1
         self._operand2 = operand2
         self._operand3 = operand3
+        self._children.extend([self._operand1, self._operand2, self._operand3])
 
     def translate(self):
         code = ""
@@ -146,6 +177,7 @@ class InstanceMethod0(Expression):
         """
         self._instance_expr = instance_expr
         self._method_name = method_name
+        self._children.extend([self._instance_expr])
 
     def translate(self):
         code = ""
@@ -165,6 +197,7 @@ class CommandSequence(collections.Sequence, LanguageComponent):
         :type commands: Statement iterable
         """
         self._commands = commands
+        self._children = self._commands
 
     def __getitem__(self,key):
         return self._commands.__getitem__(key)
@@ -192,6 +225,7 @@ class Act(LanguageComponent):
 
     def __init__(self, scenes):
         self._scenes = scenes
+        self._children = self._scenes
 
     def translate(self):
         code = ""
@@ -217,6 +251,7 @@ class Scene(LanguageComponent):
         self._duration = duration
         self._pre_commands = pre_commands
         self._post_commands = post_commands
+        self._children = [self._duration, self._pre_commands, self._post_commands]
 
     def translate(self):
         """
@@ -291,7 +326,6 @@ class TextScene(Scene,Function2):
         """
         super(TextScene, self).__init__(title, comment, duration)
         Function2.__init__(self, "display", text, duration)
-        self._text = text
 
     def translate_content(self):
         return Function2.translate(self) + "\n"
@@ -334,6 +368,13 @@ class SetVariableStatement(Statement):
         code += "%s = %s\n" % (self._name,last)
         return code
 
+    # def get_live_variables(self):
+    #     """
+    #     Later may want to implement a better estimate by taking into account
+    #     variables being dereferenced by setting to a new value.
+    #     """
+    #     return []
+
 class GetVariableExpression(LanguageComponent):
 
     def __init__(self, name):
@@ -344,6 +385,10 @@ class GetVariableExpression(LanguageComponent):
 
     def translate(self):
         return self._name
+
+    def get_live_variables(self):
+        """Base case."""
+        return set([self._name])
 
 class TextExpression(Expression):
     """Base class for expressions that evaluate to type Text."""
@@ -434,7 +479,7 @@ class Multiply(Operator2):
     def __init__(self,op1,op2):
         super(Multiply,self).__init__("*", op1, op2)
 
-class VideoExpression():
+class VideoExpression(Expression):
     """Base class for expressions that evaluate to type Video."""
     pass
 
@@ -452,6 +497,8 @@ class VideoValue(VideoExpression):
 class VideoCollectionExpression():
     """Base class for expressions that evaluate to type VideoCollection."""
     pass
+
+def VideoCollectionValue(VideoCollectionExpression):
 
     def __init__(self,video_collection):
         """
