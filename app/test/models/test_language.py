@@ -6,7 +6,7 @@ import unittest
 import logging
 
 from app.models.language import *
-from app.test import motivating_applications
+# from app.test import motivating_applications
 
 logging.basicConfig(level=logging.DEBUG,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
@@ -114,10 +114,21 @@ class SmartMusicPlayerTest(unittest.TestCase):
 
         print act1.translate()
 
+class Test(unittest.TestCase):
+    """
+    General tests.
+    """
+
+    def test_operator_functions(self):
+
+        exec translate_operator_2("+",NumberValue(1),NumberValue(1))
+        exec translate_operator_2("-",NumberValue(1),NumberValue(1))
+
     def test_operators(self):
         """
         Tests of representation of standard Python operators.
         """
+        print Add(NumberValue(1),NumberValue(2)).translate()
         exec Add(NumberValue(1),NumberValue(2)).translate()
         exec Subtract(NumberValue(1),NumberValue(2)).translate()
         exec Multiply(NumberValue(1),NumberValue(2)).translate()

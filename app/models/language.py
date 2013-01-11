@@ -49,11 +49,21 @@ def get_fresh_variable_name():
     return "tmp_%s" % get_fresh_variable_name.count
 get_fresh_variable_name.count = 0
 
+def translate_operator_2(operator_name, operand1, operand2):
+    code = ""
+    operand1_var_name = get_fresh_variable_name()
+    code += SetVariableStatement(operand1_var_name, operand1).translate()
+    operand2_var_name = get_fresh_variable_name()
+    code += SetVariableStatement(operand2_var_name, operand2).translate()
+    code += "%s %s %s" % (operand1_var_name,  operator_name,
+        operand2_var_name)
+    return code
+
 class LanguageComponent(object):
     """Base class for all components of the language."""
 
-    def __init__(self):
-        self._children = []
+    def __init__(self, children=[]):
+        self._children = children
     
     def translate(self):
         """
@@ -186,7 +196,7 @@ class InstanceMethod0(Expression):
         code += "%s.%s()" % (instance_var_name, self._method_name)
         return code
 
-class CommandSequence(collections.Sequence, LanguageComponent):
+class CommandSequence(LanguageComponent, collections.Sequence):
     """
     Implement collections.Sequence abstract class using delegation-composition
     so only expose neccessary features in interface.
@@ -464,10 +474,20 @@ class GetRandomNumberBetweenInterval(Function2, NumberExpression):
             higher_number_expr
         )
 
-class Add(Operator2):
+# class Add(Operator2):
 
-    def __init__(self,op1,op2):
-        super(Add,self).__init__("+", op1, op2)
+#     def __init__(self,op1,op2):
+#         super(Add,self).__init__("+", op1, op2)
+
+class Add(Expression):
+
+    def __init__(self, op1, op2):
+        super(Add,self).__init__([op1, op2])
+        self._op1 = op1
+        self._op2 = op2
+
+    def translate(self):
+        translate_operator_2("+", self._op1, self._op2)
 
 class Subtract(Operator2):
 
@@ -509,7 +529,7 @@ def VideoCollectionValue(VideoCollectionExpression):
     def translate(self):
         return "VideoCollection('%s')" % self._video_collection
 
-class YoutubeVideoGetRelated(InstanceMethod0, VideoCollectionExpression):
+class YoutubeVideoGetRelated(InstanceMethod0):
 
     def __init__(self,video_expr):
         """
@@ -517,7 +537,7 @@ class YoutubeVideoGetRelated(InstanceMethod0, VideoCollectionExpression):
         """
         super(YoutubeVideoGetRelated, self).__init__(video_expr, "related")
 
-class YoutubeSearch(Function1, VideoCollectionExpression):
+class YoutubeSearch(Function1):
 
     def __init__(self,text_expr):
         """
@@ -525,7 +545,7 @@ class YoutubeSearch(Function1, VideoCollectionExpression):
         """
         super(YoutubeSearch, self).__init__(text_expr, "youtube.search")
 
-class YoutubeVideoCollectionRandom(InstanceMethod0, VideoCollectionExpression):
+class YoutubeVideoCollectionRandom(InstanceMethod0):
 
     def __init__(self,video_collection_expr):
         """
