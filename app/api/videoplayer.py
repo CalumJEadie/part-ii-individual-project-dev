@@ -12,6 +12,10 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 def play(video,offset,duration):
+    """
+    :type video: youtube.Video
+    """
+
     logger.info("play(video=%s,offset=%s,duration=%s)",video,offset,duration)
     if pyomxplayer.is_omxplayer_available():
         p = pyomxplayer.OMXPlayer(video)

@@ -55,7 +55,9 @@ class SmartMusicPlayer(unittest.TestCase):
         # Idea of a list may not be suffeciently flexible. This motivates using
         # the more general notion of a collection. Will review.
 
-        seed_videos = youtube.VideoCollection([
+        # Update: Using from_web_urls for clarity in API.
+
+        seed_videos = youtube.VideoCollection.from_web_urls([
             # Generated using YouTube Music Top Tracks.
             # Pop
             "http://www.youtube.com/watch?v=9bZkp7q19f0", # PSY - GANGNAM STYLE
@@ -161,7 +163,7 @@ class SmartMusicPlayer(unittest.TestCase):
                 # Should selection process be exposed or left to the API to
                 # implement.
 
-                curr_video = curr_video.related()
+                curr_video = curr_video.related().random()
 
             else:
 
