@@ -18,7 +18,7 @@ def play(video,offset,duration):
 
     logger.info("play(video=%s,offset=%s,duration=%s)",video,offset,duration)
     if pyomxplayer.is_omxplayer_available():
-        p = pyomxplayer.OMXPlayer(video)
+        p = pyomxplayer.OMXPlayer(video.best_streaming_url())
         time.sleep(duration)
         p.stop()
     else:

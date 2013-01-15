@@ -3,7 +3,7 @@
 """
 YouTube API.
 
-Implemented using YouTube Data API.
+Implemented using YouTube Data API and youtube-dl.
 
 References:
 - https://developers.google.com/youtube/1.0/developers_guide_python#UnderstandingVideos.
@@ -13,6 +13,7 @@ import logging
 import collections
 import re
 import random
+import subprocess
 
 import gdata.youtube
 import gdata.youtube.service
@@ -106,7 +107,7 @@ class Video:
         return cls(entry)
 
     def __str__(self):
-        return "Video(title=%s,duration=%s)" % (self.title(),self.duration())
+        return "Video(title=%s, duration=%s, best_streaming_url=%s)" % (self.title(), self.duration(), self.best_streaming_url())
 
     def title(self):
         return self._entry.media.title.text
@@ -137,6 +138,22 @@ class Video:
         :rtype: string
         """
         return extract_video_id_from_api_uri(self._entry.id.text)
+
+    def web_url(self):
+        return self._entry.media.player.url
+
+    def streaming_url(self, format):
+        """
+        Returns url for streaming video using specified format.
+        """
+        output = subprocess.check_output(["youtube-dl","--get-url","--format", format, self.web_url()])
+        return output[:-1] # Remove new line character.
+
+    def best_streaming_url(self):
+        """
+        Returns url for streaming video using best available format.
+        """
+        return self.streaming_url("best")
 
 class VideoCollection(collections.Sequence):
     """
