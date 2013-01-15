@@ -5,6 +5,8 @@ YouTube API.
 
 Implemented using YouTube Data API and youtube-dl.
 
+youtube-dl is used as not obvious how to retrieve streaming urls from Data API.
+
 References:
 - https://developers.google.com/youtube/1.0/developers_guide_python#UnderstandingVideos.
 """
