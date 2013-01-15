@@ -18,5 +18,5 @@ def play(video,offset,duration):
         time.sleep(duration)
         p.stop()
     else:
-        log.info("OMXPlayer not available, calling `time.sleep`.")
+        logger.info("OMXPlayer not available, calling `time.sleep`.")
         time.sleep(duration)
