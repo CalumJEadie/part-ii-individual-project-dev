@@ -25,43 +25,52 @@ logger.setLevel(logging.INFO)
 logger.info("Initialising YouTubeService object")
 yt_service = gdata.youtube.service.YouTubeService()
 
-def extract_video_id(url):
+def extract_video_id_from_web_url(url):
     """
     Extracts video identifier from web url.
 
-    >>> extract_video_id("http://www.youtube.com/watch?v=9bZkp7q19f0&feature=g-all-f&context=G27f364eFAAAAAAAAAAA")
+    >>> extract_video_id_from_web_url("http://www.youtube.com/watch?v=9bZkp7q19f0&feature=g-all-f&context=G27f364eFAAAAAAAAAAA")
     '9bZkp7q19f0'
-    >>> extract_video_id("http://www.youtube.com/watch?feature=g-all-f&v=9bZkp7q19f0&context=G27f364eFAAAAAAAAAAA")
+    >>> extract_video_id_from_web_url("http://www.youtube.com/watch?feature=g-all-f&v=9bZkp7q19f0&context=G27f364eFAAAAAAAAAAA")
     '9bZkp7q19f0'
-    >>> extract_video_id('<iframe width="560" height="315" src="http://www.youtube.com/embed/9bZkp7q19f0" frameborder="0" allowfullscreen></iframe>')
+    >>> extract_video_id_from_web_url('<iframe width="560" height="315" src="http://www.youtube.com/embed/9bZkp7q19f0" frameborder="0" allowfullscreen></iframe>')
     '9bZkp7q19f0'
-    >>> extract_video_id("youtube.com/v/9bZkp7q19f0")
+    >>> extract_video_id_from_web_url("youtube.com/v/9bZkp7q19f0")
     '9bZkp7q19f0'
-    >>> extract_video_id("youtube.com/vi/9bZkp7q19f0")
+    >>> extract_video_id_from_web_url("youtube.com/vi/9bZkp7q19f0")
     '9bZkp7q19f0'
-    >>> extract_video_id("youtube.com/?v=9bZkp7q19f0")
+    >>> extract_video_id_from_web_url("youtube.com/?v=9bZkp7q19f0")
     '9bZkp7q19f0'
-    >>> extract_video_id("youtube.com/?vi=9bZkp7q19f0")
+    >>> extract_video_id_from_web_url("youtube.com/?vi=9bZkp7q19f0")
     '9bZkp7q19f0'
-    >>> extract_video_id("youtube.com/watch?v=9bZkp7q19f0")
+    >>> extract_video_id_from_web_url("youtube.com/watch?v=9bZkp7q19f0")
     '9bZkp7q19f0'
-    >>> extract_video_id("youtube.com/watch?vi=9bZkp7q19f0")
+    >>> extract_video_id_from_web_url("youtube.com/watch?vi=9bZkp7q19f0")
     '9bZkp7q19f0'
-    >>> extract_video_id("youtu.be/9bZkp7q19f0")
+    >>> extract_video_id_from_web_url("youtu.be/9bZkp7q19f0")
     '9bZkp7q19f0'
 
-    >>> extract_video_id("http://vimeo.com/48100473")
+    >>> extract_video_id_from_web_url("http://vimeo.com/48100473")
     Traceback (most recent call last):
         ...
     VideoIdentifierError: http://vimeo.com/48100473
     """
 
-    # Based on http://rubular.com/r/M9PJYcQxRW / http://stackoverflow.com/questions/3392993/php-regex-to-get-youtube-video-id
+    # Based on http://rubular.com/r/M9PJYcQxRW and http://stackoverflow.com/questions/3392993/php-regex-to-get-youtube-video-id
     video_id_re = '(?<=(?:v|i)=)[a-zA-Z0-9-]+(?=&)|(?<=(?:v|i)\/)[^&\n]+|(?<=embed\/)[^"&\n]+|(?<=(?:v|i)=)[^&\n]+|(?<=youtu.be\/)[^&\n]+'
     matches = re.search(video_id_re,url)
     if matches is None:
         raise VideoIdentifierError(url)
     return matches.group(0)
+
+def extract_video_id_from_api_uri(uri):
+    """
+    See https://developers.google.com/youtube/1.0/developers_guide_python#UnderstandingVideos
+
+    >>> extract_video_id_from_api_uri("http://gdata.youtube.com/feeds/api/videos/9bZkp7q19f0")
+    '9bZkp7q19f0'
+    """
+    return uri[-11:]
 
 class VideoIdentifierError(Exception):
     """
@@ -88,8 +97,11 @@ class Video:
     def from_web_url(cls,url):
         """
         Constructs a Video object from a web url.
+
+        :type url: string
+        :rtype: Video
         """
-        video_id = extract_video_id(url)
+        video_id = extract_video_id_from_web_url(url)
         entry = yt_service.GetYouTubeVideoEntry(video_id=video_id)
         return cls(entry)
 
@@ -107,13 +119,24 @@ class Video:
 
     def related(self):
         """
-        rtype: VideoCollection
+        :rtype: VideoCollection
         """
-        show(self._entry.id.text)
-        #related_feed = yt_service.GetYouTubeRelatedVideoFeed(uri=self._entry.id.text)
-        related_feed = yt_service.GetYouTubeRelatedVideoFeed(video_id="9bZkp7q19f0")
-        show(related_feed)
+        # See https://developers.google.com/youtube/1.0/developers_guide_python
+        # See http://gdata-python-client.googlecode.com/hg/pydocs/gdata.youtube.service.html#YouTubeService-GetYouTubeRelatedVideoFeed
+        # See http://gdata-python-client.googlecode.com/hg/pydocs/gdata.youtube.html#YouTubeVideoEntry
+        
+        # This should work however API doesn't recognise the URI.
+        # related_feed = yt_service.GetYouTubeRelatedVideoFeed(uri=self._entry.id.text)
+        
+        # Instead get video_id from the URI.
+        related_feed = yt_service.GetYouTubeRelatedVideoFeed(video_id=self._video_id())
         return VideoCollection.from_feed(related_feed)
+
+    def _video_id(self):
+        """
+        :rtype: string
+        """
+        return extract_video_id_from_api_uri(self._entry.id.text)
 
 class VideoCollection(collections.Sequence):
     """
@@ -122,14 +145,18 @@ class VideoCollection(collections.Sequence):
     This could be implemented by subclassing list however at this point not clear
     what the interface to VideoCollection should be. Will use delegation-composition
     and selectively build interface.
+
+    self._videos : Video sequence
     """
 
     def __init__(self,videos=[]):
         """
-        :param videos: YouTube video web urls
-        :type videos: String iterable
+        :type videos: Video iterable
+        :rtype: VideoCollection
         """
-        self._videos = map(Video.from_web_url,videos)
+        self._videos = []
+        for video in videos:
+            self._videos.append(video)
 
     @classmethod
     def from_feed(cls,feed):
@@ -143,6 +170,15 @@ class VideoCollection(collections.Sequence):
         for entry in feed.entry:
             videos.append(Video(entry))
         return cls(videos)
+
+    @classmethod
+    def from_web_urls(cls,urls):
+        """
+        :param urls: YouTube video web urls
+        :type urls: String iterable
+        :rtype: VideoCollection
+        """
+        return cls(map(Video.from_web_url, urls))
 
     def __getitem__(self,key):
         return self._videos.__getitem__(key)

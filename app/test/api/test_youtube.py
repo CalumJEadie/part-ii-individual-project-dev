@@ -4,10 +4,16 @@ Unit tests for YouTube API.
 
 import unittest
 import logging
+import doctest
 
 from app.api import youtube
 
 logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+class TestDoctests(unittest.TestCase):
+
+    def test_doctests(self):
+        doctest.testmod(youtube)
 
 class TestVideoGangnam(unittest.TestCase):
     """
@@ -47,7 +53,7 @@ class TestVideoCollection(unittest.TestCase):
     Use popular music tracks as unlikely to be removed.
     """
 
-    _videos = [
+    urls = [
         "http://www.youtube.com/watch?v=9bZkp7q19f0", # PSY - GANGNAM STYLE
         "http://www.youtube.com/watch?v=lJqbaGloVxg", # James Arthur - Impossible - Official Single
         "http://www.youtube.com/watch?v=kYtGl1dX5qI", # will.i.am - Scream & Shout ft. Britney Spears
@@ -55,12 +61,12 @@ class TestVideoCollection(unittest.TestCase):
         "http://www.youtube.com/watch?v=KHF9itPLUo4" # Johnny Cash - I Walk the Line
     ]
 
-    def test_init(self):
-        videos = youtube.VideoCollection(self._videos)
+    def test_from_web_urls(self):
+        videos = youtube.VideoCollection.from_web_urls(self.urls)
 
     def test_len(self):
-        videos = youtube.VideoCollection(self._videos)
-        self.assertEqual(len(videos),len(self._videos))
+        videos = youtube.VideoCollection.from_web_urls(self.urls)
+        self.assertEqual(len(videos),len(self.urls))
 
 if __name__ == "__main__":
     unittest.main()
