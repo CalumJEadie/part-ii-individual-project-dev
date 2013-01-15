@@ -1,5 +1,17 @@
 from PySide import QtGui,QtCore
 
+class ActWidget(QtGui.QListView):
+
+    def __init__(self, parent=None):
+        super(ActWidget, self).__init__(parent)
+
+class ActView(QtGui.QListView):
+
+    def __init__(self, parent=None):
+        super(ActView, self).__init__(parent)
+        # self.setAcceptDrops(True)
+        self.setDragDropMode(QtGui.QAbstractItemView.InternalMove)
+
 class SceneWidget(QtGui.QWidget):
 
     def __init__(self,parent=None):
