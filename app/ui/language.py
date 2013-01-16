@@ -15,6 +15,32 @@ from app.models import language
 #         # self.setAcceptDrops(True)
 #         self.setDragDropMode(QAbstractItemView.InternalMove)
 
+class ActEdit(QWidget):
+
+    def __init__(self, parent=None):
+        super(ActEdit, self).__init__(parent)
+        self._scenes = [
+            VideoSceneWidget(self)
+        ]
+        self._setupUI()
+
+    def _setupUI(self):
+        layout = QVBoxLayout()
+        for scene in self._scenes:
+            layout.addWidget(scene)
+        self.setLayout(layout)
+
+    def model(self):
+        """
+        :rtype: models.language.Act
+        """
+        return language.Act(map(lambda x: x.model(), self._scenes))
+
+    def mousePressEvent(self,event):
+        self.changed.emit(self.model().translate())
+
+    changed = Signal(str)
+
 
 class ActWidget(QWidget):
 

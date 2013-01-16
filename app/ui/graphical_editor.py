@@ -2,9 +2,13 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 import os.path
 from os.path import join
+import logging
 
 from app.ui.language import *
 from app.interpreter import interpreter
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class GraphicalEditor(QMainWindow):
 
@@ -37,8 +41,11 @@ class GraphicalEditor(QMainWindow):
         
         horizontalLayout.addWidget(self.createSidebar(centralwidget))
         horizontalLayout.addWidget(self.createEditorPane(centralwidget))
+        horizontalLayout.addWidget(self.createPreview(centralwidget))
 
         self.setCentralWidget(centralwidget)
+
+        self._actEdit.changed.connect(self._previewTextEdit.setPlainText)
 
     def createSidebar(self, parent):
         """
@@ -131,17 +138,34 @@ class GraphicalEditor(QMainWindow):
 
         editorPaneLayout = QHBoxLayout()
 
-        actWidget = ActWidget()
+        self._actEdit = ActEdit()
 
         # Create stretchable space either side of act.
         editorPaneLayout.addStretch(50)
-        editorPaneLayout.addWidget(actWidget)
+        editorPaneLayout.addWidget(self._actEdit)
         editorPaneLayout.addStretch(50)
 
         editorPane = QWidget(parent)
         editorPane.setLayout(editorPaneLayout)
 
         return editorPane
+
+    def createPreview(self, parent):
+        """
+        :type parent: QWidget
+        :rtype: QWidget
+        """
+
+        self._previewTextEdit = QPlainTextEdit()
+
+        previewBox = QGroupBox("Preview")
+        previewBoxLayout = QVBoxLayout()
+        previewBoxLayout.addWidget(self._previewTextEdit)
+        previewBox.setLayout(previewBoxLayout)
+
+        previewBox.setFixedWidth(300)
+
+        return previewBox
 
     def setupToolbar(self):
 
@@ -183,8 +207,10 @@ class GraphicalEditor(QMainWindow):
         self.move(qr.topLeft())
 
     def run(self):
-        program = self.textEdit.toPlainText()
-        interpreter.interpret(program)
+        program = self._actEdit.model().translate()
+        logger.info(program)
+        self._previewTextEdit.setPlainText(program)
+        # interpreter.interpret(program)
 
     def clear(self):
         self.textEdit.clear()

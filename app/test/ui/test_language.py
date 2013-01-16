@@ -22,7 +22,7 @@ class Test(unittest.TestCase):
 
     def test_act(self):
         app = QtGui.QApplication([])
-        w = ActWidget()
+        w = ActEdit()
         w.show()
         app.exec_()
 
@@ -44,7 +44,7 @@ class Test(unittest.TestCase):
         """
         app = QtGui.QApplication([])
 
-        w1 = ActWidget()
+        w1 = ActEdit()
         w1.show()
         show(w1.children())
 
@@ -59,7 +59,7 @@ class Test(unittest.TestCase):
 
     def test_act_model(self):
         app = QtGui.QApplication([])
-        w = ActWidget()
+        w = ActEdit()
         w.show()
         print w.model().translate()
 
