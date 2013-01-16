@@ -63,8 +63,7 @@ class SmartMusicPlayerTest(unittest.TestCase):
             offset = GetVariableExpression("clip_offset"),
             source = GetVariableExpression("curr_video")
         )
-
-    @unittest.skip
+        
     def test_translate_inner_loop_scenes(self):
         """
         Tests translating scenes describing inner loop from the example.

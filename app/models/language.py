@@ -470,15 +470,15 @@ class VideoExpression(Expression):
 
 class VideoValue(VideoExpression):
 
-    def __init__(self,video):
+    def __init__(self, web_url):
         """
-        :type video: Video
+        :type web_url: string
         """
         super(VideoValue, self).__init__()
-        self._video = video
+        self._web_url = web_url
 
     def translate(self):
-        return "Video('%s')" % self._video
+        return "Video.from_web_url('%s')" % self._web_url
 
 class VideoCollectionExpression(Expression):
     """Base class for expressions that evaluate to type VideoCollection."""
@@ -486,15 +486,15 @@ class VideoCollectionExpression(Expression):
 
 class VideoCollectionValue(VideoCollectionExpression):
 
-    def __init__(self,video_collection):
+    def __init__(self,web_urls):
         """
-        :type video_collection: VideoCollection
+        :type web_urls: string
         """
         super(VideoCollectionValue, self).__init__()
-        self._video_collection = video_collection
+        self._web_urls = web_urls
 
     def translate(self):
-        return "VideoCollection('%s')" % self._video_collection
+        return "VideoCollection.from_web_urls('%s')" % self._web_urls
 
 class YoutubeVideoGetRelated(VideoCollectionExpression):
 
