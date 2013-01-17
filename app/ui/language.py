@@ -1,7 +1,12 @@
 from PySide.QtGui import *
 from PySide.QtCore import *
+import logging
+import cPickle
 
 from app.models import language
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 # class ActWidget(QListView):
 
@@ -14,6 +19,9 @@ from app.models import language
 #         super(ActView, self).__init__(parent)
 #         # self.setAcceptDrops(True)
 #         self.setDragDropMode(QAbstractItemView.InternalMove)
+
+# MIME format for language components.
+LC_MIME_FORMAT = "application/x-language-component"
 
 class ActEdit(QWidget):
 
@@ -359,11 +367,26 @@ class NumberValueWidget(QFrame):
         layout.addWidget(self._number)
         self.setLayout(layout)
 
+        self.setStyleSheet("background: blue")
+        self._number.setStyleSheet("background: white")
+
     def model(self):
         """
         :rtype: models.language.NumberValue
         """
         return language.NumberValue(float(self._number.text()))
+
+    def startDrag(self):
+        data = cPickle.dumps(self.model())
+        mimeData = QMimeData()
+        mimeData.setData(LC_MIME_FORMAT, data)
+        drag = QDrag(self)
+        drag.setMimeData(mimeData)
+        drag.start(Qt.CopyAction)
+
+    def mouseMoveEvent(self, event):
+        self.startDrag()
+        QWidget.mouseMoveEvent(self, event)
 
 class SlotWidget(QLabel):
 
@@ -378,11 +401,25 @@ class NumberSlotWidget(SlotWidget):
         self.setText("number")
         self.setStyleSheet("background: blue")
 
+        self.setAcceptDrops(True)
+
     def model(self):
         """
         :rtype: models.language.NumberExpression
         """
         return language.NumberValue(15)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasFormat(LC_MIME_FORMAT):
+            event.accept()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        lc = cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
+
+        if isinstance(lc, language.NumberValue):
+            NumberValueWidget(float(lc.translate()), self).show()
 
 class TextSlotWidget(SlotWidget):
 
