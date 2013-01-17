@@ -66,12 +66,12 @@ class GraphicalEditor(QMainWindow):
 
         textBox = QGroupBox("Text")
         textBoxLayout = QVBoxLayout()
-        textBoxLayout.addWidget(TextValueWidget())
+        textBoxLayout.addWidget(TextValueWidget(""))
         textBox.setLayout(textBoxLayout)
 
         numberBox = QGroupBox("Numbers")
         numberBoxLayout = QVBoxLayout()
-        numberBoxLayout.addWidget(NumberValueWidget())
+        numberBoxLayout.addWidget(NumberValueWidget(0))
         numberBox.setLayout(numberBoxLayout)
 
         variableBox = QGroupBox("Variables")

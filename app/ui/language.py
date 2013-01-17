@@ -332,17 +332,38 @@ class SetterWidget(QWidget):
 
         self.horizontalLayout_4.addLayout(self.horizontalLayout_3)
 
-class TextValueWidget(QLineEdit):
+class TextValueWidget(QFrame):
 
-    def __init__(self, parent=None):
+    def __init__(self, text, parent=None):
         super(TextValueWidget, self).__init__(parent)
-        self.setStyleSheet("background: green;")
+        self._text = QLineEdit(text, self)
+        layout = QHBoxLayout()
+        layout.addWidget(QLabel("\"", self))
+        layout.addWidget(self._text)
+        layout.addWidget(QLabel("\"", self))
+        self.setLayout(layout)
 
-class NumberValueWidget(QLineEdit):
+    def model(self):
+        """
+        :rtype: models.language.TextValue
+        """
+        return language.TextValue(self._text.text())
 
-    def __init__(self, parent=None):
+class NumberValueWidget(QFrame):
+
+    def __init__(self, number, parent=None):
         super(NumberValueWidget, self).__init__(parent)
-        self.setStyleSheet("background: blue;")
+        self._number = QLineEdit(str(number), self)
+        self._number.setValidator(QDoubleValidator())
+        layout = QHBoxLayout()
+        layout.addWidget(self._number)
+        self.setLayout(layout)
+
+    def model(self):
+        """
+        :rtype: models.language.NumberValue
+        """
+        return language.NumberValue(float(self._number.text()))
 
 class SlotWidget(QLabel):
 

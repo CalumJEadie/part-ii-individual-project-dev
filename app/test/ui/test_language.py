@@ -63,5 +63,27 @@ class Test(unittest.TestCase):
         w.show()
         print w.model().translate()
 
+    def test_text_value(self):
+        app = QtGui.QApplication([])
+        w = TextValueWidget("one")
+        w.show()
+        self.assertEqual(
+            w.model().translate(),
+            u"'one'"
+        )
+        print w.model().translate()
+        app.exec_()
+
+    def test_number_value(self):
+        app = QtGui.QApplication([])
+        w = NumberValueWidget(1.01)
+        w.show()
+        self.assertEqual(
+            w.model().translate(),
+            u"1.01"
+        )
+        print w.model().translate()
+        app.exec_()
+
 if __name__ == "__main__":
     unittest.main()
