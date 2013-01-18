@@ -105,6 +105,27 @@ class CommentWidget(QPlainTextEdit):
 
         self.setMaximumHeight(50)
 
+class MiniVideoSceneWidget(QLabel):
+
+    def __init__(self, parent=None):
+        super(MiniVideoSceneWidget, self).__init__(parent)
+        self.setText("Video Scene")
+        self.setStyleSheet("background: purple;")
+
+    def model():
+        """
+        :rtype: models.language.VideoScene
+        """
+        return language.VideoScene(
+            "Example Video Scene",
+            "",
+            language.NumberValue(10),
+            language.CommandSequence([]),
+            language.CommandSequence([]),
+            language.NumberValue(0),
+            language.VideoScene("http://www.youtube.com/watch?v=9bZkp7q19f0")
+        )
+
 class VideoSceneWidget(QWidget):
 
     def __init__(self,parent=None):

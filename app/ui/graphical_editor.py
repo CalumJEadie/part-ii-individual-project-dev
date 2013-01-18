@@ -155,7 +155,7 @@ class PaletteWidget(QWidget):
             (
                 "Scenes",
                 (
-                    SceneWidget(),
+                    MiniVideoSceneWidget(),
                 )
             ),
             (
