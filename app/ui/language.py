@@ -120,10 +120,10 @@ class VideoSceneWidget(QWidget):
         videoControls = QWidget(self)
         videoControlsLayout = QGridLayout()
 
-        self._source = VideoSlotWidget()
-        self._duration = NumberSlotWidget()
-        self._offset = NumberSlotWidget()
-        # self._volume = NumberSlotWidget()
+        self._source = VideoGapWidget()
+        self._duration = NumberGapWidget()
+        self._offset = NumberGapWidget()
+        # self._volume = NumberGapWidget()
 
         videoControlsLayout.addWidget(QLabel("play"), 0, 0)
         videoControlsLayout.addWidget(self._source, 0, 1)
@@ -231,19 +231,6 @@ class VideoDefnWidget(QWidget):
         self.horizontalLayout_8.addWidget(self.lineEdit_2)
 
         self.horizontalLayout_9.addLayout(self.horizontalLayout_8)
-
-class VideoSlotWidget(QLabel):
-
-    def __init__(self, parent=None):
-        super(VideoSlotWidget, self).__init__(parent)
-        self.setPixmap(QPixmap("res/video-64-64.png"))
-        self.setStyleSheet("background: red;")
-
-    def model(self):
-        """
-        :rtype: models.language.VideoExpression
-        """
-        return language.VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0")
 
 class VideoCollectionDefnWidget(QWidget):
 
@@ -388,27 +375,17 @@ class NumberValueWidget(QFrame):
         self.startDrag()
         QWidget.mouseMoveEvent(self, event)
 
-class SlotWidget(QStackedWidget):
+class GapWidget(QStackedWidget):
 
     def __init__(self, parent=None):
-        super(SlotWidget, self).__init__(parent)
+        super(GapWidget, self).__init__(parent)
+        self.setAcceptDrops(True)
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self._child = None
 
-class NumberSlotWidget(SlotWidget):
-
-    def __init__(self, parent=None):
-        super(NumberSlotWidget, self).__init__(parent)
-
-        self.addWidget(QLabel("number"))
-
-        self.setStyleSheet("background: blue")
-
-        self.setAcceptDrops(True)
-
     def model(self):
         """
-        :rtype: models.language.NumberExpression
+        :rtype: models.language.Expression
         """
         if self._child is not None:
             return self._child.model()
@@ -429,9 +406,31 @@ class NumberSlotWidget(SlotWidget):
             self.insertWidget(1, self._child)
             self.setCurrentIndex(1)
 
-class TextSlotWidget(SlotWidget):
+class NumberGapWidget(GapWidget):
 
     def __init__(self, parent=None):
-        self.setText("text")
-        super(TextSlotWidget, self).__init__(parent)
+        super(NumberGapWidget, self).__init__(parent)
+
+        self.setStyleSheet("background: blue")
+
+class TextGapWidget(GapWidget):
+
+    def __init__(self, parent=None):
+        super(TextGapWidget, self).__init__(parent)
+
         self.setStyleSheet("background: green")
+
+class VideoGapWidget(GapWidget):
+
+    def __init__(self, parent=None):
+        super(VideoGapWidget, self).__init__(parent)
+        self.setStyleSheet("background: red;")
+        label = QLabel(self)
+        label.setPixmap(QPixmap("res/video-64-64.png"))
+        self.addWidget(label)
+
+    def model(self):
+        """
+        :rtype: models.language.VideoExpression
+        """
+        return language.VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0")
