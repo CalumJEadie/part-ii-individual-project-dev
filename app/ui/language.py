@@ -485,6 +485,10 @@ class GapWidget(QStackedWidget):
             self._child = NumberValueWidget(float(lc.translate()), self)
             self.insertWidget(1, self._child)
             self.setCurrentIndex(1)
+        elif isinstance(lc, language.Add):
+            self._child = NumberOperatorWidget("+", NumberGapWidget(), NumberGapWidget(), self)
+            self.insertWidget(1, self._child)
+            self.setCurrentIndex(1)
         elif isinstance(lc, language.TextValue):
             self._child = TextValueWidget(lc.translate(), self)
             self.insertWidget(1, self._child)
@@ -522,3 +526,60 @@ class VideoGapWidget(GapWidget):
         :rtype: models.language.VideoExpression
         """
         return language.VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0")
+
+class NumberOperatorWidget(QFrame):
+
+    OPERATORS = {
+        "+": language.Add,
+        "-": language.Subtract,
+        "/": language.Multiply
+    }
+
+    def __init__(self, operator, operand1, operand2, parent=None):
+        """
+        :type operator: string
+        :type operand1: QWidget
+        :type operand2: QWidget
+        """
+
+        assert operator in self.OPERATORS.keys()
+        super(NumberOperatorWidget, self).__init__(parent)
+
+        self._operand1 = operand1
+        self._operand2 = operand2
+
+        self._operator = QComboBox()
+        self._operator.addItem("+")
+        self._operator.addItem("-")
+        self._operator.addItem("*")
+
+        layout = QHBoxLayout()
+        layout.addWidget(self._operand1)
+        layout.addWidget(self._operator)
+        layout.addWidget(self._operand2)
+
+        self.setLayout(layout)
+
+        self.setStyleSheet("background: blue")
+
+    def model(self):
+        """
+        :rtype: models.language.NumberValue
+        """
+        operator = self._operator.currentText()
+        return self.OPERATORS[operator](
+            self._operand1.model(),
+            self._operand2.model()
+        )
+
+    def startDrag(self):
+        data = cPickle.dumps(self.model())
+        mimeData = QMimeData()
+        mimeData.setData(LC_MIME_FORMAT, data)
+        drag = QDrag(self)
+        drag.setMimeData(mimeData)
+        drag.start(Qt.CopyAction)
+
+    def mouseMoveEvent(self, event):
+        self.startDrag()
+        QWidget.mouseMoveEvent(self, event)

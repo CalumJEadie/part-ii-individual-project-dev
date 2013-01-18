@@ -169,6 +169,7 @@ class PaletteWidget(QWidget):
                 "Numbers",
                 (
                     NumberValueWidget(0),
+                    NumberOperatorWidget("+", NumberGapWidget(), NumberGapWidget())
                 )
             ),
             (
