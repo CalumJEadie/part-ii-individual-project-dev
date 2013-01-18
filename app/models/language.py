@@ -275,14 +275,16 @@ class ImageScene(Scene):
 
 class TextScene(Scene):
 
-    def __init__(self, title, comment, duration, text):
+    def __init__(self, title, comment, duration, pre_commands, post_commands, text):
         """
         :type title: string
         :type comment: string
+        :type pre_commands: CommandSequence
+        :type post_commands: CommandSequence
         :type duration: <:NumberExpression
         :type text: <:TextExpression
         """
-        super(TextScene, self).__init__(title, comment, duration)
+        super(TextScene, self).__init__(title, comment, duration, pre_commands, post_commands)
         self._children.append(text)
         self._text = text
 

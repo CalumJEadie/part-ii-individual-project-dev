@@ -28,14 +28,17 @@ class ActEdit(QWidget):
     def __init__(self, parent=None):
         super(ActEdit, self).__init__(parent)
         self._scenes = [
+            TextSceneWidget(self),
             VideoSceneWidget(self)
         ]
         self._setupUI()
 
     def _setupUI(self):
         layout = QVBoxLayout()
+        layout.addSpacing(10)
         for scene in self._scenes:
             layout.addWidget(scene)
+        layout.addStretch(10)
         self.setLayout(layout)
 
     def model(self):
@@ -75,19 +78,23 @@ class SceneWidget(QWidget):
 
     def __init__(self,parent=None):
         super(SceneWidget, self).__init__(parent)
-        self._setupUI()
 
-    def _setupUI(self):
-        comments = CommentWidget("comments", self)
-        preCommands = CommandSequenceWidget(self)
-        postCommands = CommandSequenceWidget(self)
+    def title(self):
+        before, sep, after = self._comment.toPlainText().partition("\n")
+        return before
 
-        layout = QVBoxLayout()
-        layout.addWidget(comments)
-        layout.addWidget(preCommands)
-        layout.addWidget(postCommands)
+    def comment(self):
+        before, sep, after = self._comment.toPlainText().partition("\n")
+        return after
 
-        self.setLayout(layout)
+    def duration(self):
+        return self._duration.model()
+
+    def preCommands(self):
+        return self._preCommands.model()
+
+    def postCommands(self):
+        return self._postCommands.model()
 
 class CommentWidget(QPlainTextEdit):
 
@@ -126,7 +133,7 @@ class MiniVideoSceneWidget(QLabel):
             language.VideoScene("http://www.youtube.com/watch?v=9bZkp7q19f0")
         )
 
-class VideoSceneWidget(QWidget):
+class VideoSceneWidget(SceneWidget):
 
     def __init__(self,parent=None):
         super(VideoSceneWidget, self).__init__(parent)
@@ -179,28 +186,60 @@ class VideoSceneWidget(QWidget):
             self.source()
         )
 
-    def title(self):
-        before, sep, after = self._comment.toPlainText().partition("\n")
-        return before
-
-    def comment(self):
-        before, sep, after = self._comment.toPlainText().partition("\n")
-        return after
-
-    def duration(self):
-        return self._duration.model()
-
-    def preCommands(self):
-        return self._preCommands.model()
-
-    def postCommands(self):
-        return self._postCommands.model()
-
     def offset(self):
         return self._duration.model()
 
     def source(self):
         return self._source.model()
+
+class TextSceneWidget(SceneWidget):
+
+    def __init__(self,parent=None):
+        super(TextSceneWidget, self).__init__(parent)
+        self._setupUI()
+
+    def _setupUI(self):
+        self._comment = CommentWidget("comment", self)
+        self._comment.setMaximumHeight(50)
+        self._preCommands = CommandSequenceWidget(self)
+        self._postCommands = CommandSequenceWidget(self)
+
+        textControls = QWidget(self)
+        textControlsLayout = QGridLayout()
+
+        self._text = TextGapWidget()
+        self._duration = NumberGapWidget()
+
+        textControlsLayout.addWidget(QLabel("display"), 0, 0)
+        textControlsLayout.addWidget(self._text, 0, 1)
+        textControlsLayout.addWidget(QLabel("for"), 1, 0)
+        textControlsLayout.addWidget(self._duration, 1, 1)
+
+        textControls.setLayout(textControlsLayout)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self._comment)
+        layout.addWidget(self._preCommands)
+        layout.addWidget(textControls)
+        layout.addWidget(self._postCommands)
+
+        self.setLayout(layout)
+
+    def model(self):
+        """
+        :rtype: models.language.TextScene
+        """
+        return language.TextScene(
+            self.title(),
+            self.comment(),
+            self.duration(),
+            self.preCommands(),
+            self.postCommands(),
+            self.text(),
+        )
+
+    def text(self):
+        return self._text.model()
 
 class CommandSequenceWidget(QWidget):
 
@@ -302,6 +341,18 @@ class TextValueWidget(QFrame):
         :rtype: models.language.TextValue
         """
         return language.TextValue(self._text.text())
+
+    def startDrag(self):
+        data = cPickle.dumps(self.model())
+        mimeData = QMimeData()
+        mimeData.setData(LC_MIME_FORMAT, data)
+        drag = QDrag(self)
+        drag.setMimeData(mimeData)
+        drag.start(Qt.CopyAction)
+
+    def mouseMoveEvent(self, event):
+        self.startDrag()
+        QWidget.mouseMoveEvent(self, event)
 
 class NumberValueWidget(QFrame):
 
@@ -432,6 +483,10 @@ class GapWidget(QStackedWidget):
 
         if isinstance(lc, language.NumberValue):
             self._child = NumberValueWidget(float(lc.translate()), self)
+            self.insertWidget(1, self._child)
+            self.setCurrentIndex(1)
+        elif isinstance(lc, language.TextValue):
+            self._child = TextValueWidget(lc.translate(), self)
             self.insertWidget(1, self._child)
             self.setCurrentIndex(1)
         elif isinstance(lc, language.VideoValue):
