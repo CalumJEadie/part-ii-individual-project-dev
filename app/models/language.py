@@ -137,6 +137,11 @@ class LanguageComponent(object):
            live_variables |= child.get_live_variables()
         return live_variables
 
+class Gap(LanguageComponent):
+
+    def translate(self):
+        return "None"
+
 class Expression(LanguageComponent):
     """Base class for all expressions in the language."""
     pass

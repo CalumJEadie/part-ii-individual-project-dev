@@ -388,17 +388,20 @@ class NumberValueWidget(QFrame):
         self.startDrag()
         QWidget.mouseMoveEvent(self, event)
 
-class SlotWidget(QLabel):
+class SlotWidget(QStackedWidget):
 
     def __init__(self, parent=None):
         super(SlotWidget, self).__init__(parent)
-        self.setFixedSize(QSize(50,50))
+        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self._child = None
 
 class NumberSlotWidget(SlotWidget):
 
     def __init__(self, parent=None):
         super(NumberSlotWidget, self).__init__(parent)
-        self.setText("number")
+
+        self.addWidget(QLabel("number"))
+
         self.setStyleSheet("background: blue")
 
         self.setAcceptDrops(True)
@@ -407,7 +410,10 @@ class NumberSlotWidget(SlotWidget):
         """
         :rtype: models.language.NumberExpression
         """
-        return language.NumberValue(15)
+        if self._child is not None:
+            return self._child.model()
+        else:
+            return language.Gap()
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasFormat(LC_MIME_FORMAT):
@@ -419,7 +425,9 @@ class NumberSlotWidget(SlotWidget):
         lc = cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
 
         if isinstance(lc, language.NumberValue):
-            NumberValueWidget(float(lc.translate()), self).show()
+            self._child = NumberValueWidget(float(lc.translate()), self)
+            self.insertWidget(1, self._child)
+            self.setCurrentIndex(1)
 
 class TextSlotWidget(SlotWidget):
 
