@@ -39,96 +39,13 @@ class GraphicalEditor(QMainWindow):
 
         # Add toolbar and editor pane
         
-        horizontalLayout.addWidget(self.createSidebar(centralwidget))
+        horizontalLayout.addWidget(PaletteWidget(self))
         horizontalLayout.addWidget(self.createEditorPane(centralwidget))
         horizontalLayout.addWidget(self.createPreview(centralwidget))
 
         self.setCentralWidget(centralwidget)
 
         self._actEdit.changed.connect(self._previewTextEdit.setPlainText)
-
-    def createSidebar(self, parent):
-        """
-        type parent: QWidget
-        :rtype: QWidget
-        """
-
-        sceneBox = QGroupBox("Scenes")
-        sceneBoxLayout = QVBoxLayout()
-        sceneBoxLayout.addWidget(SceneWidget())
-        sceneBox.setLayout(sceneBoxLayout)
-
-        videoBox = QGroupBox("Video and Video Collections")
-        videoBoxLayout = QVBoxLayout()
-        videoBoxLayout.addWidget(VideoValueWidget("http://www.youtube.com/watch?v=9bZkp7q19f0"))
-        videoBoxLayout.addWidget(VideoCollectionDefnWidget())
-        videoBox.setLayout(videoBoxLayout)
-
-        textBox = QGroupBox("Text")
-        textBoxLayout = QVBoxLayout()
-        textBoxLayout.addWidget(TextValueWidget(""))
-        textBox.setLayout(textBoxLayout)
-
-        numberBox = QGroupBox("Numbers")
-        numberBoxLayout = QVBoxLayout()
-        numberBoxLayout.addWidget(NumberValueWidget(0))
-        numberBox.setLayout(numberBoxLayout)
-
-        variableBox = QGroupBox("Variables")
-        variableBoxLayout = QVBoxLayout()
-        variableBoxLayout.addWidget(GetterWidget())
-        variableBoxLayout.addWidget(SetterWidget())
-        variableBox.setLayout(variableBoxLayout)
-
-        sidebar = QWidget()
-        sidebarLayout = QVBoxLayout()
-        sidebarLayout.addWidget(sceneBox)
-        sidebarLayout.addWidget(videoBox)
-        sidebarLayout.addWidget(textBox)
-        sidebarLayout.addWidget(numberBox)
-        sidebarLayout.addWidget(variableBox)
-        sidebarLayout.addStretch()
-        sidebar.setLayout(sidebarLayout)
-
-        sidebar.setFixedWidth(300)
-
-        return sidebar
-
-    def createToolbox(self,parent):
-        """
-        :type parent: QWidget
-        :rtype: QWidget
-        """
-
-        toolBox = QToolBox(parent)
-        toolBox.setMaximumSize(QSize(300, 16777215))
-        # self.toolBox.setCurrentIndex(0)
-
-        # Scenes
-        page_3 = QWidget()
-        page_3.setGeometry(QRect(0, 0, 300, 438))
-        SceneWidget(page_3)
-        toolBox.addItem(page_3, "Scenes")
-
-
-        # Videos and Video Collections
-        page_4 = QWidget()
-        page_4.setGeometry(QRect(0, 0, 300, 438))
-        widget_3 = VideoDefnWidget(page_4)
-        widget_4 = VideoCollectionDefnWidget(page_4)
-        toolBox.addItem(page_4, "Videos and Video Collections")
-
-        # Variables
-        page_5 = QWidget()
-        verticalLayout = QVBoxLayout(page_5)
-        widget = SetterWidget(page_5)
-        widget_2 = GetterWidget(page_5)
-        verticalLayout.addWidget(widget)
-        verticalLayout.addWidget(widget_2)
-        page_5.setLayout(verticalLayout)
-        toolBox.addItem(page_5, "Variables")
-
-        return toolBox
 
     def createEditorPane(self,parent):
         """
@@ -220,3 +137,56 @@ class GraphicalEditor(QMainWindow):
 
     def loadExample2(self):
         self.textEdit.setPlainText(self.example2)
+
+class PaletteWidget(QWidget):
+
+    def __init__(self, parent=None):
+        super(PaletteWidget, self).__init__(parent)
+        self.setupUI()
+
+    def setupUI(self):
+
+        self.setFixedWidth(300)
+
+        # Rather than use a lot of boiler plate code define abstract
+        # structure of the palette and take care of layout later.
+        # Need to use comma after element in 1-tuple for iteration.
+        paletteContents = (
+            (
+                "Scenes",
+                (
+                    SceneWidget(),
+                )
+            ),
+            (
+                "Video and Video Collections",
+                (
+                    VideoValueWidget("http://www.youtube.com/watch?v=9bZkp7q19f0"),
+                    VideoCollectionDefnWidget()
+                )
+            ),
+            (
+                "Numbers",
+                (
+                    NumberValueWidget(0),
+                )
+            ),
+            (
+                "Text",
+                (
+                    TextValueWidget(""),
+                )
+            )
+        )
+        paletteLayout = QVBoxLayout()
+
+        for (label, tools) in paletteContents:
+            box = QGroupBox(label)
+            boxLayout = QVBoxLayout()
+            for tool in tools:
+                boxLayout.addWidget(tool)
+            box.setLayout(boxLayout)
+            paletteLayout.addWidget(box)
+
+        paletteLayout.addStretch()
+        self.setLayout(paletteLayout)
