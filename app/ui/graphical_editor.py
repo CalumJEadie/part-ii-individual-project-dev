@@ -60,7 +60,7 @@ class GraphicalEditor(QMainWindow):
 
         videoBox = QGroupBox("Video and Video Collections")
         videoBoxLayout = QVBoxLayout()
-        videoBoxLayout.addWidget(VideoDefnWidget())
+        videoBoxLayout.addWidget(VideoValueWidget("http://www.youtube.com/watch?v=9bZkp7q19f0"))
         videoBoxLayout.addWidget(VideoCollectionDefnWidget())
         videoBox.setLayout(videoBoxLayout)
 

@@ -199,71 +199,6 @@ class CommandSequenceWidget(QWidget):
         """
         return language.CommandSequence()
 
-class VideoDefnWidget(QWidget):
-
-    def __init__(self, parent=None):
-        super(VideoDefnWidget, self).__init__(parent)
-        self._setupUI()
-
-    def _setupUI(self):
-        self.setGeometry(QRect(60, 30, 211, 71))
-        self.setStyleSheet("background:red")
-        self.setObjectName("widget_3")
-
-        self.horizontalLayout_9 = QHBoxLayout(self)
-        self.horizontalLayout_9.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout_9.setObjectName("horizontalLayout_9")
-
-        self.horizontalLayout_8 = QHBoxLayout()
-        self.horizontalLayout_8.setObjectName("horizontalLayout_8")
-
-        self.label_4 = QLabel(self)
-        self.label_4.setText("")
-        
-        self.label_4.setPixmap(QPixmap("res/video-64-64.png"))
-        self.label_4.setObjectName("label_4")
-
-        self.horizontalLayout_8.addWidget(self.label_4)
-
-        self.lineEdit_2 = QLineEdit(self)
-        self.lineEdit_2.setObjectName("lineEdit_2")
-
-        self.horizontalLayout_8.addWidget(self.lineEdit_2)
-
-        self.horizontalLayout_9.addLayout(self.horizontalLayout_8)
-
-class VideoCollectionDefnWidget(QWidget):
-
-    def __init__(self, parent=None):
-        super(VideoCollectionDefnWidget, self).__init__(parent)
-        self._setupUI()
-
-    def _setupUI(self):
-        self.setGeometry(QRect(60, 160, 191, 71))
-        self.setStyleSheet("background:red")
-        self.setObjectName("widget_4")
-
-        self.horizontalLayout_11 = QHBoxLayout(self)
-        self.horizontalLayout_11.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout_11.setObjectName("horizontalLayout_11")
-
-        self.horizontalLayout_10 = QHBoxLayout()
-        self.horizontalLayout_10.setObjectName("horizontalLayout_10")
-
-        self.label_5 = QLabel(self)
-        self.label_5.setText("")
-        self.label_5.setPixmap(QPixmap("res/video-collection-64-64.png"))
-        self.label_5.setObjectName("label_5")
-
-        self.horizontalLayout_10.addWidget(self.label_5)
-
-        self.lineEdit = QLineEdit(self)
-        self.lineEdit.setObjectName("lineEdit")
-
-        self.horizontalLayout_10.addWidget(self.lineEdit)
-
-        self.horizontalLayout_11.addLayout(self.horizontalLayout_10)
-
 class GetterWidget(QWidget):
 
     def __init__(self, parent=None):
@@ -338,6 +273,9 @@ class TextValueWidget(QFrame):
         layout.addWidget(QLabel("\"", self))
         self.setLayout(layout)
 
+        self.setStyleSheet("background: green")
+        self._text.setStyleSheet("background: white")
+
     def model(self):
         """
         :rtype: models.language.TextValue
@@ -375,6 +313,76 @@ class NumberValueWidget(QFrame):
         self.startDrag()
         QWidget.mouseMoveEvent(self, event)
 
+class VideoValueWidget(QFrame):
+
+    def __init__(self, video, parent=None):
+        super(VideoValueWidget, self).__init__(parent)
+        self._value = QLineEdit(video, self)
+        # TODO add validator
+        
+        layout = QHBoxLayout()
+
+        icon = QLabel(self)
+        icon.setPixmap(QPixmap("res/video-64-64.png"))
+        layout.addWidget(icon)
+
+        layout.addWidget(self._value)
+
+        self.setLayout(layout)
+
+        self.setStyleSheet("background: red;")
+        self._value.setStyleSheet("background: red;")
+
+    def model(self):
+        """
+        :rtype: models.language.VideoValue
+        """
+        return language.VideoValue(self._value.text())
+
+    def startDrag(self):
+        data = cPickle.dumps(self.model())
+        mimeData = QMimeData()
+        mimeData.setData(LC_MIME_FORMAT, data)
+        drag = QDrag(self)
+        drag.setMimeData(mimeData)
+        drag.start(Qt.CopyAction)
+
+    def mouseMoveEvent(self, event):
+        self.startDrag()
+        QWidget.mouseMoveEvent(self, event)
+
+class VideoCollectionDefnWidget(QWidget):
+
+    def __init__(self, parent=None):
+        super(VideoCollectionDefnWidget, self).__init__(parent)
+        self._setupUI()
+
+    def _setupUI(self):
+        self.setGeometry(QRect(60, 160, 191, 71))
+        self.setStyleSheet("background:red")
+        self.setObjectName("widget_4")
+
+        self.horizontalLayout_11 = QHBoxLayout(self)
+        self.horizontalLayout_11.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_11.setObjectName("horizontalLayout_11")
+
+        self.horizontalLayout_10 = QHBoxLayout()
+        self.horizontalLayout_10.setObjectName("horizontalLayout_10")
+
+        self.label_5 = QLabel(self)
+        self.label_5.setText("")
+        self.label_5.setPixmap(QPixmap("res/video-collection-64-64.png"))
+        self.label_5.setObjectName("label_5")
+
+        self.horizontalLayout_10.addWidget(self.label_5)
+
+        self.lineEdit = QLineEdit(self)
+        self.lineEdit.setObjectName("lineEdit")
+
+        self.horizontalLayout_10.addWidget(self.lineEdit)
+
+        self.horizontalLayout_11.addLayout(self.horizontalLayout_10)
+
 class GapWidget(QStackedWidget):
 
     def __init__(self, parent=None):
@@ -403,6 +411,10 @@ class GapWidget(QStackedWidget):
 
         if isinstance(lc, language.NumberValue):
             self._child = NumberValueWidget(float(lc.translate()), self)
+            self.insertWidget(1, self._child)
+            self.setCurrentIndex(1)
+        elif isinstance(lc, language.VideoValue):
+            self._child = VideoValueWidget(lc.translate(), self)
             self.insertWidget(1, self._child)
             self.setCurrentIndex(1)
 
