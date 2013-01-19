@@ -1,9 +1,13 @@
 MiniVideoSceneWidget {
-    background: purple;
+    border-color: purple;
+    border-width: 2px;
+    border-style: solid;
 }
 
 TextValueWidget, TextGapWidget {
-    background: green;
+    border-color: green;
+    border-width: 2px;
+    border-style: solid;
 }
 
 TextValueWidget > QLineEdit {
@@ -12,7 +16,9 @@ TextValueWidget > QLineEdit {
 }
 
 NumberValueWidget, NumberGapWidget, NumberOperatorWidget {
-    background: blue;
+    border-color: blue;
+    border-width: 2px;
+    border-style: solid;
 }
 
 NumberValueWidget > QLineEdit {
@@ -21,7 +27,9 @@ NumberValueWidget > QLineEdit {
 }
 
 VideoValueWidget, VideoGapWidget {
-    background: red;
+    border-color: red;
+    border-width: 2px;
+    border-style: solid;
 }
 
 VideoValueWidget > QLineEdit {
@@ -30,7 +38,9 @@ VideoValueWidget > QLineEdit {
 }
 
 VideoCollectionWidget {
-    background: red;
+    border-color: red;
+    border-width: 2px;
+    border-style: solid;
 }
 
 VideoCollectionWidget > QLineEdit {

@@ -47,8 +47,6 @@ class LanguageWidgetFactory(object):
         :rtype: <:QWidget
         """
 
-        logger.info("build(%s, %s)" % (lc, parent))
-
         if isinstance(lc, language.Gap):
             return GapWidget(parent)
         elif isinstance(lc, language.NumberValue):
