@@ -140,6 +140,23 @@ class Test(unittest.TestCase):
         exec Subtract(NumberValue(1),NumberValue(2)).translate()
         exec Multiply(NumberValue(1),NumberValue(2)).translate()
 
+    def test_operator_evaluation_order(self):
+
+        # Example where evaluation order different than with brackets.
+        # 2 * 3 + 4 -> (2*3) + 4 -> 10
+        # 2 * (3 + 4) -> 14
+        e = 2 * (3 + 4)
+        m = Multiply(
+            NumberValue(2),
+            Add(
+                NumberValue(3),
+                NumberValue(4)
+            )
+        )
+        print m.translate()
+        # Can't use eval or exec here, would need more sophisticated methods
+        # to check.
+
     def test_instance_methods(self):
         """
         Tests of representation of instance methods.

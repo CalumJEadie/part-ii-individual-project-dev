@@ -4,6 +4,7 @@ import logging
 import cPickle
 
 from app.models import language
+from app.api import youtube
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -22,6 +23,34 @@ logger.setLevel(logging.INFO)
 
 # MIME format for language components.
 LC_MIME_FORMAT = "application/x-language-component"
+
+class LanguageWidgetFactory(object):
+    """
+    Responsible for constructing language component widgets
+    from models.
+    """
+
+    def build(self, lc, parent=None):
+        """
+        Returns language component widget for given language component
+        model.
+
+        Reverse of .model() in language component widgets.
+
+        :type model: <:LanguageComponent
+        :type parent: QWidget
+        :rtype: <:QWidget
+        """
+
+        if isinstance(lc, language.NumberValue):
+            return NumberValueWidget(float(lc.translate()), parent)
+        elif isinstance(lc, language.Add):
+            return NumberOperatorWidget("+", NumberGapWidget(), NumberGapWidget(), parent)
+        elif isinstance(lc, language.TextValue):
+            return TextValueWidget(lc.translate()[1:-1], parent) # Remove brackets
+        elif isinstance(lc, language.VideoValue):
+            # TODO: Remove interface violation.
+            return VideoValueWidget(lc._web_url, parent)
 
 class ActEdit(QWidget):
 
@@ -381,7 +410,9 @@ class VideoValueWidget(QFrame):
     def __init__(self, video, parent=None):
         super(VideoValueWidget, self).__init__(parent)
         self._value = QLineEdit(video, self)
-        # TODO add validator
+        # TODO: Add validator
+        # video_id_re = QRegExp(youtube.VIDEO_ID_RE)
+        # self._value.setValidator(QRegExpValidator(video_id_re, self))
         
         layout = QHBoxLayout()
 
@@ -468,22 +499,10 @@ class GapWidget(QStackedWidget):
     def dropEvent(self, event):
         lc = cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
 
-        if isinstance(lc, language.NumberValue):
-            self._child = NumberValueWidget(float(lc.translate()), self)
-            self.insertWidget(1, self._child)
-            self.setCurrentIndex(1)
-        elif isinstance(lc, language.Add):
-            self._child = NumberOperatorWidget("+", NumberGapWidget(), NumberGapWidget(), self)
-            self.insertWidget(1, self._child)
-            self.setCurrentIndex(1)
-        elif isinstance(lc, language.TextValue):
-            self._child = TextValueWidget(lc.translate(), self)
-            self.insertWidget(1, self._child)
-            self.setCurrentIndex(1)
-        elif isinstance(lc, language.VideoValue):
-            self._child = VideoValueWidget(lc.translate(), self)
-            self.insertWidget(1, self._child)
-            self.setCurrentIndex(1)
+        wf = LanguageWidgetFactory()
+        self._child = wf.build(lc, self)
+        self.insertWidget(1, self._child)
+        self.setCurrentIndex(1)
 
 class NumberGapWidget(GapWidget):
 
