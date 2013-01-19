@@ -33,6 +33,12 @@ class LanguageWidgetFactory(object):
 
     For speed of implementation this class makes extensive use of the implementation
     details of the language modes.
+
+    An alternative would have been to have a hierachy of factory classes, one for each
+    language component class where each class took responsibility for the details of
+    building it's language component. This would have involved instantiation of a lot
+    of very small one method classes.a lot of seperate
+    classes
     """
 
     def build(self, lc, parent=None):
@@ -47,37 +53,70 @@ class LanguageWidgetFactory(object):
         :rtype: <:QWidget
         """
 
-        if isinstance(lc, language.Gap):
-            return NumberGapWidget(parent)
-        elif isinstance(lc, language.NumberValue):
-            return NumberValueWidget(float(lc.translate()), parent)
-        elif isinstance(lc, language.Add):
-            return NumberOperatorWidget(
+        builders = {
+            language.NumberGap: lambda lc, p: NumberGapWidget(p),
+            language.TextGap: lambda lc, p: TextGapWidget(p),
+            language.VideoGap: lambda lc, p: VideoGapWidget(p),
+            language.NumberValue: lambda lc, p: NumberValueWidget(float(lc.translate()), p),
+            language.Add: lambda lc, p: NumberOperatorWidget(
                 "+",
-                self.build(lc._op1, parent),
-                self.build(lc._op2, parent),
-                parent
-            )
-        elif isinstance(lc, language.Subtract):
-            return NumberOperatorWidget(
+                self.build(lc._op1, p),
+                self.build(lc._op2, p),
+                p
+            ),
+            language.Subtract: lambda lc, p: NumberOperatorWidget(
                 "-",
-                self.build(lc._op1, parent),
-                self.build(lc._op2, parent),
-                parent
-            )
-        elif isinstance(lc, language.Multiply):
-            return NumberOperatorWidget(
+                self.build(lc._op1, p),
+                self.build(lc._op2, p),
+                p
+            ),
+            language.Multiply: lambda lc, p: NumberOperatorWidget(
                 "*",
-                self.build(lc._op1, parent),
-                self.build(lc._op2, parent),
-                parent
-            )
-        elif isinstance(lc, language.TextValue):
-            return TextValueWidget(lc.translate()[1:-1], parent) # Remove brackets
-        elif isinstance(lc, language.VideoValue):
-            return VideoValueWidget(lc._web_url, parent)
-        else:
-            raise NotImplementedError
+                self.build(lc._op1, p),
+                self.build(lc._op2, p),
+                p
+            ),
+            language.TextValue: lambda lc, p: TextValueWidget(lc.translate()[1:-1], p), # Remove brackets
+            language.VideoValue: lambda lc, p: VideoValueWidget(lc._web_url, p)
+        }
+
+        return builders[lc.__class__](lc, parent)
+
+        # if isinstance(lc, language.NumberGap):
+        #     return NumberGapWidget(parent)
+        # elif isinstance(lc, language.TextGap):
+        #     return TextGapWidget(parent)
+        # elif isinstance(lc, language.VideoGap):
+        #     return VideoGapWidget(parent)
+        # elif isinstance(lc, language.NumberValue):
+        #     return NumberValueWidget(float(lc.translate()), parent)
+        # elif isinstance(lc, language.Add):
+        #     return NumberOperatorWidget(
+        #         "+",
+        #         self.build(lc._op1, parent),
+        #         self.build(lc._op2, parent),
+        #         parent
+        #     )
+        # elif isinstance(lc, language.Subtract):
+        #     return NumberOperatorWidget(
+        #         "-",
+        #         self.build(lc._op1, parent),
+        #         self.build(lc._op2, parent),
+        #         parent
+        #     )
+        # elif isinstance(lc, language.Multiply):
+        #     return NumberOperatorWidget(
+        #         "*",
+        #         self.build(lc._op1, parent),
+        #         self.build(lc._op2, parent),
+        #         parent
+        #     )
+        # elif isinstance(lc, language.TextValue):
+        #     return TextValueWidget(lc.translate()[1:-1], parent) # Remove brackets
+        # elif isinstance(lc, language.VideoValue):
+        #     return VideoValueWidget(lc._web_url, parent)
+        # else:
+        #     raise NotImplementedError
 
 class ActEdit(QWidget):
 
@@ -512,12 +551,9 @@ class GapWidget(QStackedWidget):
 
     def model(self):
         """
-        :rtype: models.language.Expression
+        :rtype: models.language.LanguageComponent
         """
-        if self._child is not None:
-            return self._child.model()
-        else:
-            return language.Gap()
+        raise NotImplementedError
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasFormat(LC_MIME_FORMAT):
@@ -540,12 +576,30 @@ class NumberGapWidget(GapWidget):
         label = QLabel("number", self)
         self.addWidget(label)
 
+    def model(self):
+        """
+        :rtype: models.language.NumberExpression
+        """
+        if self._child is not None:
+            return self._child.model()
+        else:
+            return language.NumberGap()
+
 class TextGapWidget(GapWidget):
 
     def __init__(self, parent=None):
         super(TextGapWidget, self).__init__(parent)
         label = QLabel("text", self)
         self.addWidget(label)
+
+    def model(self):
+        """
+        :rtype: models.language.TextExpression
+        """
+        if self._child is not None:
+            return self._child.model()
+        else:
+            return language.TextGap()
 
 class VideoGapWidget(GapWidget):
 
@@ -559,7 +613,10 @@ class VideoGapWidget(GapWidget):
         """
         :rtype: models.language.VideoExpression
         """
-        return language.VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0")
+        if self._child is not None:
+            return self._child.model()
+        else:
+            return language.VideoGap()
 
 class NumberOperatorWidget(QFrame):
 

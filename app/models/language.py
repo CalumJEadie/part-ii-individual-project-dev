@@ -138,9 +138,23 @@ class LanguageComponent(object):
         return live_variables
 
 class Gap(LanguageComponent):
+    """
+    Base class for gaps, components to represent an incomplete part of the syntax
+    tree.
+    """
+    pass
 
-    def translate(self):
-        return "None"
+class NumberGap(Gap):
+    pass
+
+class TextGap(Gap):
+    pass
+
+class VideoGap(Gap):
+    pass
+
+class VideoCollectionGap(Gap):
+    pass
 
 class Expression(LanguageComponent):
     """Base class for all expressions in the language."""
