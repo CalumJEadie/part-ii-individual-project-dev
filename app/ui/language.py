@@ -48,7 +48,7 @@ class LanguageWidgetFactory(object):
         """
 
         if isinstance(lc, language.Gap):
-            return GapWidget(parent)
+            return NumberGapWidget(parent)
         elif isinstance(lc, language.NumberValue):
             return NumberValueWidget(float(lc.translate()), parent)
         elif isinstance(lc, language.Add):
@@ -505,7 +505,9 @@ class GapWidget(QStackedWidget):
     def __init__(self, parent=None):
         super(GapWidget, self).__init__(parent)
         self.setAcceptDrops(True)
-        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        # self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        # self.setMinimumSize(QSize(10,10))
         self._child = None
 
     def model(self):
@@ -535,11 +537,15 @@ class NumberGapWidget(GapWidget):
 
     def __init__(self, parent=None):
         super(NumberGapWidget, self).__init__(parent)
+        label = QLabel("number", self)
+        self.addWidget(label)
 
 class TextGapWidget(GapWidget):
 
     def __init__(self, parent=None):
         super(TextGapWidget, self).__init__(parent)
+        label = QLabel("text", self)
+        self.addWidget(label)
 
 class VideoGapWidget(GapWidget):
 
