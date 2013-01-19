@@ -1,3 +1,15 @@
+TextSceneWidget {
+    border-color: green;
+    border-width: 2px;
+    border-style: solid;
+}
+
+VideoSceneWidget {
+    border-color: red;
+    border-width: 2px;
+    border-style: solid;
+}
+
 MiniVideoSceneWidget {
     border-color: purple;
     border-width: 2px;

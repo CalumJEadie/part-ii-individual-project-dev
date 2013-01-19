@@ -181,7 +181,7 @@ class ActWidget(QWidget):
         """
         return language.Act(map(lambda x: x.model(), self._scenes))
 
-class SceneWidget(QWidget):
+class SceneWidget(QFrame):
 
     def __init__(self,parent=None):
         super(SceneWidget, self).__init__(parent)
