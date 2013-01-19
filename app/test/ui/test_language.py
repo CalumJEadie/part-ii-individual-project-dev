@@ -23,34 +23,32 @@ def _setup_qt():
 
 class Test(unittest.TestCase):
 
+    def setUp(self):
+        self._app = _setup_qt()
+
     def test_editor(self):
-        app = QtGui.QApplication([])
         e = GraphicalEditor()
-        app.exec_()
+        self._app.exec_()
 
     def test_act(self):
-        app = QtGui.QApplication([])
         w = ActEdit()
         w.show()
-        app.exec_()
+        self._app.exec_()
 
     def test_scene(self):
-        app = QtGui.QApplication([])
         w = SceneWidget()
         w.show()
-        app.exec_()
+        self._app.exec_()
 
     def test_video_slot(self):
-        app = QtGui.QApplication([])
         w = VideoSlotWidget()
         w.show()
-        app.exec_()
+        self._app.exec_()
 
     def test_qobject_children(self):
         """
         Testing QObject.children().
         """
-        app = QtGui.QApplication([])
 
         w1 = ActEdit()
         w1.show()
@@ -66,13 +64,11 @@ class Test(unittest.TestCase):
         show(w3.children())
 
     def test_act_model(self):
-        app = QtGui.QApplication([])
         w = ActEdit()
         w.show()
         print w.model().translate()
 
     def test_text_value(self):
-        app = QtGui.QApplication([])
         w = TextValueWidget("one")
         w.show()
         self.assertEqual(
@@ -80,10 +76,9 @@ class Test(unittest.TestCase):
             u"'one'"
         )
         print w.model().translate()
-        app.exec_()
+        self._app.exec_()
 
     def test_number_value(self):
-        app = QtGui.QApplication([])
         w = NumberValueWidget(1.01)
         w.show()
         self.assertEqual(
@@ -91,7 +86,19 @@ class Test(unittest.TestCase):
             u"1.01"
         )
         print w.model().translate()
-        app.exec_()
+        self._app.exec_()
+
+    def test_get_widget(self):
+        w = GetWidget("item")
+        w.show()
+        print w.model().translate()
+        self._app.exec_()
+
+    def test_set_widget(self):
+        w = SetWidget("item", VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0"))
+        w.show()
+        print w.model().translate()
+        self._app.exec_()
 
 class TestLanguageWidgetFactory(unittest.TestCase):
 

@@ -30,6 +30,17 @@ import show
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+class LanguageException(Exception):
+    """Base class for exceptions."""
+    pass
+
+class GapError(LanguageException):
+    """
+    Raised when an operation could not be performed due to a gap in the 
+    synax tree.
+    """
+    pass
+
 def partition_on_last_newline(text):
     """
     Splits text into lines up to last line and the last line.
@@ -142,7 +153,9 @@ class Gap(LanguageComponent):
     Base class for gaps, components to represent an incomplete part of the syntax
     tree.
     """
-    pass
+    
+    def translate(self):
+        raise GapError()
 
 class NumberGap(Gap):
     pass

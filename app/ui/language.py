@@ -1,3 +1,13 @@
+"""
+Representation of language components.
+
+Follow naming conventions used in PySide.
+
+- Getters omit get, setters include.
+- lowerCamelCase for methods and variables.
+"""
+
+
 from PySide.QtGui import *
 from PySide.QtCore import *
 import logging
@@ -77,7 +87,9 @@ class LanguageWidgetFactory(object):
                 p
             ),
             language.TextValue: lambda lc, p: TextValueWidget(lc.translate()[1:-1], p), # Remove brackets
-            language.VideoValue: lambda lc, p: VideoValueWidget(lc._web_url, p)
+            language.VideoValue: lambda lc, p: VideoValueWidget(lc._web_url, p),
+            language.GetVariableExpression: lambda lc, p: GetWidget(lc._name, p),
+            language.SetVariableStatement: lambda lc, p: SetWidget(lc._name, self.build(lc._value, p), p),
         }
 
         return builders[lc.__class__](lc, parent)
@@ -353,66 +365,87 @@ class CommandSequenceWidget(QWidget):
         """
         return language.CommandSequence()
 
-class GetterWidget(QWidget):
+# TODO: Use live variables.
+VARIABLE_NAMES = ["item", "curr_video", "curr_duration", "curr_offset"]
 
-    def __init__(self, parent=None):
-        super(GetterWidget, self).__init__(parent)
-        self._setupUI()
+class GetWidget(QFrame):
 
-    def _setupUI(self):
-    
-        self.setMaximumSize(QSize(16777215, 71))
-        self.setObjectName("widget_2")
-        self.horizontalLayout_6 = QHBoxLayout(self)
-        self.horizontalLayout_6.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout_6.setObjectName("horizontalLayout_6")
-        self.horizontalLayout_5 = QHBoxLayout()
-        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+    def __init__(self, name, parent=None):
+        """
+        :type name: string
+        """
+        super(GetWidget, self).__init__(parent)
 
-        self.label_2 = QLabel("get",self)
-        self.label_2.setObjectName("label_2")
+        self._name = QComboBox(self)
+        for name in VARIABLE_NAMES:
+            self._name.addItem(name)
 
-        self.horizontalLayout_5.addWidget(self.label_2)
+        layout = QHBoxLayout()
+        layout.addWidget(QLabel("get"))
+        layout.addWidget(self._name)
 
-        self.comboBox_2 = QComboBox(self)
-        self.comboBox_2.setObjectName("comboBox_2")
-        self.horizontalLayout_5.addWidget(self.comboBox_2)
-        spacerItem = QSpacerItem(40, 20, QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
+        self.setLayout(layout)
 
-        self.horizontalLayout_5.addItem(spacerItem)
+    def model(self):
+        """
+        :rtype: models.language.GetExpression
+        """
+        return language.GetVariableExpression(self._name.currentText())
 
-        self.horizontalLayout_6.addLayout(self.horizontalLayout_5)
+    def startDrag(self):
+        data = cPickle.dumps(self.model())
+        mimeData = QMimeData()
+        mimeData.setData(LC_MIME_FORMAT, data)
+        drag = QDrag(self)
+        drag.setMimeData(mimeData)
+        drag.start(Qt.CopyAction)
 
-class SetterWidget(QWidget):
+    def mouseMoveEvent(self, event):
+        self.startDrag()
+        QWidget.mouseMoveEvent(self, event)
 
-    def __init__(self, parent=None):
-        super(SetterWidget, self).__init__(parent)
-        self._setupUI()
+class SetWidget(QFrame):
 
-    def _setupUI(self):
+    def __init__(self, name, value, parent=None):
+        """
+        :type name: string
+        :type value: QWidget
+        """
+        super(SetWidget, self).__init__(parent)
 
-        self.setMaximumSize(QSize(16777215, 51))
-        self.setAutoFillBackground(False)
-        self.setObjectName("widget")
+        self._name = QComboBox()
+        for name in VARIABLE_NAMES:
+            self._name.addItem(name)
 
-        self.horizontalLayout_4 = QHBoxLayout(self)
-        self.horizontalLayout_4.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        # Use empty NumberGapWidget for convenience.
+        # TODO: Generalise.
+        self._value = NumberGapWidget(self)
 
-        self.horizontalLayout_3 = QHBoxLayout()
-        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        layout = QHBoxLayout()
+        layout.addWidget(QLabel("set"))
+        layout.addWidget(self._name)
+        layout.addWidget(QLabel("to"))
+        layout.addWidget(self._value)
 
-        self.label = QLabel("set",self)
-        self.label.setObjectName("label")
+        self.setLayout(layout)
 
-        self.horizontalLayout_3.addWidget(self.label)
+    def model(self):
+        """
+        :rtype: models.language.SetVariableStatement
+        """
+        return language.SetVariableStatement(self._name.currentText(), self._value.model())
 
-        self.comboBox = QComboBox(self)
-        self.comboBox.setObjectName("comboBox")
+    def startDrag(self):
+        data = cPickle.dumps(self.model())
+        mimeData = QMimeData()
+        mimeData.setData(LC_MIME_FORMAT, data)
+        drag = QDrag(self)
+        drag.setMimeData(mimeData)
+        drag.start(Qt.CopyAction)
 
-        self.horizontalLayout_3.addWidget(self.comboBox)
-
-        self.horizontalLayout_4.addLayout(self.horizontalLayout_3)
+    def mouseMoveEvent(self, event):
+        self.startDrag()
+        QWidget.mouseMoveEvent(self, event)
 
 class TextValueWidget(QFrame):
 

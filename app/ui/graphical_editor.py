@@ -127,10 +127,12 @@ class GraphicalEditor(QMainWindow):
         self.move(qr.topLeft())
 
     def run(self):
-        program = self._actEdit.model().translate()
-        logger.info(program)
-        self._previewTextEdit.setPlainText(program)
-        # interpreter.interpret(program)
+        try:
+            program = self._actEdit.model().translate()
+            self._previewTextEdit.setPlainText(program)
+            # interpreter.interpret(program)
+        except language.GapError:
+            self._previewTextEdit.setPlainText("gap found :(")
 
     def clear(self):
         self.textEdit.clear()
@@ -179,6 +181,13 @@ class PaletteWidget(QWidget):
                 "Text",
                 (
                     TextValueWidget(""),
+                )
+            ),
+            (
+                "Variables",
+                (
+                    GetWidget("item"),
+                    SetWidget("item", "http://www.youtube.com/watch?v=9bZkp7q19f0"),
                 )
             )
         )
