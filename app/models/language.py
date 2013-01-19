@@ -89,7 +89,7 @@ def translate_operator_2(operator_name, operand1, operand2):
     code += SetVariableStatement(operand1_var_name, operand1).translate()
     operand2_var_name = get_fresh_variable_name()
     code += SetVariableStatement(operand2_var_name, operand2).translate()
-    code += "%s %s %s" % (operand1_var_name,  operator_name,
+    code += "(%s %s %s)" % (operand1_var_name,  operator_name,
         operand2_var_name)
     return code
 
