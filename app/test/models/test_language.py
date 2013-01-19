@@ -32,14 +32,18 @@ class SmartMusicPlayerTest(unittest.TestCase):
             title = "Show video title",
             comment = "",
             duration = NumberValue(2),
-            text = YoutubeVideoGetTitle(curr_video)
+            text = YoutubeVideoGetTitle(curr_video),
+            pre_commands = CommandSequence([]),
+            post_commands = CommandSequence([])
         )
 
         scene2 = TextScene(
             title = "Show video description",
             comment = "",
             duration = NumberValue(2),
-            text = YoutubeVideoGetDescription(curr_video)
+            text = YoutubeVideoGetDescription(curr_video),
+            pre_commands = CommandSequence([]),
+            post_commands = CommandSequence([])
         )
 
         scene3 = VideoScene(
@@ -77,14 +81,18 @@ class SmartMusicPlayerTest(unittest.TestCase):
                 title = "Show video title",
                 comment = "",
                 duration = NumberValue(2),
-                text = YoutubeVideoGetTitle(curr_video)
+                text = YoutubeVideoGetTitle(curr_video),
+                pre_commands = CommandSequence([]),
+                post_commands = CommandSequence([])
             ),
 
             TextScene(
                 title = "Show video description",
                 comment = "",
                 duration = NumberValue(2),
-                text = YoutubeVideoGetDescription(curr_video)
+                text = YoutubeVideoGetDescription(curr_video),
+                pre_commands = CommandSequence([]),
+                post_commands = CommandSequence([])
             ),
 
             VideoScene(
