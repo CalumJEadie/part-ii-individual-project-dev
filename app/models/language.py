@@ -423,6 +423,9 @@ class NumberValue(NumberExpression):
     def translate(self):
         return str(self._number)
 
+    def __repr__(self):
+        return "NumberValue(%s)" % self._number
+
 class GetRandomNumberBetweenInterval(NumberExpression):
 
     def __init__(self,lower_number_expr,higher_number_expr):
@@ -451,6 +454,9 @@ class Add(NumberExpression):
     def translate(self):
         return translate_operator_2("+", self._op1, self._op2)
 
+    def __repr__(self):
+        return "Add(%s,%s)" % (self._op1, self._op2)
+
 class Subtract(NumberExpression):
 
     def __init__(self,op1,op2):
@@ -461,6 +467,9 @@ class Subtract(NumberExpression):
     def translate(self):
         return translate_operator_2("-", self._op1, self._op2)
 
+    def __repr__(self):
+        return "Subtract(%s,%s)" % (self._op1, self._op2)
+
 class Multiply(NumberExpression):
 
     def __init__(self,op1,op2):
@@ -470,6 +479,9 @@ class Multiply(NumberExpression):
 
     def translate(self):
         return translate_operator_2("*", self._op1, self._op2)
+
+    def __repr__(self):
+        return "Multiply(%s,%s)" % (self._op1, self._op2)
 
 class VideoExpression(Expression):
     """Base class for expressions that evaluate to type Video."""

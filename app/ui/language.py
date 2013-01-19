@@ -6,6 +6,8 @@ import cPickle
 from app.models import language
 from app.api import youtube
 
+from show import show
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -28,6 +30,9 @@ class LanguageWidgetFactory(object):
     """
     Responsible for constructing language component widgets
     from models.
+
+    For speed of implementation this class makes extensive use of the implementation
+    details of the language modes.
     """
 
     def build(self, lc, parent=None):
@@ -42,15 +47,39 @@ class LanguageWidgetFactory(object):
         :rtype: <:QWidget
         """
 
-        if isinstance(lc, language.NumberValue):
+        logger.info("build(%s, %s)" % (lc, parent))
+
+        if isinstance(lc, language.Gap):
+            return GapWidget(parent)
+        elif isinstance(lc, language.NumberValue):
             return NumberValueWidget(float(lc.translate()), parent)
         elif isinstance(lc, language.Add):
-            return NumberOperatorWidget("+", NumberGapWidget(), NumberGapWidget(), parent)
+            return NumberOperatorWidget(
+                "+",
+                self.build(lc._op1, parent),
+                self.build(lc._op2, parent),
+                parent
+            )
+        elif isinstance(lc, language.Subtract):
+            return NumberOperatorWidget(
+                "-",
+                self.build(lc._op1, parent),
+                self.build(lc._op2, parent),
+                parent
+            )
+        elif isinstance(lc, language.Multiply):
+            return NumberOperatorWidget(
+                "*",
+                self.build(lc._op1, parent),
+                self.build(lc._op2, parent),
+                parent
+            )
         elif isinstance(lc, language.TextValue):
             return TextValueWidget(lc.translate()[1:-1], parent) # Remove brackets
         elif isinstance(lc, language.VideoValue):
-            # TODO: Remove interface violation.
             return VideoValueWidget(lc._web_url, parent)
+        else:
+            raise NotImplementedError
 
 class ActEdit(QWidget):
 

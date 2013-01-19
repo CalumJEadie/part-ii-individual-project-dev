@@ -4,14 +4,22 @@ Unit tests for language UI components.
 
 import unittest
 import logging
-from PySide import QtGui
+from PySide import QtGui, QtCore
 
 from show import show
 
 from app.ui.graphical_editor import *
 from app.ui.language import *
+from app.models.language import *
 
 logging.basicConfig(level=logging.DEBUG,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+def _setup_qt():
+    try:
+        app = QtGui.QApplication([])
+    except RuntimeError:
+        app = QtCore.QCoreApplication.instance()
+    return app
 
 class Test(unittest.TestCase):
 
@@ -84,6 +92,71 @@ class Test(unittest.TestCase):
         )
         print w.model().translate()
         app.exec_()
+
+class TestLanguageWidgetFactory(unittest.TestCase):
+
+    def setUp(self):
+        self._app = _setup_qt()
+
+    def test_number_value(self):
+        wf = LanguageWidgetFactory()
+        m = NumberValue(1)
+        w = wf.build(m)
+        w.show()
+        self.assertEqual(
+            float(w.model().translate()),
+            float(m.translate())
+        )
+        self._app.exec_()
+
+    def test_text_value(self):
+        wf = LanguageWidgetFactory()
+        m = TextValue("one")
+        w = wf.build(m)
+        w.show()
+        self.assertEqual(
+            w.model().translate(),
+            m.translate()
+        )
+        self._app.exec_()
+
+    def test_number_operator(self):
+        wf = LanguageWidgetFactory()
+        m = Add(
+            NumberValue(1),
+            Subtract(
+                NumberValue(2),
+                NumberValue(3)
+            )
+        )
+        w = wf.build(m)
+        w.show()
+        print w.model().translate()
+        self._app.exec_()
+
+class TestNumberOperatorBug(unittest.TestCase):
+    """
+    Attempting to recreate a bug occuring in LanguageWidgetFactory.build
+
+    FIXED: Wasn't handling unmatched type, including Subtract.
+    """
+
+    def setUp(self):
+        self._app = _setup_qt()
+
+    def test(self):
+        wf = LanguageWidgetFactory()
+        m = Add(
+            NumberValue(1),
+            Subtract(
+                NumberValue(2),
+                NumberValue(3)
+            )
+        )
+        w = wf.build(m._op2) # Seg fault was occuring on building op2
+        w.show()
+
+        self._app.exec_()
 
 if __name__ == "__main__":
     unittest.main()
