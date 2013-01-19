@@ -22,7 +22,10 @@ class GraphicalEditor(QMainWindow):
         self.setupUI()
         self.show()
         
-    def setupUI(self):               
+    def setupUI(self):
+
+        with open("res/style.css", "r") as f:
+            self.setStyleSheet(f.read())
         
         self.setupWindow()
         self.setupToolbar()

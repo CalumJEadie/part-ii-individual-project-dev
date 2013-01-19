@@ -1,0 +1,43 @@
+MiniVideoSceneWidget {
+    background: purple;
+}
+
+TextValueWidget, TextGapWidget {
+    background: green;
+}
+
+TextValueWidget > QLineEdit {
+    background: white;
+    color: green;
+}
+
+NumberValueWidget, NumberGapWidget, NumberOperatorWidget {
+    background: blue;
+}
+
+NumberValueWidget > QLineEdit {
+    background: white;
+    color: blue;
+}
+
+VideoValueWidget, VideoGapWidget {
+    background: red;
+}
+
+VideoValueWidget > QLineEdit {
+    background: white;
+    color: red;
+}
+
+VideoCollectionWidget {
+    background: red;
+}
+
+VideoCollectionWidget > QLineEdit {
+    background: white;
+    color: red;
+}
+
+GetterWidget, SetterWidget {
+    background: white;
+}

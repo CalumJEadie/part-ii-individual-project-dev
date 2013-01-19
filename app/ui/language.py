@@ -117,7 +117,6 @@ class MiniVideoSceneWidget(QLabel):
     def __init__(self, parent=None):
         super(MiniVideoSceneWidget, self).__init__(parent)
         self.setText("Video Scene")
-        self.setStyleSheet("background: purple;")
 
     def model():
         """
@@ -268,7 +267,6 @@ class GetterWidget(QWidget):
     def _setupUI(self):
     
         self.setMaximumSize(QSize(16777215, 71))
-        self.setStyleSheet("background:white")
         self.setObjectName("widget_2")
         self.horizontalLayout_6 = QHBoxLayout(self)
         self.horizontalLayout_6.setContentsMargins(0, 0, 0, 0)
@@ -300,7 +298,6 @@ class SetterWidget(QWidget):
 
         self.setMaximumSize(QSize(16777215, 51))
         self.setAutoFillBackground(False)
-        self.setStyleSheet("background:white;")
         self.setObjectName("widget")
 
         self.horizontalLayout_4 = QHBoxLayout(self)
@@ -333,9 +330,6 @@ class TextValueWidget(QFrame):
         layout.addWidget(QLabel("\"", self))
         self.setLayout(layout)
 
-        self.setStyleSheet("background: green")
-        self._text.setStyleSheet("background: white")
-
     def model(self):
         """
         :rtype: models.language.TextValue
@@ -363,9 +357,6 @@ class NumberValueWidget(QFrame):
         layout = QHBoxLayout()
         layout.addWidget(self._number)
         self.setLayout(layout)
-
-        self.setStyleSheet("background: blue")
-        self._number.setStyleSheet("background: white")
 
     def model(self):
         """
@@ -402,9 +393,6 @@ class VideoValueWidget(QFrame):
 
         self.setLayout(layout)
 
-        self.setStyleSheet("background: red;")
-        self._value.setStyleSheet("background: red;")
-
     def model(self):
         """
         :rtype: models.language.VideoValue
@@ -431,7 +419,6 @@ class VideoCollectionDefnWidget(QWidget):
 
     def _setupUI(self):
         self.setGeometry(QRect(60, 160, 191, 71))
-        self.setStyleSheet("background:red")
         self.setObjectName("widget_4")
 
         self.horizontalLayout_11 = QHBoxLayout(self)
@@ -503,20 +490,15 @@ class NumberGapWidget(GapWidget):
     def __init__(self, parent=None):
         super(NumberGapWidget, self).__init__(parent)
 
-        self.setStyleSheet("background: blue")
-
 class TextGapWidget(GapWidget):
 
     def __init__(self, parent=None):
         super(TextGapWidget, self).__init__(parent)
 
-        self.setStyleSheet("background: green")
-
 class VideoGapWidget(GapWidget):
 
     def __init__(self, parent=None):
         super(VideoGapWidget, self).__init__(parent)
-        self.setStyleSheet("background: red;")
         label = QLabel(self)
         label.setPixmap(QPixmap("res/video-64-64.png"))
         self.addWidget(label)
@@ -559,8 +541,6 @@ class NumberOperatorWidget(QFrame):
         layout.addWidget(self._operand2)
 
         self.setLayout(layout)
-
-        self.setStyleSheet("background: blue")
 
     def model(self):
         """
