@@ -5,6 +5,7 @@ Follow naming conventions used in PySide.
 
 - Getters omit get, setters include.
 - lowerCamelCase for methods and variables.
+- Methods that append use "add", those that support an index use "insert".
 """
 
 
@@ -93,42 +94,6 @@ class LanguageWidgetFactory(object):
         }
 
         return builders[lc.__class__](lc, parent)
-
-        # if isinstance(lc, language.NumberGap):
-        #     return NumberGapWidget(parent)
-        # elif isinstance(lc, language.TextGap):
-        #     return TextGapWidget(parent)
-        # elif isinstance(lc, language.VideoGap):
-        #     return VideoGapWidget(parent)
-        # elif isinstance(lc, language.NumberValue):
-        #     return NumberValueWidget(float(lc.translate()), parent)
-        # elif isinstance(lc, language.Add):
-        #     return NumberOperatorWidget(
-        #         "+",
-        #         self.build(lc._op1, parent),
-        #         self.build(lc._op2, parent),
-        #         parent
-        #     )
-        # elif isinstance(lc, language.Subtract):
-        #     return NumberOperatorWidget(
-        #         "-",
-        #         self.build(lc._op1, parent),
-        #         self.build(lc._op2, parent),
-        #         parent
-        #     )
-        # elif isinstance(lc, language.Multiply):
-        #     return NumberOperatorWidget(
-        #         "*",
-        #         self.build(lc._op1, parent),
-        #         self.build(lc._op2, parent),
-        #         parent
-        #     )
-        # elif isinstance(lc, language.TextValue):
-        #     return TextValueWidget(lc.translate()[1:-1], parent) # Remove brackets
-        # elif isinstance(lc, language.VideoValue):
-        #     return VideoValueWidget(lc._web_url, parent)
-        # else:
-        #     raise NotImplementedError
 
 class ActEdit(QWidget):
 
@@ -348,22 +313,40 @@ class TextSceneWidget(SceneWidget):
         return self._text.model()
 
 class CommandSequenceWidget(QWidget):
+    """
+    Basic implementation of drag and drop. Append only.
+    """
 
     def __init__(self, parent=None):
         super(CommandSequenceWidget, self).__init__(parent)
-        self._setupUI()
 
-    def _setupUI(self):
-        layout = QVBoxLayout()
-        for i in range(1,4):
-            layout.addWidget(QLabel("command %s" % i, self))
-        self.setLayout(layout)
+        self._commands = []
+        self._gap = CommandGapWidget(self)
+
+        self._layout = QVBoxLayout()
+        self._layout.addWidget(self._gap)
+        self.setLayout(self._layout)
 
     def model(self):
         """
         :rtype: models.language.CommandSequence
         """
-        return language.CommandSequence()
+        return language.CommandSequence(map(lambda w: w.model(), self._commands))
+
+    def addCommand(self, command):
+        """
+        :type command: QWidget
+        """
+        self._addAtEnd(command)
+        self._commands.append(command)
+
+    def _addAtEnd(self, widget):
+        """
+        Adds widget to end of layout but before gap.
+
+        :type widget: QWidget
+        """
+        self._layout.insertWidget(self._layout.indexOf(self._gap), widget)
 
 # TODO: Use live variables.
 VARIABLE_NAMES = ["item", "curr_video", "curr_duration", "curr_offset"]
@@ -650,6 +633,30 @@ class VideoGapWidget(GapWidget):
             return self._child.model()
         else:
             return language.VideoGap()
+
+class CommandGapWidget(GapWidget):
+
+    def __init__(self, parent=None):
+        """
+        :param parent: Used to call back to for modifying commands.
+        :type parent: CommandSequenceWidget
+        """
+
+        super(CommandGapWidget, self).__init__(parent)
+        label = QLabel("command", self)
+        self.addWidget(label)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasFormat(LC_MIME_FORMAT):
+            event.accept()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        lc = cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
+
+        wf = LanguageWidgetFactory()
+        self.parent().addCommand(wf.build(lc, self))
 
 class NumberOperatorWidget(QFrame):
 

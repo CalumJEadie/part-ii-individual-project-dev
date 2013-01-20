@@ -74,8 +74,13 @@ VideoCollectionWidget > QLineEdit {
 
 NumberGapWidget > QLabel,
 TextGapWidget > QLabel,
-VideoGapWidget > QLabel {
+VideoGapWidget > QLabel,
+CommandGapWidget > QLabel {
     color: white;
+}
+
+CommandGapWidget {
+    background: orange;
 }
 
 GetWidget, SetWidget {
