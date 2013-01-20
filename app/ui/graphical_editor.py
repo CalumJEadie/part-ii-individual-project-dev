@@ -89,6 +89,11 @@ class GraphicalEditor(QMainWindow):
 
     def setupToolbar(self):
 
+        translateAction = QAction('Translate', self)
+        translateAction.setShortcut('Ctrl+T')
+        translateAction.setStatusTip('Translate Program')
+        translateAction.triggered.connect(self.translate)
+
         runAction = QAction('Run', self)
         runAction.setShortcut('Ctrl+R')
         runAction.setStatusTip('Run Program')
@@ -108,6 +113,7 @@ class GraphicalEditor(QMainWindow):
         loadExample2Action.triggered.connect(self.loadExample2)
 
         toolbar = self.addToolBar('Tools')
+        toolbar.addAction(translateAction)
         toolbar.addAction(runAction)
         toolbar.addAction(clearAction)
         toolbar.addAction(loadExample1Action)
@@ -126,13 +132,16 @@ class GraphicalEditor(QMainWindow):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
-    def run(self):
+    def translate(self):
         try:
             program = self._actEdit.model().translate()
             self._previewTextEdit.setPlainText(program)
-            # interpreter.interpret(program)
         except language.GapError:
-            self._previewTextEdit.setPlainText("gap found :(")
+            self._previewTextEdit.setPlainText("Could not translate - encountered Gap.")
+
+    def run(self):
+        program = self._actEdit.model().translate()
+        interpreter.interpret(program)
 
     def clear(self):
         self.textEdit.clear()

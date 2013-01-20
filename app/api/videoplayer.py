@@ -23,7 +23,7 @@ def play(video,offset,duration):
     # Enforce minimum duration to make sure have enough time to run `video.best_streaming_url()`.
     if duration < MIN_DURATION:
         duration = MIN_DURATION
-        log.info("Enforcing minimum duration of %ss" % MIN_DURATION)
+        logger.info("Enforcing minimum duration of %ss" % MIN_DURATION)
 
     if pyomxplayer.is_omxplayer_available():
         p = pyomxplayer.OMXPlayer(video.best_streaming_url())

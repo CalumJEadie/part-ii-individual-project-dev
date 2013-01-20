@@ -48,8 +48,8 @@ from api import youtube,videoplayer"""
     # Previous approach didn't work either.
     
     def run(code):
-        from api.core import display,ask_yes_no
-        from api import youtube,videoplayer
+        from app.api.core import display,ask_yes_no
+        from app.api import youtube,videoplayer
         exec(code)
 
     run(code)

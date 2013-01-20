@@ -524,7 +524,7 @@ class VideoValue(VideoExpression):
         self._web_url = web_url
 
     def translate(self):
-        return "Video.from_web_url('%s')" % self._web_url
+        return "youtube.Video.from_web_url('%s')" % self._web_url
 
 class VideoCollectionExpression(Expression):
     """Base class for expressions that evaluate to type VideoCollection."""
@@ -540,7 +540,7 @@ class VideoCollectionValue(VideoCollectionExpression):
         self._web_urls = web_urls
 
     def translate(self):
-        return "VideoCollection.from_web_urls('%s')" % self._web_urls
+        return "youtube.VideoCollection.from_web_urls('%s')" % self._web_urls
 
 class YoutubeVideoGetRelated(VideoCollectionExpression):
 
