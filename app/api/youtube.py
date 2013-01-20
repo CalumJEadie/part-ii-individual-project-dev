@@ -28,6 +28,9 @@ logger.setLevel(logging.INFO)
 logger.info("Initialising YouTubeService object")
 yt_service = gdata.youtube.service.YouTubeService()
 
+# Based on http://rubular.com/r/M9PJYcQxRW and http://stackoverflow.com/questions/3392993/php-regex-to-get-youtube-video-id
+VIDEO_ID_RE = '(?<=(?:v|i)=)[a-zA-Z0-9-]+(?=&)|(?<=(?:v|i)\/)[^&\n]+|(?<=embed\/)[^"&\n]+|(?<=(?:v|i)=)[^&\n]+|(?<=youtu.be\/)[^&\n]+'
+
 def extract_video_id_from_web_url(url):
     """
     Extracts video identifier from web url.
@@ -59,9 +62,7 @@ def extract_video_id_from_web_url(url):
     VideoIdentifierError: http://vimeo.com/48100473
     """
 
-    # Based on http://rubular.com/r/M9PJYcQxRW and http://stackoverflow.com/questions/3392993/php-regex-to-get-youtube-video-id
-    video_id_re = '(?<=(?:v|i)=)[a-zA-Z0-9-]+(?=&)|(?<=(?:v|i)\/)[^&\n]+|(?<=embed\/)[^"&\n]+|(?<=(?:v|i)=)[^&\n]+|(?<=youtu.be\/)[^&\n]+'
-    matches = re.search(video_id_re,url)
+    matches = re.search(VIDEO_ID_RE,url)
     if matches is None:
         raise VideoIdentifierError(url)
     return matches.group(0)

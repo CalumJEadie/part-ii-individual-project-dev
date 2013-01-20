@@ -1,0 +1,92 @@
+TextSceneWidget {
+    border-color: green;
+    border-width: 2px;
+    border-style: solid;
+    background: white;
+}
+
+VideoSceneWidget, MiniVideoSceneWidget {
+    border-color: red;
+    border-width: 2px;
+    border-style: solid;
+    background: white;
+}
+
+TextGapWidget {
+    background: green;
+}
+
+TextValueWidget {
+    border-color: green;
+    border-width: 2px;
+    border-style: solid;
+    background: white;
+}
+
+TextValueWidget > QLineEdit {
+    background: white;
+    color: green;
+}
+
+NumberGapWidget {
+    background: blue;
+}
+
+NumberValueWidget, NumberOperatorWidget {
+    border-color: blue;
+    border-width: 2px;
+    border-style: solid;
+    background: white;
+}
+
+NumberValueWidget > QLineEdit {
+    background: white;
+    color: blue;
+}
+
+VideoGapWidget {
+    background: red;
+}
+
+VideoValueWidget {
+    border-color: red;
+    border-width: 2px;
+    border-style: solid;
+    background: white;
+}
+
+VideoValueWidget > QLineEdit {
+    background: white;
+    color: red;
+}
+
+VideoCollectionWidget {
+    border-color: red;
+    border-width: 2px;
+    border-style: solid;
+    background: white;
+}
+
+VideoCollectionWidget > QLineEdit {
+    background: white;
+    color: red;
+}
+
+NumberGapWidget > QLabel,
+TextGapWidget > QLabel,
+VideoGapWidget > QLabel,
+CommandGapWidget > QLabel {
+    color: white;
+}
+
+CommandGapWidget {
+    background: orange;
+}
+
+GetWidget, SetWidget {
+    background: white;
+    border-color: orange;
+    border-width: 2px;
+    border-style: solid;
+    background: white;
+}

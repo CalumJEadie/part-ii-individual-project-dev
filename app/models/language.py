@@ -30,6 +30,17 @@ import show
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+class LanguageException(Exception):
+    """Base class for exceptions."""
+    pass
+
+class GapError(LanguageException):
+    """
+    Raised when an operation could not be performed due to a gap in the 
+    synax tree.
+    """
+    pass
+
 def partition_on_last_newline(text):
     """
     Splits text into lines up to last line and the last line.
@@ -49,14 +60,56 @@ def get_fresh_variable_name():
     return "tmp_%s" % get_fresh_variable_name.count
 get_fresh_variable_name.count = 0
 
+def translate_function_1(function_name, operand1):
+    """Generates code for 1-ary function application."""
+    code = ""
+    operand1_var_name = get_fresh_variable_name()
+    code += SetVariableStatement(operand1_var_name,operand1).translate()
+    code += "%s(%s)" % (function_name, operand1_var_name)
+    return code
+
+def translate_function_2(function_name, operand1, operand2):
+    """Generates code for 2-ary function application."""
+    code = ""
+    operand1_var_name = get_fresh_variable_name()
+    code += SetVariableStatement(operand1_var_name,operand1).translate()
+    operand2_var_name = get_fresh_variable_name()
+    code += SetVariableStatement(operand2_var_name,operand2).translate()
+    code += "%s(%s, %s)" % (function_name, operand1_var_name, 
+        operand2_var_name)
+    return code
+
+def translate_function_3(function_name, operand1, operand2, operand3):
+    """Generates code for 3-ary function application."""
+    code = ""
+    operand1_var_name = get_fresh_variable_name()
+    code += SetVariableStatement(operand1_var_name,operand1).translate()
+    operand2_var_name = get_fresh_variable_name()
+    code += SetVariableStatement(operand2_var_name,operand2).translate()
+    operand3_var_name = get_fresh_variable_name()
+    code += SetVariableStatement(operand3_var_name,operand3).translate()
+    code += "%s(%s, %s, %s)" % (function_name, operand1_var_name, 
+        operand2_var_name, operand3_var_name)
+    return code
+
 def translate_operator_2(operator_name, operand1, operand2):
+    """Generates code for 2-ary infix operator application."""
+
     code = ""
     operand1_var_name = get_fresh_variable_name()
     code += SetVariableStatement(operand1_var_name, operand1).translate()
     operand2_var_name = get_fresh_variable_name()
     code += SetVariableStatement(operand2_var_name, operand2).translate()
-    code += "%s %s %s" % (operand1_var_name,  operator_name,
+    code += "(%s %s %s)" % (operand1_var_name,  operator_name,
         operand2_var_name)
+    return code
+
+def translate_instance_method_0(instance_expr, method_name):
+    """Generates code for 0-ary instance method application."""
+    code = ""
+    instance_var_name = get_fresh_variable_name()
+    code += SetVariableStatement(instance_var_name,instance_expr).translate()
+    code += "%s.%s()" % (instance_var_name, method_name)
     return code
 
 class LanguageComponent(object):
@@ -91,110 +144,34 @@ class LanguageComponent(object):
         # This assumes all variables are defined in leaves and that leaves
         # implement the base case.
         live_variables = set()
-        logger.debug(self)
-        logger.debug(self._children)
         for child in self._children:
            live_variables |= child.get_live_variables()
         return live_variables
 
+class Gap(LanguageComponent):
+    """
+    Base class for gaps, components to represent an incomplete part of the syntax
+    tree.
+    """
+    
+    def translate(self):
+        raise GapError()
+
+class NumberGap(Gap):
+    pass
+
+class TextGap(Gap):
+    pass
+
+class VideoGap(Gap):
+    pass
+
+class VideoCollectionGap(Gap):
+    pass
+
 class Expression(LanguageComponent):
     """Base class for all expressions in the language."""
     pass
-
-class Operator2(Expression):
-    """Asbtract class for a 2-ary infix operator application"""
-
-    def __init__(self, operator_name, operand1, operand2):
-        self._operator_name = operator_name
-        self._operand1 = operand1
-        self._operand2 = operand2
-        # Use extend as implementing class may already have children.
-        self._children.extend([self._operand1,self._operand2])
-
-    def translate(self):
-        code = ""
-        operand1_var_name = get_fresh_variable_name()
-        code += SetVariableStatement(operand1_var_name,self._operand1).translate()
-        operand2_var_name = get_fresh_variable_name()
-        code += SetVariableStatement(operand2_var_name,self._operand2).translate()
-        code += "%s %s %s" % (operand1_var_name, self._operator_name,
-            operand2_var_name)
-        return code
-
-class Function1(Expression):
-    """Abstract class for a 1-ary function application."""
-
-    def __init__(self, function_name, operand1):
-        self._function_name = function_name
-        self._operand1 = operand1
-        self._children.extend([self._operand1])
-
-    def translate(self):
-        code = ""
-        operand1_var_name = get_fresh_variable_name()
-        code += SetVariableStatement(operand1_var_name,self._operand1).translate()
-        code += "%s(%s)" % (self._function_name, operand1_var_name)
-        return code
-
-class Function2(Expression):
-    """Abstract class for a 2-ary function application."""
-
-    def __init__(self, function_name, operand1, operand2):
-        self._function_name = function_name
-        self._operand1 = operand1
-        self._operand2 = operand2
-        self._children.extend([self._operand1,self._operand2])
-
-    def translate(self):
-        code = ""
-        operand1_var_name = get_fresh_variable_name()
-        code += SetVariableStatement(operand1_var_name,self._operand1).translate()
-        operand2_var_name = get_fresh_variable_name()
-        code += SetVariableStatement(operand2_var_name,self._operand2).translate()
-        code += "%s(%s, %s)" % (self._function_name, operand1_var_name, 
-            operand2_var_name)
-        return code
-
-class Function3(Expression):
-    """Abstract class for a 3-ary function application."""
-
-    def __init__(self, function_name, operand1, operand2, operand3):
-        self._function_name = function_name
-        self._operand1 = operand1
-        self._operand2 = operand2
-        self._operand3 = operand3
-        self._children.extend([self._operand1, self._operand2, self._operand3])
-
-    def translate(self):
-        code = ""
-        operand1_var_name = get_fresh_variable_name()
-        code += SetVariableStatement(operand1_var_name,self._operand1).translate()
-        operand2_var_name = get_fresh_variable_name()
-        code += SetVariableStatement(operand2_var_name,self._operand2).translate()
-        operand3_var_name = get_fresh_variable_name()
-        code += SetVariableStatement(operand3_var_name,self._operand3).translate()
-        code += "%s(%s, %s, %s)" % (self._function_name, operand1_var_name, 
-            operand2_var_name, operand3_var_name)
-        return code
-
-class InstanceMethod0(Expression):
-    """Abstract class for a 0-ary instance method application."""
-
-    def __init__(self, instance_expr, method_name):
-        """
-        :type instance_expr: <:Expression
-        :type method_name: string
-        """
-        self._instance_expr = instance_expr
-        self._method_name = method_name
-        self._children.extend([self._instance_expr])
-
-    def translate(self):
-        code = ""
-        instance_var_name = get_fresh_variable_name()
-        code += SetVariableStatement(instance_var_name,self._instance_expr).translate()
-        code += "%s.%s()" % (instance_var_name, self._method_name)
-        return code
 
 class CommandSequence(LanguageComponent, collections.Sequence):
     """
@@ -206,14 +183,13 @@ class CommandSequence(LanguageComponent, collections.Sequence):
         """
         :type commands: Statement iterable
         """
-        self._commands = commands
-        self._children = self._commands
+        super(CommandSequence, self).__init__(commands)
 
     def __getitem__(self,key):
-        return self._commands.__getitem__(key)
+        return self._children.__getitem__(key)
 
     def __len__(self):
-        return self._commands.__len__()
+        return self._children.__len__()
 
     def translate(self):
         """
@@ -223,7 +199,7 @@ class CommandSequence(LanguageComponent, collections.Sequence):
         - Will end in a new line.
         """
         code = ""
-        for command in self._commands:
+        for command in self._children:
             code += command.translate()
         code += "\n"
         return code
@@ -234,12 +210,11 @@ class Act(LanguageComponent):
     """
 
     def __init__(self, scenes):
-        self._scenes = scenes
-        self._children = self._scenes
+        super(Act, self).__init__(scenes)
 
     def translate(self):
         code = ""
-        for scene in self._scenes:
+        for scene in self._children:
             code += "\n" + scene.translate()
         return code
 
@@ -256,12 +231,12 @@ class Scene(LanguageComponent):
         :type pre_commands: CommandSequence
         :type post_commands: CommandSequence
         """
+        super(Scene, self).__init__([duration, pre_commands, post_commands])
         self._title = title
         self._comment = comment
         self._duration = duration
         self._pre_commands = pre_commands
         self._post_commands = post_commands
-        self._children = [self._duration, self._pre_commands, self._post_commands]
 
     def translate(self):
         """
@@ -293,7 +268,7 @@ class Scene(LanguageComponent):
         code += self._post_commands.translate()
         return code
 
-class VideoScene(Scene,Function3):
+class VideoScene(Scene):
 
     def __init__(self, title, comment, duration, pre_commands, post_commands, offset, source):
         """
@@ -306,10 +281,12 @@ class VideoScene(Scene,Function3):
         :type source: <:VideoExpression
         """
         super(VideoScene, self).__init__(title, comment, duration, pre_commands, post_commands)
-        Function3.__init__(self, "videoplayer.play", source, offset, duration)
+        self._children.extend([offset, source])
+        self._offset = offset
+        self._source = source
 
     def translate_content(self):
-        return Function3.translate(self) + "\n"
+        return translate_function_3("videoplayer.play", self._source, self._offset, self._duration) + "\n"
 
 class ImageScene(Scene):
 
@@ -321,24 +298,25 @@ class ImageScene(Scene):
         :type offset: <:NumberExpression
         :type source: <:VideoExpression
         """
-        super(ImageScene, self).__init__(title, comment, duration)
-        self._offset = offset
-        self._source = source
+        raise NotImplementedError
 
-class TextScene(Scene,Function2):
+class TextScene(Scene):
 
-    def __init__(self, title, comment, duration, text):
+    def __init__(self, title, comment, duration, pre_commands, post_commands, text):
         """
         :type title: string
         :type comment: string
+        :type pre_commands: CommandSequence
+        :type post_commands: CommandSequence
         :type duration: <:NumberExpression
         :type text: <:TextExpression
         """
-        super(TextScene, self).__init__(title, comment, duration)
-        Function2.__init__(self, "display", text, duration)
+        super(TextScene, self).__init__(title, comment, duration, pre_commands, post_commands)
+        self._children.append(text)
+        self._text = text
 
     def translate_content(self):
-        return Function2.translate(self) + "\n"
+        return translate_function_2("display", self._text, self._duration) + "\n"
 
 class Statement(LanguageComponent):
 
@@ -354,6 +332,9 @@ class Statement(LanguageComponent):
 class CommentStatement(Statement):
 
     def __init__(self, text):
+        """
+        :type text: string
+        """
         self._text = text
 
     def translate(self):
@@ -366,6 +347,7 @@ class SetVariableStatement(Statement):
         :type name: string
         :type value: <: TextExpression | NumberExpression | VideoExpression | VideoCollectionExpression
         """
+        super(SetVariableStatement, self).__init__([value])
         self._name = name
         self._value = value
 
@@ -410,6 +392,7 @@ class TextValue(TextExpression):
         """
         :type text: string
         """
+        super(TextValue, self).__init__()
         self._text = text
 
     def translate(self):
@@ -421,34 +404,39 @@ class YoutubeVideoGetTitle(TextExpression):
         """
         :type video: <:VideoExpression
         """
+        super(YoutubeVideoGetTitle, self).__init__([video])
         self._video = video
 
     def translate(self):
-        code = ""
-        video_var_name = get_fresh_variable_name()
-        code += SetVariableStatement(video_var_name,self._video).translate()
-        code += "\n%s.title()" % video_var_name
-        return code
+        return translate_instance_method_0(self._video, "title")
 
-class YoutubeVideoGetDescription(InstanceMethod0, TextExpression):
+class YoutubeVideoGetDescription(TextExpression):
 
-    def __init__(self,video_expr):
+    def __init__(self,video):
         """
-        :type video_expr: <:VideoExpression
+        :type video: <:VideoExpression
         """
-        super(YoutubeVideoGetDescription, self).__init__(video_expr, "description")
+        super(YoutubeVideoGetDescription, self).__init__([video])
+        self._video = video
+
+    def translate(self):
+        return translate_instance_method_0(self._video, "description")
 
 class NumberExpression(Expression):
     """Base class for expressions that evaluate to type Number."""
     pass
 
-class YoutubeVideoGetDuration(InstanceMethod0, NumberExpression):
+class YoutubeVideoGetDuration(NumberExpression):
 
-    def __init__(self,video_expr):
+    def __init__(self,video):
         """
-        :type video_expr: <:VideoExpression
+        :type video: <:VideoExpression
         """
-        super(YoutubeVideoGetDuration, self).__init__(video_expr, "duration")
+        super(YoutubeVideoGetDuration, self).__init__([video])
+        self._video = video
+
+    def translate(self):
+        return translate_instance_method_0(self._video, "duration")
 
 class NumberValue(NumberExpression):
 
@@ -456,30 +444,34 @@ class NumberValue(NumberExpression):
         """
         :type number: int
         """
+        super(NumberValue, self).__init__()
         self._number = number
 
     def translate(self):
         return str(self._number)
 
-class GetRandomNumberBetweenInterval(Function2, NumberExpression):
+    def __repr__(self):
+        return "NumberValue(%s)" % self._number
+
+class GetRandomNumberBetweenInterval(NumberExpression):
 
     def __init__(self,lower_number_expr,higher_number_expr):
         """
         :type lower_number_expr: <:NumberExpression
         :type higher_number_expr: <:NumberExpression
         """
-        super(GetRandomNumberBetweenInterval, self).__init__(
-            "random.uniform",
+        super(GetRandomNumberBetweenInterval, self).__init__([
             lower_number_expr,
             higher_number_expr
-        )
+        ])
+        self._lower_number_expr = lower_number_expr
+        self._higher_number_expr = higher_number_expr
 
-# class Add(Operator2):
+    def translate(self):
+        return translate_function_2("random.uniform", self._lower_number_expr, self._higher_number_expr)
 
-#     def __init__(self,op1,op2):
-#         super(Add,self).__init__("+", op1, op2)
 
-class Add(Expression):
+class Add(NumberExpression):
 
     def __init__(self, op1, op2):
         super(Add,self).__init__([op1, op2])
@@ -487,17 +479,36 @@ class Add(Expression):
         self._op2 = op2
 
     def translate(self):
-        translate_operator_2("+", self._op1, self._op2)
+        return translate_operator_2("+", self._op1, self._op2)
 
-class Subtract(Operator2):
+    def __repr__(self):
+        return "Add(%s,%s)" % (self._op1, self._op2)
 
-    def __init__(self,op1,op2):
-        super(Subtract,self).__init__("-", op1, op2)
-
-class Multiply(Operator2):
+class Subtract(NumberExpression):
 
     def __init__(self,op1,op2):
-        super(Multiply,self).__init__("*", op1, op2)
+        super(Subtract,self).__init__([op1, op2])
+        self._op1 = op1
+        self._op2 = op2
+
+    def translate(self):
+        return translate_operator_2("-", self._op1, self._op2)
+
+    def __repr__(self):
+        return "Subtract(%s,%s)" % (self._op1, self._op2)
+
+class Multiply(NumberExpression):
+
+    def __init__(self,op1,op2):
+        super(Multiply,self).__init__([op1, op2])
+        self._op1 = op1
+        self._op2 = op2
+
+    def translate(self):
+        return translate_operator_2("*", self._op1, self._op2)
+
+    def __repr__(self):
+        return "Multiply(%s,%s)" % (self._op1, self._op2)
 
 class VideoExpression(Expression):
     """Base class for expressions that evaluate to type Video."""
@@ -505,50 +516,64 @@ class VideoExpression(Expression):
 
 class VideoValue(VideoExpression):
 
-    def __init__(self,video):
+    def __init__(self, web_url):
         """
-        :type video: Video
+        :type web_url: string
         """
-        self._video = video
+        super(VideoValue, self).__init__()
+        self._web_url = web_url
 
     def translate(self):
-        return "Video('%s')" % self._video
+        return "youtube.Video.from_web_url('%s')" % self._web_url
 
-class VideoCollectionExpression():
+class VideoCollectionExpression(Expression):
     """Base class for expressions that evaluate to type VideoCollection."""
     pass
 
-def VideoCollectionValue(VideoCollectionExpression):
+class VideoCollectionValue(VideoCollectionExpression):
 
-    def __init__(self,video_collection):
+    def __init__(self,web_urls):
         """
-        :type video_collection: VideoCollection
+        :type web_urls: string
         """
-        self._video_collection = video_collection
+        super(VideoCollectionValue, self).__init__()
+        self._web_urls = web_urls
 
     def translate(self):
-        return "VideoCollection('%s')" % self._video_collection
+        return "youtube.VideoCollection.from_web_urls('%s')" % self._web_urls
 
-class YoutubeVideoGetRelated(InstanceMethod0):
+class YoutubeVideoGetRelated(VideoCollectionExpression):
 
-    def __init__(self,video_expr):
+    def __init__(self,video):
         """
-        :type video_expr: <:VideoExpression
+        :type video: <:VideoExpression
         """
-        super(YoutubeVideoGetRelated, self).__init__(video_expr, "related")
+        super(YoutubeVideoGetRelated,self).__init__([video])
+        self._video = video
 
-class YoutubeSearch(Function1):
+    def translate(self):
+        return translate_instance_method_0(self._video, "related")
+
+class YoutubeSearch(VideoCollectionExpression):
 
     def __init__(self,text_expr):
         """
         :type text_expr: <:TextExpression
         """
-        super(YoutubeSearch, self).__init__(text_expr, "youtube.search")
+        super(YoutubeSearch,self).__init__([text_expr])
+        self._text_expr = text_expr
 
-class YoutubeVideoCollectionRandom(InstanceMethod0):
+    def translate(self):
+        return translate_function_2("youtube.search", self._text_expr)
+
+class YoutubeVideoCollectionRandom(VideoExpression):
 
     def __init__(self,video_collection_expr):
         """
         :type video_collection_expr: <:VideoCollectionExpression
         """
-        super(YoutubeVideoCollectionRandom, self).__init__(video_collection_expr, "random")
+        super(YoutubeVideoCollectionRandom,self).__init__([video_collection_expr])
+        self._video_collection_expr = video_collection_expr
+
+    def translate(self):
+        return translate_instance_method_0(self._video_collection_expr, "random")

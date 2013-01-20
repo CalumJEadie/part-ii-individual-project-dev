@@ -1,11 +1,16 @@
-from PySide import QtGui, QtCore
+from PySide.QtCore import *
+from PySide.QtGui import *
 import os.path
 from os.path import join
+import logging
 
-from ui import language
-from interpreter import interpreter
+from app.ui.language import *
+from app.interpreter import interpreter
 
-class GraphicalEditor(QtGui.QMainWindow):
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+class GraphicalEditor(QMainWindow):
 
     d = os.path.dirname(__file__)
     example1 = open(join(d,"example1.py")).read()
@@ -17,7 +22,10 @@ class GraphicalEditor(QtGui.QMainWindow):
         self.setupUI()
         self.show()
         
-    def setupUI(self):               
+    def setupUI(self):
+
+        with open("res/style.css", "r") as f:
+            self.setStyleSheet(f.read())
         
         self.setupWindow()
         self.setupToolbar()
@@ -28,116 +36,84 @@ class GraphicalEditor(QtGui.QMainWindow):
         
         # Set up layout
 
-        centralwidget = QtGui.QWidget(self)
+        centralwidget = QWidget(self)
 
-        horizontalLayout = QtGui.QHBoxLayout(centralwidget)
+        horizontalLayout = QHBoxLayout(centralwidget)
 
         # Add toolbar and editor pane
         
-        horizontalLayout.addWidget(self.createToolbox(centralwidget))
+        horizontalLayout.addWidget(PaletteWidget(self))
         horizontalLayout.addWidget(self.createEditorPane(centralwidget))
+        horizontalLayout.addWidget(self.createPreview(centralwidget))
 
         self.setCentralWidget(centralwidget)
 
-    def createToolbox(self,parent):
-        """
-        :type parent: QtGui.QWidget
-        :rtype: QtGui.QWidget
-        """
-
-        toolBox = QtGui.QToolBox(parent)
-        toolBox.setMaximumSize(QtCore.QSize(300, 16777215))
-        # self.toolBox.setCurrentIndex(0)
-
-        # Scenes
-        page_3 = QtGui.QWidget()
-        page_3.setGeometry(QtCore.QRect(0, 0, 300, 438))
-        language.SceneWidget(page_3)
-        toolBox.addItem(page_3, "Scenes")
-
-
-        # Videos and Video Collections
-        page_4 = QtGui.QWidget()
-        page_4.setGeometry(QtCore.QRect(0, 0, 300, 438))
-        widget_3 = language.VideoDefnWidget(page_4)
-        widget_4 = language.VideoCollectionDefnWidget(page_4)
-        toolBox.addItem(page_4, "Videos and Video Collections")
-
-        # Variables
-        page_5 = QtGui.QWidget()
-        verticalLayout = QtGui.QVBoxLayout(page_5)
-        widget = language.SetterWidget(page_5)
-        widget_2 = language.GetterWidget(page_5)
-        verticalLayout.addWidget(widget)
-        verticalLayout.addWidget(widget_2)
-        page_5.setLayout(verticalLayout)
-        toolBox.addItem(page_5, "Variables")
-
-        return toolBox
+        self._actEdit.changed.connect(self._previewTextEdit.setPlainText)
 
     def createEditorPane(self,parent):
         """
-        :type parent: QtGui.QWidget
-        :rtype: QtGui.QWidget
+        :type parent: QWidget
+        :rtype: QWidget
         """
 
-        editorPane = QtGui.QWidget(parent)
+        editorPaneLayout = QHBoxLayout()
 
-        hBoxLayout = QtGui.QHBoxLayout(editorPane)
-        editorPane.setLayout(hBoxLayout)
+        self._actEdit = ActEdit()
 
-        scrollArea = QtGui.QScrollArea(editorPane)
-        hBoxLayout.addStretch(50) # Create stretchable space either side of act.
-        hBoxLayout.addWidget(scrollArea)
-        hBoxLayout.addStretch(50) # Create stretchable space either side of act.
+        # Create stretchable space either side of act.
+        editorPaneLayout.addStretch(50)
+        editorPaneLayout.addWidget(self._actEdit)
+        editorPaneLayout.addStretch(50)
 
-        actWidget = QtGui.QWidget(scrollArea)
-        actWidget.setMinimumSize(400,400)
-        scrollArea.setWidget(actWidget)
-        # scrollArea.setWidget(language.SceneWidget())
-        # return editorPane
-
-        vBoxLayout = QtGui.QVBoxLayout(actWidget)
-        actWidget.setLayout(vBoxLayout)
-
-        for i in range(0,20):
-            # sw = language.SceneWidget(actWidget)
-            # vBoxLayout.addWidget(sw)
-            vBoxLayout.addWidget(QtGui.QLabel("test %s" % i))
+        editorPane = QWidget(parent)
+        editorPane.setLayout(editorPaneLayout)
 
         return editorPane
 
-        # scrollArea_2 = QtGui.QScrollArea(parent)
-        # scrollArea_2.setWidgetResizable(True)
+    def createPreview(self, parent):
+        """
+        :type parent: QWidget
+        :rtype: QWidget
+        """
 
-        # scrollAreaWidgetContents_2 = QtGui.QWidget()
-        # scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 582, 538))
+        self._previewTextEdit = QPlainTextEdit()
 
-        # scrollArea_2.setWidget(scrollAreaWidgetContents_2)
+        previewBox = QGroupBox("Preview")
+        previewBoxLayout = QVBoxLayout()
+        previewBoxLayout.addWidget(self._previewTextEdit)
+        previewBox.setLayout(previewBoxLayout)
 
-        # return scrollArea_2
+        previewBox.setFixedWidth(300)
+
+        return previewBox
 
     def setupToolbar(self):
 
-        runAction = QtGui.QAction('Run', self)
+        translateAction = QAction('Translate', self)
+        translateAction.setShortcut('Ctrl+T')
+        translateAction.setStatusTip('Translate Program')
+        translateAction.triggered.connect(self.translate)
+
+        runAction = QAction('Run', self)
         runAction.setShortcut('Ctrl+R')
         runAction.setStatusTip('Run Program')
         runAction.triggered.connect(self.run)
 
-        clearAction = QtGui.QAction('Clear', self)
+        clearAction = QAction('Clear', self)
         clearAction.setShortcut('Ctrl+E')
         clearAction.setStatusTip('Clear Program')
         clearAction.triggered.connect(self.clear)
 
-        loadExample1Action = QtGui.QAction('Load Example 1', self)
+        loadExample1Action = QAction('Load Example 1', self)
         loadExample1Action.setStatusTip('Replace current program with example 1')
         loadExample1Action.triggered.connect(self.loadExample1)
 
-        loadExample2Action = QtGui.QAction('Load Example 2', self)
+        loadExample2Action = QAction('Load Example 2', self)
         loadExample2Action.setStatusTip('Replace current program with example 2')
         loadExample2Action.triggered.connect(self.loadExample2)
 
         toolbar = self.addToolBar('Tools')
+        toolbar.addAction(translateAction)
         toolbar.addAction(runAction)
         toolbar.addAction(clearAction)
         toolbar.addAction(loadExample1Action)
@@ -145,19 +121,26 @@ class GraphicalEditor(QtGui.QMainWindow):
 
     def setupWindow(self):
 
-        self.resize(1024,800)
+        self.resize(1200,800)
         self.center()
         self.setWindowTitle('Graphical Editor')
         
     def center(self):
         
         qr = self.frameGeometry()
-        cp = QtGui.QDesktopWidget().availableGeometry().center()
+        cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
+    def translate(self):
+        try:
+            program = self._actEdit.model().translate()
+            self._previewTextEdit.setPlainText(program)
+        except language.GapError:
+            self._previewTextEdit.setPlainText("Could not translate - encountered Gap.")
+
     def run(self):
-        program = self.textEdit.toPlainText()
+        program = self._actEdit.model().translate()
         interpreter.interpret(program)
 
     def clear(self):
@@ -168,3 +151,64 @@ class GraphicalEditor(QtGui.QMainWindow):
 
     def loadExample2(self):
         self.textEdit.setPlainText(self.example2)
+
+class PaletteWidget(QWidget):
+
+    def __init__(self, parent=None):
+        super(PaletteWidget, self).__init__(parent)
+        self.setupUI()
+
+    def setupUI(self):
+
+        self.setFixedWidth(300)
+
+        # Rather than use a lot of boiler plate code define abstract
+        # structure of the palette and take care of layout later.
+        # Need to use comma after element in 1-tuple for iteration.
+        paletteContents = (
+            (
+                "Scenes",
+                (
+                    MiniVideoSceneWidget(),
+                )
+            ),
+            (
+                "Video and Video Collections",
+                (
+                    VideoValueWidget("http://www.youtube.com/watch?v=9bZkp7q19f0"),
+                    VideoCollectionDefnWidget()
+                )
+            ),
+            (
+                "Numbers",
+                (
+                    NumberValueWidget(0),
+                    NumberOperatorWidget("+", NumberGapWidget(), NumberGapWidget())
+                )
+            ),
+            (
+                "Text",
+                (
+                    TextValueWidget(""),
+                )
+            ),
+            (
+                "Variables",
+                (
+                    GetWidget("item"),
+                    SetWidget("item", "http://www.youtube.com/watch?v=9bZkp7q19f0"),
+                )
+            )
+        )
+        paletteLayout = QVBoxLayout()
+
+        for (label, tools) in paletteContents:
+            box = QGroupBox(label)
+            boxLayout = QVBoxLayout()
+            for tool in tools:
+                boxLayout.addWidget(tool)
+            box.setLayout(boxLayout)
+            paletteLayout.addWidget(box)
+
+        paletteLayout.addStretch()
+        self.setLayout(paletteLayout)
