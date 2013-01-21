@@ -1,4 +1,4 @@
-TextSceneWidget {
+TextSceneWidget, MiniTextSceneWidget {
     border-color: green;
     border-width: 2px;
     border-style: solid;
@@ -75,12 +75,17 @@ VideoCollectionWidget > QLineEdit {
 NumberGapWidget > QLabel,
 TextGapWidget > QLabel,
 VideoGapWidget > QLabel,
-CommandGapWidget > QLabel {
+CommandGapWidget > QLabel,
+SceneGapWidget > QLabel {
     color: white;
 }
 
 CommandGapWidget {
     background: orange;
+}
+
+SceneGapWidget {
+    background: purple;
 }
 
 GetWidget, SetWidget {

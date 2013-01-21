@@ -58,7 +58,7 @@ class GraphicalEditor(QMainWindow):
 
         editorPaneLayout = QHBoxLayout()
 
-        self._actEdit = ActEdit()
+        self._actEdit = ActEdit(self)
 
         # Create stretchable space either side of act.
         editorPaneLayout.addStretch(50)
@@ -169,34 +169,35 @@ class PaletteWidget(QWidget):
             (
                 "Scenes",
                 (
-                    MiniVideoSceneWidget(),
+                    MiniTextSceneWidget(self),
+                    MiniVideoSceneWidget(self),
                 )
             ),
             (
                 "Video and Video Collections",
                 (
-                    VideoValueWidget("http://www.youtube.com/watch?v=9bZkp7q19f0"),
-                    VideoCollectionDefnWidget()
+                    VideoValueWidget("http://www.youtube.com/watch?v=9bZkp7q19f0", self),
+                    VideoCollectionDefnWidget(self)
                 )
             ),
             (
                 "Numbers",
                 (
-                    NumberValueWidget(0),
-                    NumberOperatorWidget("+", NumberGapWidget(), NumberGapWidget())
+                    NumberValueWidget(0, self),
+                    NumberOperatorWidget("+", NumberGapWidget(None, self), NumberGapWidget(None, self), self)
                 )
             ),
             (
                 "Text",
                 (
-                    TextValueWidget(""),
+                    TextValueWidget("", self),
                 )
             ),
             (
                 "Variables",
                 (
-                    GetWidget("item"),
-                    SetWidget("item", "http://www.youtube.com/watch?v=9bZkp7q19f0"),
+                    GetWidget("item", self),
+                    SetWidget("item", "http://www.youtube.com/watch?v=9bZkp7q19f0", self),
                 )
             )
         )
