@@ -96,6 +96,7 @@ class Video:
         :rtype: Video
         """
         self._entry = entry
+        self._best_streaming_url = None
 
     @classmethod
     def from_web_url(cls,url):
@@ -155,8 +156,12 @@ class Video:
     def best_streaming_url(self):
         """
         Returns url for streaming video using best available format.
+
+        Use memoisation for performance.
         """
-        return self.streaming_url("best")
+        if self._best_streaming_url is None:
+            self._best_streaming_url = self.streaming_url("best")
+        return self._best_streaming_url
 
 class VideoCollection(collections.Sequence):
     """
