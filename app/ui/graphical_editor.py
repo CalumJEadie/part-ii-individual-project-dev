@@ -177,7 +177,8 @@ class PaletteWidget(QWidget):
                 "Video and Video Collections",
                 (
                     VideoValueWidget("http://www.youtube.com/watch?v=9bZkp7q19f0", self),
-                    VideoCollectionDefnWidget(self),
+                    YoutubeVideoCollectionRandomWidget(VideoCollectionGapWidget(None, self), self),
+                    YoutubeVideoGetRelatedWidget(VideoGapWidget(None, self), self)
                 )
             ),
             (

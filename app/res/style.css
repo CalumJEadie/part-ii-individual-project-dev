@@ -45,11 +45,13 @@ NumberValueWidget > QLineEdit {
     color: blue;
 }
 
-VideoGapWidget {
+VideoGapWidget,
+VideoCollectionGapWidget {
     background: red;
 }
 
-VideoValueWidget {
+VideoValueWidget,
+YoutubeVideoCollectionRandomWidget {
     border-color: red;
     border-width: 2px;
     border-style: solid;
@@ -61,7 +63,8 @@ VideoValueWidget > QLineEdit {
     color: red;
 }
 
-VideoCollectionWidget {
+VideoCollectionWidget,
+YoutubeVideoGetRelatedWidget {
     border-color: red;
     border-width: 2px;
     border-style: solid;
@@ -76,6 +79,7 @@ VideoCollectionWidget > QLineEdit {
 NumberGapWidget > QLabel,
 TextGapWidget > QLabel,
 VideoGapWidget > QLabel,
+VideoCollectionGapWidget > QLabel,
 CommandGapWidget > QLabel,
 SceneGapWidget > QLabel {
     color: white;

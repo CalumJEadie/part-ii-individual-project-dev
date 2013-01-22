@@ -107,7 +107,9 @@ class LanguageWidgetFactory(object):
                 self.build(lc._source, p),
                 p
             ),
-            language.YoutubeVideoGetTitle: lambda lc, p: YoutubeVideoGetTitleWidget(self.build(lc._video, p), p)
+            language.YoutubeVideoGetTitle: lambda lc, p: YoutubeVideoGetTitleWidget(self.build(lc._video, p), p),
+            language.YoutubeVideoGetRelated: lambda lc, p: YoutubeVideoGetRelatedWidget(self.build(lc._video, p), p),
+            language.YoutubeVideoCollectionRandom: lambda lc, p: YoutubeVideoCollectionRandomWidget(self.build(lc._video_collection_expr, p), p)
         }
 
         return builders[lc.__class__](lc, parent)
@@ -734,6 +736,23 @@ class VideoGapWidget(GapWidget):
         else:
             return language.VideoGap()
 
+class VideoCollectionGapWidget(GapWidget):
+
+    def __init__(self, child, parent):
+        super(VideoCollectionGapWidget, self).__init__(child, parent)
+        label = QLabel(self)
+        label.setPixmap(QPixmap("res/video-64-64.png"))
+        self.addWidget(label)
+
+    def model(self):
+        """
+        :rtype: models.language.VideoCollectionExpression
+        """
+        if self._child is not None:
+            return self._child.model()
+        else:
+            return language.VideoGap()
+
 class CommandGapWidget(GapWidget):
 
     def __init__(self, parent):
@@ -849,16 +868,92 @@ class YoutubeVideoGetTitleWidget(QFrame):
         self._video = VideoGapWidget(video, self)
 
         layout = QHBoxLayout()
-        layout.addWidget(QLabel("get title of", self))
+        layout.addWidget(QLabel("title of", self))
         layout.addWidget(self._video)
 
         self.setLayout(layout)
 
     def model(self):
         """
-        :rtype: models.language.TextValue
+        :rtype: models.language.YoutubeVideoGetTitle
         """
         return language.YoutubeVideoGetTitle(self._video.model())
+
+    def startDrag(self):
+        data = cPickle.dumps(self.model())
+        mimeData = QMimeData()
+        mimeData.setData(LC_MIME_FORMAT, data)
+        drag = QDrag(self)
+        drag.setMimeData(mimeData)
+        drag.start(Qt.CopyAction)
+
+    def mouseMoveEvent(self, event):
+        self.startDrag()
+        QWidget.mouseMoveEvent(self, event)
+
+class YoutubeVideoGetRelatedWidget(QFrame):
+
+    def __init__(self, video, parent):
+        """
+        :type video: QWidget
+        """
+
+        super(YoutubeVideoGetRelatedWidget, self).__init__(parent)
+
+        self._video = VideoGapWidget(video, self)
+
+        layout = QHBoxLayout()
+        icon = QLabel(self)
+        icon.setPixmap(QPixmap("res/video-collection-64-64.png"))
+        layout.addWidget(icon)
+        layout.addWidget(QLabel("related to", self))
+        layout.addWidget(self._video)
+
+        self.setLayout(layout)
+
+    def model(self):
+        """
+        :rtype: models.language.YoutubeVideoGetRelated
+        """
+        return language.YoutubeVideoGetRelated(self._video.model())
+
+    def startDrag(self):
+        data = cPickle.dumps(self.model())
+        mimeData = QMimeData()
+        mimeData.setData(LC_MIME_FORMAT, data)
+        drag = QDrag(self)
+        drag.setMimeData(mimeData)
+        drag.start(Qt.CopyAction)
+
+    def mouseMoveEvent(self, event):
+        self.startDrag()
+        QWidget.mouseMoveEvent(self, event)
+
+class YoutubeVideoCollectionRandomWidget(QFrame):
+
+    def __init__(self, video, parent):
+        """
+        :type video: QWidget
+        """
+
+        super(YoutubeVideoCollectionRandomWidget, self).__init__(parent)
+
+        self._video = VideoCollectionGapWidget(video, self)
+
+        layout = QHBoxLayout()
+        icon = QLabel(self)
+        icon.setPixmap(QPixmap("res/video-64-64.png"))
+        layout.addWidget(icon)
+        layout.addWidget(QLabel("random from", self))
+        layout.addWidget(self._video)
+
+        self.setLayout(layout)
+
+    def model(self):
+        """
+        :rtype: models.language.YoutubeVideoCollectionRandom
+        """
+        return language.YoutubeVideoCollectionRandom(self._video.model())
 
     def startDrag(self):
         data = cPickle.dumps(self.model())
