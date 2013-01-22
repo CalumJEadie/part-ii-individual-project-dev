@@ -204,30 +204,30 @@ class CommentWidget(QPlainTextEdit):
 
         self.setMaximumHeight(50)
 
-# class DraggableMixin(object):
-#     """
-#     Provides draggable behavioir.
+class DraggableMixin(object):
+    """
+    Provides draggable behavior to child class.
 
-#     ( ) what is a class that uses a mixin called?
+    Child class:
+    - Must subclass QWidget.
+    - Must provide a method model() : () -> language.LanguageComponent.
+    - Must put DraggableMixin earlier in the Method Resolution Order so override
+      methods of parent class.
+    """
 
-#     Interface:
-#     - Must subclass QWidget.
-#     - Must provide a model() -> language.LanguageComponent method.
-#     """
+    def startDrag(self):
+        data = cPickle.dumps(self.model())
+        mimeData = QMimeData()
+        mimeData.setData(LC_MIME_FORMAT, data)
+        drag = QDrag(self)
+        drag.setMimeData(mimeData)
+        drag.start(Qt.CopyAction)
 
-#     def startDrag(self):
-#         data = cPickle.dumps(self.model())
-#         mimeData = QMimeData()
-#         mimeData.setData(LC_MIME_FORMAT, data)
-#         drag = QDrag(self)
-#         drag.setMimeData(mimeData)
-#         drag.start(Qt.CopyAction)
+    def mouseMoveEvent(self, event):
+        self.startDrag()
+        QWidget.mouseMoveEvent(self, event)
 
-#     def mouseMoveEvent(self, event):
-#         self.startDrag()
-#         QWidget.mouseMoveEvent(self, event)
-
-class MiniVideoSceneWidget(QLabel):
+class MiniVideoSceneWidget(DraggableMixin, QLabel):
 
     def __init__(self, parent):
         super(MiniVideoSceneWidget, self).__init__(parent)
@@ -247,19 +247,7 @@ class MiniVideoSceneWidget(QLabel):
             language.VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0")
         )
 
-    def startDrag(self):
-        data = cPickle.dumps(self.model())
-        mimeData = QMimeData()
-        mimeData.setData(LC_MIME_FORMAT, data)
-        drag = QDrag(self)
-        drag.setMimeData(mimeData)
-        drag.start(Qt.CopyAction)
-
-    def mouseMoveEvent(self, event):
-        self.startDrag()
-        QWidget.mouseMoveEvent(self, event)
-
-class MiniTextSceneWidget(QLabel):
+class MiniTextSceneWidget(DraggableMixin, QLabel):
 
     def __init__(self, parent):
         super(MiniTextSceneWidget, self).__init__(parent)
@@ -277,18 +265,6 @@ class MiniTextSceneWidget(QLabel):
             language.CommandSequence([]),
             language.TextValue("title of gangnam style")
         )
-
-    def startDrag(self):
-        data = cPickle.dumps(self.model())
-        mimeData = QMimeData()
-        mimeData.setData(LC_MIME_FORMAT, data)
-        drag = QDrag(self)
-        drag.setMimeData(mimeData)
-        drag.start(Qt.CopyAction)
-
-    def mouseMoveEvent(self, event):
-        self.startDrag()
-        QWidget.mouseMoveEvent(self, event)
 
 class VideoSceneWidget(SceneWidget):
 
@@ -448,7 +424,7 @@ class CommandSequenceWidget(QWidget):
 # TODO: Use live variables.
 VARIABLE_NAMES = ["item", "curr_video", "curr_duration", "curr_offset"]
 
-class GetWidget(QFrame):
+class GetWidget(DraggableMixin, QFrame):
 
     def __init__(self, name, parent):
         """
@@ -472,19 +448,7 @@ class GetWidget(QFrame):
         """
         return language.GetVariableExpression(self._name.currentText())
 
-    def startDrag(self):
-        data = cPickle.dumps(self.model())
-        mimeData = QMimeData()
-        mimeData.setData(LC_MIME_FORMAT, data)
-        drag = QDrag(self)
-        drag.setMimeData(mimeData)
-        drag.start(Qt.CopyAction)
-
-    def mouseMoveEvent(self, event):
-        self.startDrag()
-        QWidget.mouseMoveEvent(self, event)
-
-class SetWidget(QFrame):
+class SetWidget(DraggableMixin, QFrame):
 
     def __init__(self, name, value, parent):
         """
@@ -515,19 +479,7 @@ class SetWidget(QFrame):
         """
         return language.SetVariableStatement(self._name.currentText(), self._value.model())
 
-    def startDrag(self):
-        data = cPickle.dumps(self.model())
-        mimeData = QMimeData()
-        mimeData.setData(LC_MIME_FORMAT, data)
-        drag = QDrag(self)
-        drag.setMimeData(mimeData)
-        drag.start(Qt.CopyAction)
-
-    def mouseMoveEvent(self, event):
-        self.startDrag()
-        QWidget.mouseMoveEvent(self, event)
-
-class TextValueWidget(QFrame):
+class TextValueWidget(DraggableMixin, QFrame):
 
     def __init__(self, text, parent):
         super(TextValueWidget, self).__init__(parent)
@@ -544,19 +496,7 @@ class TextValueWidget(QFrame):
         """
         return language.TextValue(self._text.text())
 
-    def startDrag(self):
-        data = cPickle.dumps(self.model())
-        mimeData = QMimeData()
-        mimeData.setData(LC_MIME_FORMAT, data)
-        drag = QDrag(self)
-        drag.setMimeData(mimeData)
-        drag.start(Qt.CopyAction)
-
-    def mouseMoveEvent(self, event):
-        self.startDrag()
-        QWidget.mouseMoveEvent(self, event)
-
-class NumberValueWidget(QFrame):
+class NumberValueWidget(DraggableMixin, QFrame):
 
     def __init__(self, number, parent):
         super(NumberValueWidget, self).__init__(parent)
@@ -572,19 +512,7 @@ class NumberValueWidget(QFrame):
         """
         return language.NumberValue(float(self._number.text()))
 
-    def startDrag(self):
-        data = cPickle.dumps(self.model())
-        mimeData = QMimeData()
-        mimeData.setData(LC_MIME_FORMAT, data)
-        drag = QDrag(self)
-        drag.setMimeData(mimeData)
-        drag.start(Qt.CopyAction)
-
-    def mouseMoveEvent(self, event):
-        self.startDrag()
-        QWidget.mouseMoveEvent(self, event)
-
-class VideoValueWidget(QFrame):
+class VideoValueWidget(DraggableMixin, QFrame):
 
     def __init__(self, video, parent):
         super(VideoValueWidget, self).__init__(parent)
@@ -608,18 +536,6 @@ class VideoValueWidget(QFrame):
         :rtype: models.language.VideoValue
         """
         return language.VideoValue(self._value.text())
-
-    def startDrag(self):
-        data = cPickle.dumps(self.model())
-        mimeData = QMimeData()
-        mimeData.setData(LC_MIME_FORMAT, data)
-        drag = QDrag(self)
-        drag.setMimeData(mimeData)
-        drag.start(Qt.CopyAction)
-
-    def mouseMoveEvent(self, event):
-        self.startDrag()
-        QWidget.mouseMoveEvent(self, event)
 
 class VideoCollectionDefnWidget(QWidget):
 
@@ -801,7 +717,7 @@ class SceneGapWidget(GapWidget):
         wf = LanguageWidgetFactory()
         self.parent().addScene(wf.build(lc, self))
 
-class NumberOperatorWidget(QFrame):
+class NumberOperatorWidget(DraggableMixin, QFrame):
 
     OPERATORS = {
         "+": language.Add,
@@ -844,19 +760,7 @@ class NumberOperatorWidget(QFrame):
             self._operand2.model()
         )
 
-    def startDrag(self):
-        data = cPickle.dumps(self.model())
-        mimeData = QMimeData()
-        mimeData.setData(LC_MIME_FORMAT, data)
-        drag = QDrag(self)
-        drag.setMimeData(mimeData)
-        drag.start(Qt.CopyAction)
-
-    def mouseMoveEvent(self, event):
-        self.startDrag()
-        QWidget.mouseMoveEvent(self, event)
-
-class YoutubeVideoGetTitleWidget(QFrame):
+class YoutubeVideoGetTitleWidget(DraggableMixin, QFrame):
 
     def __init__(self, video, parent):
         """
@@ -879,19 +783,7 @@ class YoutubeVideoGetTitleWidget(QFrame):
         """
         return language.YoutubeVideoGetTitle(self._video.model())
 
-    def startDrag(self):
-        data = cPickle.dumps(self.model())
-        mimeData = QMimeData()
-        mimeData.setData(LC_MIME_FORMAT, data)
-        drag = QDrag(self)
-        drag.setMimeData(mimeData)
-        drag.start(Qt.CopyAction)
-
-    def mouseMoveEvent(self, event):
-        self.startDrag()
-        QWidget.mouseMoveEvent(self, event)
-
-class YoutubeVideoGetRelatedWidget(QFrame):
+class YoutubeVideoGetRelatedWidget(DraggableMixin, QFrame):
 
     def __init__(self, video, parent):
         """
@@ -917,19 +809,7 @@ class YoutubeVideoGetRelatedWidget(QFrame):
         """
         return language.YoutubeVideoGetRelated(self._video.model())
 
-    def startDrag(self):
-        data = cPickle.dumps(self.model())
-        mimeData = QMimeData()
-        mimeData.setData(LC_MIME_FORMAT, data)
-        drag = QDrag(self)
-        drag.setMimeData(mimeData)
-        drag.start(Qt.CopyAction)
-
-    def mouseMoveEvent(self, event):
-        self.startDrag()
-        QWidget.mouseMoveEvent(self, event)
-
-class YoutubeVideoCollectionRandomWidget(QFrame):
+class YoutubeVideoCollectionRandomWidget(DraggableMixin, QFrame):
 
     def __init__(self, video, parent):
         """
@@ -954,15 +834,3 @@ class YoutubeVideoCollectionRandomWidget(QFrame):
         :rtype: models.language.YoutubeVideoCollectionRandom
         """
         return language.YoutubeVideoCollectionRandom(self._video.model())
-
-    def startDrag(self):
-        data = cPickle.dumps(self.model())
-        mimeData = QMimeData()
-        mimeData.setData(LC_MIME_FORMAT, data)
-        drag = QDrag(self)
-        drag.setMimeData(mimeData)
-        drag.start(Qt.CopyAction)
-
-    def mouseMoveEvent(self, event):
-        self.startDrag()
-        QWidget.mouseMoveEvent(self, event)
