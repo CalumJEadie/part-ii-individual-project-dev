@@ -144,13 +144,13 @@ class GraphicalEditor(QMainWindow):
         interpreter.interpret(program)
 
     def clear(self):
-        self.textEdit.clear()
+        raise NotImplementedError
 
     def loadExample1(self):
-        self.textEdit.setPlainText(self.example1)
+        raise NotImplementedError
 
     def loadExample2(self):
-        self.textEdit.setPlainText(self.example2)
+        raise NotImplementedError
 
 class PaletteWidget(QWidget):
 
@@ -177,7 +177,7 @@ class PaletteWidget(QWidget):
                 "Video and Video Collections",
                 (
                     VideoValueWidget("http://www.youtube.com/watch?v=9bZkp7q19f0", self),
-                    VideoCollectionDefnWidget(self)
+                    VideoCollectionDefnWidget(self),
                 )
             ),
             (
@@ -191,6 +191,7 @@ class PaletteWidget(QWidget):
                 "Text",
                 (
                     TextValueWidget("", self),
+                    YoutubeVideoGetTitleWidget(VideoGapWidget(None, self), self)
                 )
             ),
             (

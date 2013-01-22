@@ -107,6 +107,7 @@ class LanguageWidgetFactory(object):
                 self.build(lc._source, p),
                 p
             ),
+            language.YoutubeVideoGetTitle: lambda lc, p: YoutubeVideoGetTitleWidget(self.build(lc._video, p), p)
         }
 
         return builders[lc.__class__](lc, parent)
@@ -823,6 +824,41 @@ class NumberOperatorWidget(QFrame):
             self._operand1.model(),
             self._operand2.model()
         )
+
+    def startDrag(self):
+        data = cPickle.dumps(self.model())
+        mimeData = QMimeData()
+        mimeData.setData(LC_MIME_FORMAT, data)
+        drag = QDrag(self)
+        drag.setMimeData(mimeData)
+        drag.start(Qt.CopyAction)
+
+    def mouseMoveEvent(self, event):
+        self.startDrag()
+        QWidget.mouseMoveEvent(self, event)
+
+class YoutubeVideoGetTitleWidget(QFrame):
+
+    def __init__(self, video, parent):
+        """
+        :type video: QWidget
+        """
+
+        super(YoutubeVideoGetTitleWidget, self).__init__(parent)
+
+        self._video = VideoGapWidget(video, self)
+
+        layout = QHBoxLayout()
+        layout.addWidget(QLabel("get title of", self))
+        layout.addWidget(self._video)
+
+        self.setLayout(layout)
+
+    def model(self):
+        """
+        :rtype: models.language.TextValue
+        """
+        return language.YoutubeVideoGetTitle(self._video.model())
 
     def startDrag(self):
         data = cPickle.dumps(self.model())

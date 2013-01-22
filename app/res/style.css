@@ -16,7 +16,8 @@ TextGapWidget {
     background: green;
 }
 
-TextValueWidget {
+TextValueWidget,
+YoutubeVideoGetTitleWidget {
     border-color: green;
     border-width: 2px;
     border-style: solid;
