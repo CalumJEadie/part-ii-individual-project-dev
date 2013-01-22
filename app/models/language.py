@@ -34,6 +34,12 @@ class LanguageException(Exception):
     """Base class for exceptions."""
     pass
 
+class TypeError(LanguageException):
+    """
+    Raised when an operation could not be performed due to an inappropriate type.
+    """
+    pass
+
 class GapError(LanguageException):
     """
     Raised when an operation could not be performed due to a gap in the 
@@ -222,6 +228,12 @@ class Scene(LanguageComponent):
     """
     Analagous to a basic block.
     """
+
+    title = property(lambda self: self._title)
+    comment = property(lambda self: self._comment)
+    duration = property(lambda self: self._duration)
+    pre_commands = property(lambda self: self._pre_commands)
+    post_commands = property(lambda self: self._post_commands)
     
     def __init__(self, title, comment, duration, pre_commands=CommandSequence([]), post_commands=CommandSequence([])):
         """
@@ -270,6 +282,9 @@ class Scene(LanguageComponent):
 
 class VideoScene(Scene):
 
+    offset = property(lambda self: self._offset)
+    source = property(lambda self: self._source)
+
     def __init__(self, title, comment, duration, pre_commands, post_commands, offset, source):
         """
         :type title: string
@@ -301,6 +316,8 @@ class ImageScene(Scene):
         raise NotImplementedError
 
 class TextScene(Scene):
+
+    text = property(lambda self: self._text)
 
     def __init__(self, title, comment, duration, pre_commands, post_commands, text):
         """
@@ -342,6 +359,9 @@ class CommentStatement(Statement):
 
 class SetVariableStatement(Statement):
 
+    name = property(lambda self: self._name)
+    value = property(lambda self: self._value)
+
     def __init__(self, name, value):
         """
         :type name: string
@@ -368,6 +388,8 @@ class SetVariableStatement(Statement):
     #     return []
 
 class GetVariableExpression(LanguageComponent):
+
+    name = property(lambda self: self._name)
 
     def __init__(self, name):
         """
@@ -398,7 +420,13 @@ class TextValue(TextExpression):
     def translate(self):
         return "'%s'" % self._text
 
+    @property
+    def value(self):
+        return self._text
+
 class YoutubeVideoGetTitle(TextExpression):
+
+    video = property(lambda self: self._video)
 
     def __init__(self,video):
         """
@@ -453,6 +481,10 @@ class NumberValue(NumberExpression):
     def __repr__(self):
         return "NumberValue(%s)" % self._number
 
+    @property
+    def value(self):
+        return str(self._number)
+
 class GetRandomNumberBetweenInterval(NumberExpression):
 
     def __init__(self,lower_number_expr,higher_number_expr):
@@ -473,6 +505,9 @@ class GetRandomNumberBetweenInterval(NumberExpression):
 
 class Add(NumberExpression):
 
+    op1 = property(lambda self: self._op1)
+    op2 = property(lambda self: self._op2)
+
     def __init__(self, op1, op2):
         super(Add,self).__init__([op1, op2])
         self._op1 = op1
@@ -486,6 +521,9 @@ class Add(NumberExpression):
 
 class Subtract(NumberExpression):
 
+    op1 = property(lambda self: self._op1)
+    op2 = property(lambda self: self._op2)
+
     def __init__(self,op1,op2):
         super(Subtract,self).__init__([op1, op2])
         self._op1 = op1
@@ -498,6 +536,9 @@ class Subtract(NumberExpression):
         return "Subtract(%s,%s)" % (self._op1, self._op2)
 
 class Multiply(NumberExpression):
+
+    op1 = property(lambda self: self._op1)
+    op2 = property(lambda self: self._op2)
 
     def __init__(self,op1,op2):
         super(Multiply,self).__init__([op1, op2])
@@ -526,6 +567,10 @@ class VideoValue(VideoExpression):
     def translate(self):
         return "youtube.Video.from_web_url('%s')" % self._web_url
 
+    @property
+    def value(self):
+        return self._web_url
+
 class VideoCollectionExpression(Expression):
     """Base class for expressions that evaluate to type VideoCollection."""
     pass
@@ -543,6 +588,8 @@ class VideoCollectionValue(VideoCollectionExpression):
         return "youtube.VideoCollection.from_web_urls('%s')" % self._web_urls
 
 class YoutubeVideoGetRelated(VideoCollectionExpression):
+
+    video = property(lambda self: self._video)
 
     def __init__(self,video):
         """
@@ -567,6 +614,8 @@ class YoutubeSearch(VideoCollectionExpression):
         return translate_function_2("youtube.search", self._text_expr)
 
 class YoutubeVideoCollectionRandom(VideoExpression):
+
+    video_collection = property(lambda self: self._video_collection_expr)
 
     def __init__(self,video_collection_expr):
         """

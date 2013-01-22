@@ -40,7 +40,8 @@ class LanguageWidgetFactory(object):
     classes
     """
 
-    def build(self, lc, parent):
+    @staticmethod
+    def build(lc, parent):
         """
         Returns language component widget for given language component
         model.
@@ -53,54 +54,30 @@ class LanguageWidgetFactory(object):
         """
 
         builders = {
-            language.NumberGap: lambda lc, p: NumberGapWidget(None, p),
-            language.TextGap: lambda lc, p: TextGapWidget(None, p),
-            language.VideoGap: lambda lc, p: VideoGapWidget(None, p),
-            language.NumberValue: lambda lc, p: NumberValueWidget(float(lc.translate()), p),
-            language.Add: lambda lc, p: NumberOperatorWidget(
-                "+",
-                self.build(lc._op1, p),
-                self.build(lc._op2, p),
-                p
-            ),
-            language.Subtract: lambda lc, p: NumberOperatorWidget(
-                "-",
-                self.build(lc._op1, p),
-                self.build(lc._op2, p),
-                p
-            ),
-            language.Multiply: lambda lc, p: NumberOperatorWidget(
-                "*",
-                self.build(lc._op1, p),
-                self.build(lc._op2, p),
-                p
-            ),
-            language.TextValue: lambda lc, p: TextValueWidget(lc.translate()[1:-1], p), # Remove brackets
-            language.VideoValue: lambda lc, p: VideoValueWidget(lc._web_url, p),
-            language.GetVariableExpression: lambda lc, p: GetWidget(lc._name, p),
-            language.SetVariableStatement: lambda lc, p: SetWidget(lc._name, self.build(lc._value, p), p),
-            language.CommandSequence: lambda lc, p: CommandSequenceWidget(
-                # Create widget for each command in language component model
-                map(lambda command: self.build(command, p), lc._children),
-                p
-            ),
-            language.TextScene: lambda lc, p: TextSceneWidget(p),
-            language.VideoScene: lambda lc, p: VideoSceneWidget(
-                lc._title,
-                lc._comment,
-                self.build(lc._duration, p),
-                self.build(lc._pre_commands, p),
-                self.build(lc._post_commands, p),
-                self.build(lc._offset, p),
-                self.build(lc._source, p),
-                p
-            ),
-            language.YoutubeVideoGetTitle: lambda lc, p: YoutubeVideoGetTitleWidget(self.build(lc._video, p), p),
-            language.YoutubeVideoGetRelated: lambda lc, p: YoutubeVideoGetRelatedWidget(self.build(lc._video, p), p),
-            language.YoutubeVideoCollectionRandom: lambda lc, p: YoutubeVideoCollectionRandomWidget(self.build(lc._video_collection_expr, p), p)
+            # language.NumberGap: lambda lc, p: NumberGapWidget(None, p),
+            # language.TextGap: lambda lc, p: TextGapWidget(None, p),
+            # language.VideoGap: lambda lc, p: VideoGapWidget(None, p),
+            language.NumberValue: lambda lc, p: NumberValueWidget(lc, p),
+            language.Add: lambda lc, p: NumberOperatorWidget("+", lc.op1, lc.op2),
+            language.Subtract: lambda lc, p: NumberOperatorWidget("-", lc.op1, lc.op2),
+            language.Multiply: lambda lc, p: NumberOperatorWidget("*", lc.op1, lc.op2),
+            language.TextValue: lambda lc, p: TextValueWidget(lc, p),
+            language.VideoValue: lambda lc, p: VideoValueWidget(lc, p),
+            language.GetVariableExpression: lambda lc, p: GetWidget(lc, p),
+            language.SetVariableStatement: lambda lc, p: SetWidget(lc, p),
+            language.CommandSequence: lambda lc, p: CommandSequenceWidget(lc, p),
+            language.TextScene: lambda lc, p: TextSceneWidget(lc, p),
+            language.VideoScene: lambda lc, p: VideoSceneWidget(lc, p),
+            language.YoutubeVideoGetTitle: lambda lc, p: YoutubeVideoGetTitleWidget(lc, p),
+            language.YoutubeVideoGetRelated: lambda lc, p: YoutubeVideoGetRelatedWidget(lc, p),
+            language.YoutubeVideoCollectionRandom: lambda lc, p: YoutubeVideoCollectionRandomWidget(lc, p)
         }
 
-        return builders[lc.__class__](lc, parent)
+        try:
+            return builders[lc.__class__](lc, parent)
+        except KeyError as e:
+            raise RuntimeError("Attempted to build language component with no associated builder.\n%s" % e)
+
 
 class ActEdit(QWidget):
     """
@@ -141,10 +118,11 @@ class ActEdit(QWidget):
 
     def addScene(self, scene):
         """
-        :type scene: QWidget
+        :type scene: language.Scene
         """
-        self._addAtEnd(scene)
-        self._scenes.append(scene)
+        sceneWidget = LanguageWidgetFactory.build(scene, self)
+        self._addAtEnd(sceneWidget)
+        self._scenes.append(sceneWidget)
 
     def _addAtEnd(self, widget):
         """
@@ -227,7 +205,7 @@ class MiniVideoSceneWidget(DraggableMixin, QLabel):
         """
         return language.VideoScene(
             "Example Video Scene",
-            "",
+            "Displays Gangnan Style video for 10 seconds from offset 0 seconds.",
             language.NumberValue(10),
             language.CommandSequence([]),
             language.CommandSequence([]),
@@ -247,38 +225,34 @@ class MiniTextSceneWidget(DraggableMixin, QLabel):
         """
         return language.TextScene(
             "Example Text Scene",
-            "",
+            "Displays title of Gangnan Style video for 10 seconds.",
             language.NumberValue(10),
             language.CommandSequence([]),
             language.CommandSequence([]),
-            language.TextValue("title of gangnam style")
+            language.YoutubeVideoGetTitle(
+                language.VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0")
+            )
         )
 
 class VideoSceneWidget(SceneWidget):
 
-    def __init__(self, title, comment, duration, preCommands, postCommands, offset, source, parent):
+    def __init__(self, scene, parent):
         """
-        :type title: string
-        :type comment: string
-        :type duration: <:QWidget
-        :type preCommands: CommandSequenceWidget
-        :type postCommands: CommandSequenceWidget
-        :type offset: <:QWidget
-        :type source: <:QWidget
+        :type scene: language.VideoScene
         """
         super(VideoSceneWidget, self).__init__(parent)
 
-        self._comment = CommentWidget(title + "\n" + comment, self)
+        self._comment = CommentWidget(scene.title + "\n" + scene.comment, self)
         self._comment.setMaximumHeight(50)
-        self._preCommands = preCommands
-        self._postCommands = postCommands
+        self._preCommands = CommandSequenceWidget(scene.pre_commands, self)
+        self._postCommands = CommandSequenceWidget(scene.post_commands, self)
 
         videoControls = QWidget(self)
         videoControlsLayout = QGridLayout()
 
-        self._source = VideoGapWidget(source, self)
-        self._duration = NumberGapWidget(duration, self)
-        self._offset = NumberGapWidget(offset, self)
+        self._source = VideoGapWidget(scene.source, self)
+        self._duration = NumberGapWidget(scene.duration, self)
+        self._offset = NumberGapWidget(scene.offset, self)
         # self._volume = NumberGapWidget()
 
         videoControlsLayout.addWidget(QLabel("play"), 0, 0)
@@ -322,21 +296,22 @@ class VideoSceneWidget(SceneWidget):
 
 class TextSceneWidget(SceneWidget):
 
-    def __init__(self,parent):
+    def __init__(self, scene, parent):
+        """
+        :type scene: TextScene
+        """
         super(TextSceneWidget, self).__init__(parent)
-        self._setupUI()
 
-    def _setupUI(self):
-        self._comment = CommentWidget("comment", self)
+        self._comment = CommentWidget(scene.title + "\n" + scene.comment, self)
         self._comment.setMaximumHeight(50)
-        self._preCommands = CommandSequenceWidget([], self)
-        self._postCommands = CommandSequenceWidget([], self)
+        self._preCommands = CommandSequenceWidget(scene.pre_commands, self)
+        self._postCommands = CommandSequenceWidget(scene.post_commands, self)
 
         textControls = QWidget(self)
         textControlsLayout = QGridLayout()
 
-        self._text = TextGapWidget(None, self)
-        self._duration = NumberGapWidget(None, self)
+        self._text = TextGapWidget(scene.text, self)
+        self._duration = NumberGapWidget(scene.duration, self)
 
         textControlsLayout.addWidget(QLabel("display"), 0, 0)
         textControlsLayout.addWidget(self._text, 0, 1)
@@ -376,16 +351,18 @@ class CommandSequenceWidget(QWidget):
 
     def __init__(self, commands, parent):
         """
-        :type commands: QWidget iterable
+        :type commands: language.CommandSequence
         """
 
         super(CommandSequenceWidget, self).__init__(parent)
 
-        self._commands = commands
+        self._commands = []
         self._gap = CommandGapWidget(self)
 
         self._layout = QVBoxLayout()
         self._layout.addWidget(self._gap)
+        for command in commands:
+            self.addCommand(command)
         self.setLayout(self._layout)
 
     def model(self):
@@ -396,10 +373,11 @@ class CommandSequenceWidget(QWidget):
 
     def addCommand(self, command):
         """
-        :type command: QWidget
+        :type command: language.Statement
         """
-        self._addAtEnd(command)
-        self._commands.append(command)
+        commandWidget = LanguageWidgetFactory.build(command, self)
+        self._addAtEnd(commandWidget)
+        self._commands.append(commandWidget)
 
     def _addAtEnd(self, widget):
         """
@@ -414,15 +392,15 @@ VARIABLE_NAMES = ["item", "curr_video", "curr_duration", "curr_offset"]
 
 class GetWidget(DraggableMixin, QFrame):
 
-    def __init__(self, name, parent):
+    def __init__(self, getExpression, parent):
         """
-        :type name: string
+        :type getExpression: language.GetVariableExpression
         """
         super(GetWidget, self).__init__(parent)
 
         self._name = QComboBox(self)
         for name in VARIABLE_NAMES:
-            self._name.addItem(name)
+            self._name.addItem(getExpression.name)
 
         layout = QHBoxLayout()
         layout.addWidget(QLabel("get"))
@@ -438,20 +416,19 @@ class GetWidget(DraggableMixin, QFrame):
 
 class SetWidget(DraggableMixin, QFrame):
 
-    def __init__(self, name, value, parent):
+    def __init__(self, setStatement, parent):
         """
-        :type name: string
-        :type value: QWidget
+        :type setStatement: language.SetVariableStatement
         """
         super(SetWidget, self).__init__(parent)
 
         self._name = QComboBox()
         for name in VARIABLE_NAMES:
-            self._name.addItem(name)
+            self._name.addItem(setStatement.name)
 
         # Use empty NumberGapWidget for convenience.
         # TODO: Generalise.
-        self._value = NumberGapWidget(None, self)
+        self._value = NumberGapWidget(setStatement.value, self)
 
         layout = QHBoxLayout()
         layout.addWidget(QLabel("set"))
@@ -470,8 +447,11 @@ class SetWidget(DraggableMixin, QFrame):
 class TextValueWidget(DraggableMixin, QFrame):
 
     def __init__(self, text, parent):
+        """
+        :type text: language.TextValue
+        """
         super(TextValueWidget, self).__init__(parent)
-        self._text = QLineEdit(text, self)
+        self._text = QLineEdit(text.value, self)
         layout = QHBoxLayout()
         layout.addWidget(QLabel("\"", self))
         layout.addWidget(self._text)
@@ -487,8 +467,11 @@ class TextValueWidget(DraggableMixin, QFrame):
 class NumberValueWidget(DraggableMixin, QFrame):
 
     def __init__(self, number, parent):
+        """
+        :type number: language.NumberValue
+        """
         super(NumberValueWidget, self).__init__(parent)
-        self._number = QLineEdit(str(number), self)
+        self._number = QLineEdit(number.value, self)
         self._number.setValidator(QDoubleValidator())
         layout = QHBoxLayout()
         layout.addWidget(self._number)
@@ -503,8 +486,11 @@ class NumberValueWidget(DraggableMixin, QFrame):
 class VideoValueWidget(DraggableMixin, QFrame):
 
     def __init__(self, video, parent):
+        """
+        :type video: language.VideoValue
+        """
         super(VideoValueWidget, self).__init__(parent)
-        self._value = QLineEdit(video, self)
+        self._value = QLineEdit(video.value, self)
         # TODO: Add validator
         # video_id_re = QRegExp(youtube.VIDEO_ID_RE)
         # self._value.setValidator(QRegExpValidator(video_id_re, self))
@@ -557,6 +543,12 @@ class VideoCollectionDefnWidget(QWidget):
         self.horizontalLayout_11.addLayout(self.horizontalLayout_10)
 
 class GapWidget(QStackedWidget):
+    """
+    Provides a gap that language components can be dragged into and represented
+    within.
+
+    Currently does not support type checking or dragging out of gap.
+    """
 
     def __init__(self, child, parent):
         """
@@ -569,7 +561,9 @@ class GapWidget(QStackedWidget):
         # self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         # self.setMinimumSize(QSize(10,10))
-        self._child = child
+        self._child = None
+
+        self.fillGap(child)
 
     def model(self):
         """
@@ -585,15 +579,57 @@ class GapWidget(QStackedWidget):
 
     def dropEvent(self, event):
         lc = cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
+        self.fillGap(lc)
 
-        wf = LanguageWidgetFactory()
-        self._child = wf.build(lc, self)
-        self.insertWidget(1, self._child)
-        self.setCurrentIndex(1)
+    def emptyGap(self):
+        """
+        Removes language compoment currently in gap.
+
+        :raises RuntimeError: If gap is not currently occupied.
+        """
+        if not self.isFull():
+            raise RuntimeError("Gap is currently not occupied.")
+
+        # Remove from layout.
+        # Ownership revert to application.
+        self.removeWidget(self._child)
+        # Delete that widgets making up the language subtree that had filled the gap.
+        self._child.setParent(None)
+        # Remove reference from GapWidget to the old child.
+        self._child = None
+
+    def fillGap(self, child):
+        """
+        Fills gap with language component, replacing language component
+        currently occupying it.
+
+        If component is a gap the gap will be emptied and left empty.
+
+        :type child: language.LanguageComponent
+        """
+        if self.isFull():
+            self.emptyGap()
+
+        # Possible that language component might be a gap, in which case correct
+        # behavior is to keep empty.
+        if not isinstance(child, language.Gap):
+            self._child = LanguageWidgetFactory.build(child, self)
+            self.insertWidget(1, self._child)
+            self.setCurrentIndex(1)
+
+    def isFull(self):
+        """
+        :return: True if gap is currently occupied.
+        :rtype: boolean
+        """
+        return self._child is not None
 
 class NumberGapWidget(GapWidget):
 
     def __init__(self, child, parent):
+        """
+        :type child: language.NumberExpression
+        """
         super(NumberGapWidget, self).__init__(child, parent)
         label = QLabel("number", self)
         self.addWidget(label)
@@ -602,7 +638,7 @@ class NumberGapWidget(GapWidget):
         """
         :rtype: models.language.NumberExpression
         """
-        if self._child is not None:
+        if self.isFull():
             return self._child.model()
         else:
             return language.NumberGap()
@@ -610,6 +646,9 @@ class NumberGapWidget(GapWidget):
 class TextGapWidget(GapWidget):
 
     def __init__(self, child, parent):
+        """
+        :type child: language.TextExpression
+        """
         super(TextGapWidget, self).__init__(child, parent)
         label = QLabel("text", self)
         self.addWidget(label)
@@ -618,7 +657,7 @@ class TextGapWidget(GapWidget):
         """
         :rtype: models.language.TextExpression
         """
-        if self._child is not None:
+        if self.isFull():
             return self._child.model()
         else:
             return language.TextGap()
@@ -626,6 +665,9 @@ class TextGapWidget(GapWidget):
 class VideoGapWidget(GapWidget):
 
     def __init__(self, child, parent):
+        """
+        :type child: language.VideoExpression
+        """
         super(VideoGapWidget, self).__init__(child, parent)
         label = QLabel(self)
         label.setPixmap(QPixmap("res/video-64-64.png"))
@@ -635,7 +677,7 @@ class VideoGapWidget(GapWidget):
         """
         :rtype: models.language.VideoExpression
         """
-        if self._child is not None:
+        if self.isFull():
             return self._child.model()
         else:
             return language.VideoGap()
@@ -643,67 +685,74 @@ class VideoGapWidget(GapWidget):
 class VideoCollectionGapWidget(GapWidget):
 
     def __init__(self, child, parent):
+        """
+        :type child: language.VideoCollectionExpression
+        """
+
         super(VideoCollectionGapWidget, self).__init__(child, parent)
         label = QLabel(self)
-        label.setPixmap(QPixmap("res/video-64-64.png"))
+        label.setPixmap(QPixmap("res/video-collection-64-64.png"))
         self.addWidget(label)
 
     def model(self):
         """
         :rtype: models.language.VideoCollectionExpression
         """
-        if self._child is not None:
+        if self.isFull():
             return self._child.model()
         else:
             return language.VideoGap()
 
-class CommandGapWidget(GapWidget):
+class ListGapWidget(QLabel):
+    """
+    Provides a gap that language components can dragged onto and added to
+    an associated parent.
+
+    The general contract is that parent class must implement a method for adding
+    language components to the list:
+    - add: language.Command -> ()
+    """
+
+    def __init__(self, text, parent):
+        """
+        :type text: string
+        :param parent: Used to call back for modifying items.
+        """
+        super(ListGapWidget, self).__init__(text, parent)
+        self.setAcceptDrops(True)
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasFormat(LC_MIME_FORMAT):
+            event.accept()
+        else:
+            event.ignore()
+
+class CommandGapWidget(ListGapWidget):
 
     def __init__(self, parent):
         """
         :param parent: Used to call back to for modifying commands.
         :type parent: CommandSequenceWidget
         """
-
-        super(CommandGapWidget, self).__init__(None, parent)
-        label = QLabel("drag command here", self)
-        self.addWidget(label)
-
-    def dragEnterEvent(self, event):
-        if event.mimeData().hasFormat(LC_MIME_FORMAT):
-            event.accept()
-        else:
-            event.ignore()
+        super(CommandGapWidget, self).__init__("drag command here", parent)
 
     def dropEvent(self, event):
         lc = cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
+        self.parent().addCommand(lc)
 
-        wf = LanguageWidgetFactory()
-        self.parent().addCommand(wf.build(lc, self))
-
-class SceneGapWidget(GapWidget):
+class SceneGapWidget(ListGapWidget):
 
     def __init__(self, parent):
         """
         :param parent: Used to call back to for modifying commands.
         :type parent: ActEdit
         """
-
-        super(SceneGapWidget, self).__init__(None, parent)
-        label = QLabel("drag scene here", self)
-        self.addWidget(label)
-
-    def dragEnterEvent(self, event):
-        if event.mimeData().hasFormat(LC_MIME_FORMAT):
-            event.accept()
-        else:
-            event.ignore()
+        super(SceneGapWidget, self).__init__("drag scene here", parent)
 
     def dropEvent(self, event):
         lc = cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
-
-        wf = LanguageWidgetFactory()
-        self.parent().addScene(wf.build(lc, self))
+        self.parent().addScene(lc)
 
 class NumberOperatorWidget(DraggableMixin, QFrame):
 
@@ -716,15 +765,15 @@ class NumberOperatorWidget(DraggableMixin, QFrame):
     def __init__(self, operator, operand1, operand2, parent):
         """
         :type operator: string
-        :type operand1: QWidget
-        :type operand2: QWidget
+        :type operand1: language.NumberExpression
+        :type operand2: language.NumberExpression
         """
 
         assert operator in self.OPERATORS.keys()
         super(NumberOperatorWidget, self).__init__(parent)
 
-        self._operand1 = operand1
-        self._operand2 = operand2
+        self._operand1 = NumberGapWidget(operand1, self)
+        self._operand2 = NumberGapWidget(operand2, self)
 
         self._operator = QComboBox()
         self._operator.addItem("+")
@@ -750,14 +799,14 @@ class NumberOperatorWidget(DraggableMixin, QFrame):
 
 class YoutubeVideoGetTitleWidget(DraggableMixin, QFrame):
 
-    def __init__(self, video, parent):
+    def __init__(self, videoGetTitle, parent):
         """
-        :type video: QWidget
+        :type videoGetTitle: language.YoutubeVideoGetTitle
         """
 
         super(YoutubeVideoGetTitleWidget, self).__init__(parent)
 
-        self._video = VideoGapWidget(video, self)
+        self._video = VideoGapWidget(videoGetTitle.video, self)
 
         layout = QHBoxLayout()
         layout.addWidget(QLabel("title of", self))
@@ -773,14 +822,14 @@ class YoutubeVideoGetTitleWidget(DraggableMixin, QFrame):
 
 class YoutubeVideoGetRelatedWidget(DraggableMixin, QFrame):
 
-    def __init__(self, video, parent):
+    def __init__(self, videoGetRelated, parent):
         """
-        :type video: QWidget
+        :type videoGetRelated: language.YoutubeVideoGetRelated
         """
 
         super(YoutubeVideoGetRelatedWidget, self).__init__(parent)
 
-        self._video = VideoGapWidget(video, self)
+        self._video = VideoGapWidget(videoGetRelated.video, self)
 
         layout = QHBoxLayout()
         icon = QLabel(self)
@@ -799,21 +848,21 @@ class YoutubeVideoGetRelatedWidget(DraggableMixin, QFrame):
 
 class YoutubeVideoCollectionRandomWidget(DraggableMixin, QFrame):
 
-    def __init__(self, video, parent):
+    def __init__(self, videoCollectionRandom, parent):
         """
-        :type video: QWidget
+        :type videoCollectionRandom: language.YoutubeVideoCollectionRandom
         """
 
         super(YoutubeVideoCollectionRandomWidget, self).__init__(parent)
 
-        self._video = VideoCollectionGapWidget(video, self)
+        self._videoCollection = VideoCollectionGapWidget(videoCollectionRandom.video_collection, self)
 
         layout = QHBoxLayout()
         icon = QLabel(self)
         icon.setPixmap(QPixmap("res/video-64-64.png"))
         layout.addWidget(icon)
         layout.addWidget(QLabel("random from", self))
-        layout.addWidget(self._video)
+        layout.addWidget(self._videoCollection)
 
         self.setLayout(layout)
 
@@ -821,4 +870,4 @@ class YoutubeVideoCollectionRandomWidget(DraggableMixin, QFrame):
         """
         :rtype: models.language.YoutubeVideoCollectionRandom
         """
-        return language.YoutubeVideoCollectionRandom(self._video.model())
+        return language.YoutubeVideoCollectionRandom(self._videoCollection.model())

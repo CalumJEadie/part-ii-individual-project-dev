@@ -6,6 +6,7 @@ import logging
 
 from app.ui.language import *
 from app.interpreter import interpreter
+from app.models import language
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -176,30 +177,30 @@ class PaletteWidget(QWidget):
             (
                 "Video and Video Collections",
                 (
-                    VideoValueWidget("http://www.youtube.com/watch?v=9bZkp7q19f0", self),
-                    YoutubeVideoCollectionRandomWidget(VideoCollectionGapWidget(None, self), self),
-                    YoutubeVideoGetRelatedWidget(VideoGapWidget(None, self), self)
+                    VideoValueWidget(language.VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0"), self),
+                    YoutubeVideoCollectionRandomWidget(language.YoutubeVideoCollectionRandom(language.VideoGap()), self),
+                    YoutubeVideoGetRelatedWidget(language.YoutubeVideoGetRelated(language.VideoGap()), self)
                 )
             ),
             (
                 "Numbers",
                 (
-                    NumberValueWidget(0, self),
-                    NumberOperatorWidget("+", NumberGapWidget(None, self), NumberGapWidget(None, self), self)
+                    NumberValueWidget(language.NumberValue(0), self),
+                    NumberOperatorWidget("+", language.NumberGap(), language.NumberGap(), self)
                 )
             ),
             (
                 "Text",
                 (
-                    TextValueWidget("", self),
-                    YoutubeVideoGetTitleWidget(VideoGapWidget(None, self), self)
+                    TextValueWidget(language.TextValue(""), self),
+                    YoutubeVideoGetTitleWidget(language.YoutubeVideoGetTitle(language.VideoGap()), self)
                 )
             ),
             (
                 "Variables",
                 (
-                    GetWidget("item", self),
-                    SetWidget("item", "http://www.youtube.com/watch?v=9bZkp7q19f0", self),
+                    GetWidget(language.GetVariableExpression("item"), self),
+                    SetWidget(language.SetVariableStatement("item", language.NumberGap()), self),
                 )
             )
         )
