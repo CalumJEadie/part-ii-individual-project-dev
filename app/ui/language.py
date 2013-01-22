@@ -22,18 +22,6 @@ from show import show
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-# class ActWidget(QListView):
-
-#     def __init__(self, parent):
-#         super(ActWidget, self).__init__(parent)
-
-# class ActView(QListView):
-
-#     def __init__(self, parent):
-#         super(ActView, self).__init__(parent)
-#         # self.setAcceptDrops(True)
-#         self.setDragDropMode(QAbstractItemView.InternalMove)
-
 # MIME format for language components.
 LC_MIME_FORMAT = "application/x-language-component"
 
