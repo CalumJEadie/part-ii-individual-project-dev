@@ -70,7 +70,8 @@ class LanguageWidgetFactory(object):
             language.VideoScene: lambda lc, p: VideoSceneWidget(lc, p),
             language.YoutubeVideoGetTitle: lambda lc, p: YoutubeVideoGetTitleWidget(lc, p),
             language.YoutubeVideoGetRelated: lambda lc, p: YoutubeVideoGetRelatedWidget(lc, p),
-            language.YoutubeVideoCollectionRandom: lambda lc, p: YoutubeVideoCollectionRandomWidget(lc, p)
+            language.YoutubeVideoCollectionRandom: lambda lc, p: YoutubeVideoCollectionRandomWidget(lc, p),
+            language.Act: lambda lc,p: ActWidget(lc, p)
         }
 
         try:
@@ -79,13 +80,17 @@ class LanguageWidgetFactory(object):
             raise RuntimeError("Attempted to build language component with no associated builder.\n%s" % e)
 
 
-class ActEdit(QWidget):
+class ActWidget(QWidget):
     """
     Basic implementation of drag and drop. Append only.
     """
 
-    def __init__(self, parent):
-        super(ActEdit, self).__init__(parent)
+    def __init__(self, act, parent):
+        """
+        :type act: language.Act
+        """
+
+        super(ActWidget, self).__init__(parent)
 
         self._scenes = []
         self._gap = SceneGapWidget(self)
@@ -93,6 +98,8 @@ class ActEdit(QWidget):
         self._layout = QVBoxLayout()
         self._layout.addSpacing(10)
         self._layout.addWidget(self._gap)
+        for scene in act.scenes:
+            self.addScene(scene)
         self._layout.addStretch(10)
 
         self.setLayout(self._layout)
@@ -113,8 +120,6 @@ class ActEdit(QWidget):
 
     # def mousePressEvent(self,event):
     #     self.changed.emit(self.model().translate())
-
-    changed = Signal(str)
 
     def addScene(self, scene):
         """
@@ -746,7 +751,7 @@ class SceneGapWidget(ListGapWidget):
     def __init__(self, parent):
         """
         :param parent: Used to call back to for modifying commands.
-        :type parent: ActEdit
+        :type parent: ActWidget
         """
         super(SceneGapWidget, self).__init__("drag scene here", parent)
 

@@ -49,7 +49,7 @@ class GraphicalEditor(QMainWindow):
 
         self.setCentralWidget(centralwidget)
 
-        self._actEdit.changed.connect(self._previewTextEdit.setPlainText)
+        self._scriptEdit.changed.connect(self._previewTextEdit.setPlainText)
 
     def createEditorPane(self,parent):
         """
@@ -59,11 +59,11 @@ class GraphicalEditor(QMainWindow):
 
         editorPaneLayout = QHBoxLayout()
 
-        self._actEdit = ActEdit(self)
+        self._scriptEdit = ScriptEdit(self)
 
         # Create stretchable space either side of act.
         editorPaneLayout.addStretch(50)
-        editorPaneLayout.addWidget(self._actEdit)
+        editorPaneLayout.addWidget(self._scriptEdit)
         editorPaneLayout.addStretch(50)
 
         editorPane = QWidget(parent)
@@ -106,11 +106,11 @@ class GraphicalEditor(QMainWindow):
         clearAction.triggered.connect(self.clear)
 
         loadExample1Action = QAction('Load Example 1', self)
-        loadExample1Action.setStatusTip('Replace current program with example 1')
+        loadExample1Action.setStatusTip('Replace current script with example 1')
         loadExample1Action.triggered.connect(self.loadExample1)
 
         loadExample2Action = QAction('Load Example 2', self)
-        loadExample2Action.setStatusTip('Replace current program with example 2')
+        loadExample2Action.setStatusTip('Replace current script with example 2')
         loadExample2Action.triggered.connect(self.loadExample2)
 
         toolbar = self.addToolBar('Tools')
@@ -135,14 +135,14 @@ class GraphicalEditor(QMainWindow):
 
     def translate(self):
         try:
-            program = self._actEdit.model().translate()
-            self._previewTextEdit.setPlainText(program)
+            script = self._scriptEdit.toPython()
+            self._previewTextEdit.setPlainText(script)
         except language.GapError:
             self._previewTextEdit.setPlainText("Could not translate - encountered Gap.")
 
     def run(self):
-        program = self._actEdit.model().translate()
-        interpreter.interpret(program)
+        script = self._scriptEdit.toPython()
+        interpreter.interpret(script)
 
     def clear(self):
         raise NotImplementedError
@@ -153,7 +153,72 @@ class GraphicalEditor(QMainWindow):
     def loadExample2(self):
         raise NotImplementedError
 
+class ScriptEdit(QScrollArea):
+    """
+    Component of interface that provides an editor for the language.
+
+    Provides similiar interface to native editor classes like QLineEdit.
+    """
+
+    # A change has been made.
+    changed = Signal()
+
+    def __init__(self, parent=None):
+        super(ScriptEdit, self).__init__(parent)
+        self.setMinimumWidth(600)
+        self.clear()
+
+    def _setActWidget(self, actWidget):
+        """
+        :type actWidget: QWidget
+        """
+        container = QWidget()
+
+        containerLayout = QHBoxLayout()
+        containerLayout.addStretch()
+        containerLayout.addWidget(actWidget)
+        actWidget.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        actWidget.setMinimumSize(QSize(500,2000))
+        containerLayout.addStretch()
+
+        container.setLayout(containerLayout)
+        # horizontal, vertical
+        self.setWidget(container)
+
+    def setScript(self, script):
+        """
+        :type script: language.Act
+        """
+        actWidget = LanguageWidgetFactory.build(script, self)
+        self._setActWidget(actWidget)
+
+    def toModel(self):
+        """
+        Provides Language Component model interface to script.
+
+        :rtype: language.Act
+        """
+        return self.widget().model()
+
+    def toPython(self):
+        """
+        Provides Python interface to script.
+
+        :rtype: str
+        """
+        return self.toModel().translate()
+
+    def clear(self):
+        """
+        Sets script to act with no scenes.
+        """
+        script = language.Act([])
+        self.setScript(script)
+
 class PaletteWidget(QWidget):
+    """
+    Component of interface that provides a palette of language components.
+    """
 
     def __init__(self, parent=None):
         super(PaletteWidget, self).__init__(parent)

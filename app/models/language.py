@@ -215,6 +215,8 @@ class Act(LanguageComponent):
     Highest level container. Analagous to a program.
     """
 
+    scenes = property(lambda self: self._children)
+
     def __init__(self, scenes):
         super(Act, self).__init__(scenes)
 
