@@ -16,6 +16,7 @@ import cPickle
 
 from app.models import language
 from app.api import youtube
+from app.ui import core
 
 from show import show
 
@@ -159,21 +160,21 @@ class SceneWidget(QFrame):
     def postCommands(self):
         return self._postCommands.model()
 
-class CommentWidget(QPlainTextEdit):
+class CommentWidget(core.VerticallyGrowingPlainTextEdit):
 
     def __init__(self, text, parent):
         super(CommentWidget, self).__init__(text, parent)
-        self.setLineWrapMode(QPlainTextEdit.WidgetWidth)
+        # self.setLineWrapMode(QPlainTextEdit.WidgetWidth)
 
         # self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         # Qt.ScrollBarAsNeeded
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        # self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-        fm = QFontMetrics(self.font())
-        h = fm.height() * 1.6
-        self.setMinimumHeight(h)
+        # fm = QFontMetrics(self.font())
+        # h = fm.height() * 1.6
+        # self.setMinimumHeight(h)
 
-        self.setMaximumHeight(50)
+        # self.setMaximumHeight(50)
 
 class DraggableMixin(object):
     """

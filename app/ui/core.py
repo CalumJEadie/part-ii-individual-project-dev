@@ -94,3 +94,22 @@ class FullscreenBooleanDialog(QtGui.QDialog,FullscreenDialog):
             return True
         else:
             return False
+
+
+class VerticallyGrowingPlainTextEdit(QtGui.QPlainTextEdit):
+    """
+    Based on http://stackoverflow.com/questions/11677499/pyside-qt-auto-vertical-growth-for-textedit-widget-and-spacing-between-widgets.
+    """
+
+    def __init__(self, text, parent=None):
+        super(VerticallyGrowingPlainTextEdit, self).__init__(text, parent)
+
+        self.document().contentsChanged.connect(self.sizeChange)
+
+        self._heightMin = 0
+        self._heightMax = 65000
+
+    def sizeChange(self):
+        docHeight = self.document().size().height()
+        if self._heightMin <= docHeight <= self._heightMax:
+            self.setMinimumHeight(docHeight)

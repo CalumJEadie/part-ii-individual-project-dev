@@ -172,6 +172,8 @@ class ScriptEdit(QScrollArea):
         """
         :type actWidget: QWidget
         """
+        self._actWidget = actWidget
+
         container = QWidget()
 
         containerLayout = QHBoxLayout()
@@ -198,7 +200,7 @@ class ScriptEdit(QScrollArea):
 
         :rtype: language.Act
         """
-        return self.widget().model()
+        return self._actWidget.model()
 
     def toPython(self):
         """
