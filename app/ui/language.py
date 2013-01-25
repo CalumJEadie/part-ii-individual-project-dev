@@ -754,7 +754,7 @@ class SceneGapWidget(ListGapWidget):
         :param parent: Used to call back to for modifying commands.
         :type parent: ActWidget
         """
-        super(SceneGapWidget, self).__init__("drag scene here", parent)
+        super(SceneGapWidget, self).__init__("drag text or video\nscene here", parent)
 
     def dropEvent(self, event):
         lc = cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
