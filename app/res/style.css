@@ -27,6 +27,11 @@ VideoCollectionGapWidget > QLabel {
     background: white;
 }
 
+TextValueWidget > QLabel {
+    color: green;
+    font-size: 36px;
+}
+
 TextValueWidget > QLineEdit {
     background: white;
     color: green;
