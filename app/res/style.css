@@ -20,7 +20,7 @@ TextGapWidget {
 VideoSceneWidget,
 MiniVideoSceneWidget,
 VideoGapWidget > QLabel,
-VideoCollectionGapWidget > Qlabel {
+VideoCollectionGapWidget > QLabel {
     border-color: red;
     border-width: 2px;
     border-style: solid;
