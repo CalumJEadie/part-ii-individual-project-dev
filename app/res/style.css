@@ -1,5 +1,5 @@
 QWidget {
-    font-size: 20px;
+    font-size: 18px;
 }
 
 TextSceneWidget,
@@ -77,7 +77,7 @@ VideoCollectionWidget > QLineEdit {
 }
 
 SceneGapWidget {
-    font-size: 40px;
+    font-size: 36px;
     text-align: center;
 }
 
