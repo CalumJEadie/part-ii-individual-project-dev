@@ -78,15 +78,20 @@ class GraphicalEditor(QMainWindow):
         """
 
         self._previewTextEdit = QPlainTextEdit()
+        self._previewTextEdit.setFixedWidth(400)
+        self._previewTextEdit.setReadOnly(True)
 
-        previewBox = QGroupBox("Preview")
-        previewBoxLayout = QVBoxLayout()
-        previewBoxLayout.addWidget(self._previewTextEdit)
-        previewBox.setLayout(previewBoxLayout)
+        # previewBox = QGroupBox("Preview")
+        # previewBoxLayout = QVBoxLayout()
+        # previewBoxLayout.addWidget(self._previewTextEdit)
+        # previewBox.setLayout(previewBoxLayout)
 
-        previewBox.setFixedWidth(400)
+        # previewBox.setFixedWidth(400)
 
-        return previewBox
+        # return previewBox
+        
+        return self._previewTextEdit
+        
 
     def setupToolbar(self):
 
