@@ -217,7 +217,7 @@ class ScriptEdit(QScrollArea):
         script = language.Act([])
         self.setScript(script)
 
-class PaletteWidget(QWidget):
+class PaletteWidget(QToolBox):
     """
     Component of interface that provides a palette of language components.
     """
@@ -271,15 +271,12 @@ class PaletteWidget(QWidget):
                 )
             )
         )
-        paletteLayout = QVBoxLayout()
 
         for (label, tools) in paletteContents:
-            box = QGroupBox(label)
+            box = QWidget()
             boxLayout = QVBoxLayout()
             for tool in tools:
                 boxLayout.addWidget(tool)
+            boxLayout.addStretch()
             box.setLayout(boxLayout)
-            paletteLayout.addWidget(box)
-
-        paletteLayout.addStretch()
-        self.setLayout(paletteLayout)
+            self.addItem(box, label)
