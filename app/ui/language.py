@@ -727,6 +727,7 @@ class ListGapWidget(QLabel):
         super(ListGapWidget, self).__init__(text, parent)
         self.setAcceptDrops(True)
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.setWordWrap(True)
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasFormat(LC_MIME_FORMAT):

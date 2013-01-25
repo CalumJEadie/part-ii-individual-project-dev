@@ -4,7 +4,7 @@ QWidget {
 
 TextSceneWidget,
 MiniTextSceneWidget,
-TextGapWidget,
+TextGapWidget > QLabel,
 TextValueWidget,
 YoutubeVideoGetTitleWidget {
     border-color: green;
@@ -13,9 +13,14 @@ YoutubeVideoGetTitleWidget {
     background: white;
 }
 
+TextGapWidget {
+    color: green;
+}
+
 VideoSceneWidget,
 MiniVideoSceneWidget,
-VideoGapWidget {
+VideoGapWidget > QLabel,
+VideoCollectionGapWidget > Qlabel {
     border-color: red;
     border-width: 2px;
     border-style: solid;
@@ -29,21 +34,20 @@ TextValueWidget > QLineEdit {
 
 NumberValueWidget,
 NumberOperatorWidget,
-NumberGapWidget {
+NumberGapWidget > QLabel {
     border-color: blue;
     border-width: 2px;
     border-style: solid;
     background: white;
 }
 
-NumberValueWidget > QLineEdit {
-    background: white;
+NumberGapWidget {
     color: blue;
 }
 
-VideoGapWidget,
-VideoCollectionGapWidget {
-    background: red;
+NumberValueWidget > QLineEdit {
+    background: white;
+    color: blue;
 }
 
 VideoValueWidget,
@@ -79,14 +83,13 @@ SceneGapWidget {
 
 CommandGapWidget {
     border-color: orange;
-    border-width: 2px;
     border-style: solid;
     background: white;
+    color: orange;
 }
 
 SceneGapWidget {
     border-color: black;
-    border-width: 2px;
     border-style: solid;
     background: white;
 }
@@ -96,7 +99,6 @@ GetWidget {
     border-color: purple;
     border-width: 2px;
     border-style: solid;
-    background: white;
 }
 
 SetWidget {
@@ -104,11 +106,16 @@ SetWidget {
     border-color: orange;
     border-width: 2px;
     border-style: solid;
-    background: white;
 }
 
 CommentWidget {
     font-style: italic;
     font-family: georgia;
     border: 0px;
+}
+
+GapWidget > QLabel,
+ListGapWidget {
+    border-style: ridge;
+    border-width: 5px;
 }
