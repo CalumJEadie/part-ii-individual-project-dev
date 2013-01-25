@@ -119,3 +119,22 @@ ListGapWidget {
     border-style: ridge;
     border-width: 5px;
 }
+
+TextSceneWidget,
+VideoSceneWidget,
+MiniTextSceneWidget,
+MiniVideoSceneWidget,
+GapWidget > QLabel,
+ListGapWidget,
+TextValueWidget,
+NumberValueWidget,
+VideoValueWidget,
+VideoCollectionValueWidget,
+SetWidget,
+GetWidget,
+NumberOperatorWidget,
+YoutubeVideoGetTitleWidget,
+YoutubeVideoGetRelatedWidget,
+YoutubeVideoCollectionRandomWidget {
+    border-radius: 5px;
+}
