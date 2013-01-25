@@ -29,9 +29,10 @@ class GraphicalEditor(QMainWindow):
             self.setStyleSheet(f.read())
         
         self.setupWindow()
-        self.setupToolbar()
         self.setupCentralWidget()
         self.statusBar()
+
+        self.setupToolbar()
 
     def setupCentralWidget(self):
         
@@ -108,7 +109,7 @@ class GraphicalEditor(QMainWindow):
         clearAction = QAction('Clear', self)
         clearAction.setShortcut('Ctrl+E')
         clearAction.setStatusTip('Clear Program')
-        clearAction.triggered.connect(self.clear)
+        clearAction.triggered.connect(self._scriptEdit.clear)
 
         loadExample1Action = QAction('Load Example 1', self)
         loadExample1Action.setStatusTip('Replace current script with example 1')
@@ -148,9 +149,6 @@ class GraphicalEditor(QMainWindow):
     def run(self):
         script = self._scriptEdit.toPython()
         interpreter.interpret(script)
-
-    def clear(self):
-        raise NotImplementedError
 
     def loadExample1(self):
         raise NotImplementedError
