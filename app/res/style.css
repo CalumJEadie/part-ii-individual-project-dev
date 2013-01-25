@@ -100,3 +100,9 @@ GetWidget, SetWidget {
     border-style: solid;
     background: white;
 }
+
+CommentWidget {
+    font-style: italic;
+    font-family: georgia;
+    border: 0px;
+}
