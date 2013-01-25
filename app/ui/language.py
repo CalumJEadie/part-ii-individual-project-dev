@@ -231,8 +231,8 @@ class MiniTextSceneWidget(DraggableMixin, QLabel):
         """
         return language.TextScene(
             "Example Text Scene",
-            "Displays title of Gangnan Style video for 10 seconds.",
-            language.NumberValue(10),
+            "Displays title of Gangnan Style video for 2 seconds.",
+            language.NumberValue(2),
             language.CommandSequence([]),
             language.CommandSequence([]),
             language.YoutubeVideoGetTitle(
