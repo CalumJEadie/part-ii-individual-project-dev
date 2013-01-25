@@ -168,7 +168,7 @@ class ScriptEdit(QScrollArea):
 
     def __init__(self, parent=None):
         super(ScriptEdit, self).__init__(parent)
-        self.setMinimumWidth(600)
+        self.setMinimumWidth(700)
         self.clear()
 
     def _setActWidget(self, actWidget):
@@ -183,7 +183,7 @@ class ScriptEdit(QScrollArea):
         containerLayout.addStretch()
         containerLayout.addWidget(actWidget)
         actWidget.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-        actWidget.setMinimumSize(QSize(500,2000))
+        actWidget.setMinimumSize(QSize(650,2000))
         containerLayout.addStretch()
 
         container.setLayout(containerLayout)
