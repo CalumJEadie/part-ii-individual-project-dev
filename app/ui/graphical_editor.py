@@ -79,7 +79,7 @@ class GraphicalEditor(QMainWindow):
         """
 
         self._previewTextEdit = QPlainTextEdit()
-        self._previewTextEdit.setFixedWidth(400)
+        self._previewTextEdit.setFixedWidth(350)
         self._previewTextEdit.setReadOnly(True)
 
         # previewBox = QGroupBox("Preview")
@@ -87,7 +87,7 @@ class GraphicalEditor(QMainWindow):
         # previewBoxLayout.addWidget(self._previewTextEdit)
         # previewBox.setLayout(previewBoxLayout)
 
-        # previewBox.setFixedWidth(400)
+        # previewBox.setFixedWidth(350)
 
         # return previewBox
         
@@ -151,10 +151,79 @@ class GraphicalEditor(QMainWindow):
         interpreter.interpret(script)
 
     def loadExample1(self):
-        raise NotImplementedError
+        example = language.Act([
+            language.TextScene(
+                "Displays the title of a video, click `run` to find out what it it!",
+                "",
+                language.NumberValue(2),
+                language.CommandSequence([]),
+                language.CommandSequence([]),
+                language.YoutubeVideoGetTitle(language.VideoValue("http://www.youtube.com/watch?v=uweWiCLT8Eg")) # David Guetta - She Wolf (Lyrics Video) ft. Sia
+            ),
+            language.VideoScene(
+                "Plays the video.",
+                "",
+                language.NumberValue(2),
+                language.CommandSequence([]),
+                language.CommandSequence([]),
+                language.NumberValue(0),
+                language.VideoValue("http://www.youtube.com/watch?v=uweWiCLT8Eg") # David Guetta - She Wolf (Lyrics Video) ft. Sia
+            )
+        ])
+        self._scriptEdit.setScript(example)
 
     def loadExample2(self):
-        raise NotImplementedError
+        example = language.Act([
+            language.TextScene(
+                "Use this space to write about a scene, this one displays the title of Gangnam Style.",
+                "The Gangnam Style video is identified by it's web page and saved for later in the variable `curr_video`.",
+                language.NumberValue(2),
+                language.CommandSequence([
+                    language.SetVariableStatement(
+                        "curr_video",
+                        language.VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0")
+                    )
+                ]),
+                language.CommandSequence([]),
+                language.YoutubeVideoGetTitle(language.GetVariableExpression("curr_video"))
+            ),
+            language.VideoScene(
+                "This scene plays Gangnam Style.",
+                "We get hold of the video by using the variable we stored it in earlier.",
+                language.NumberValue(10),
+                language.CommandSequence([]),
+                language.CommandSequence([]),
+                language.NumberValue(0),
+                language.GetVariableExpression("curr_video")
+            ),
+            language.TextScene(
+                "Display title of a related video.",
+                "We select a random related video and use that from now on.",
+                language.NumberValue(2),
+                language.CommandSequence([
+                    language.SetVariableStatement(
+                        "curr_video",
+                        language.YoutubeVideoCollectionRandom(
+                            language.YoutubeVideoGetRelated(
+                                language.GetVariableExpression("curr_video")
+                            )
+                        )
+                    )
+                ]),
+                language.CommandSequence([]),
+                language.YoutubeVideoGetTitle(language.GetVariableExpression("curr_video"))
+            ),
+            language.VideoScene(
+                "This scene plays the related video.",
+                "",
+                language.NumberValue(10),
+                language.CommandSequence([]),
+                language.CommandSequence([]),
+                language.NumberValue(0),
+                language.GetVariableExpression("curr_video")
+            )
+        ])
+        self._scriptEdit.setScript(example)
 
 class ScriptEdit(QScrollArea):
     """
@@ -231,7 +300,7 @@ class PaletteWidget(QToolBox):
 
     def setupUI(self):
 
-        self.setFixedWidth(400)
+        self.setFixedWidth(350)
 
         # Rather than use a lot of boiler plate code define abstract
         # structure of the palette and take care of layout later.

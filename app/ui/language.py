@@ -175,6 +175,7 @@ class CommentWidget(core.VerticallyGrowingPlainTextEdit):
         # self.setMinimumHeight(h)
 
         # self.setMaximumHeight(50)
+        self.setMinimumHeight(100)
 
 class DraggableMixin(object):
     """
@@ -406,7 +407,8 @@ class GetWidget(DraggableMixin, QFrame):
 
         self._name = QComboBox(self)
         for name in VARIABLE_NAMES:
-            self._name.addItem(getExpression.name)
+            self._name.addItem(name)
+        self._name.setCurrentIndex(self._name.findText(getExpression.name))
 
         layout = QHBoxLayout()
         layout.addWidget(QLabel("get"))
@@ -430,7 +432,8 @@ class SetWidget(DraggableMixin, QFrame):
 
         self._name = QComboBox()
         for name in VARIABLE_NAMES:
-            self._name.addItem(setStatement.name)
+            self._name.addItem(name)
+        self._name.setCurrentIndex(self._name.findText(setStatement.name))
 
         # Use empty NumberGapWidget for convenience.
         # TODO: Generalise.
