@@ -84,9 +84,14 @@ NumberGapWidget > QLabel,
 TextGapWidget > QLabel,
 VideoGapWidget > QLabel,
 VideoCollectionGapWidget > QLabel,
-CommandGapWidget > QLabel,
-SceneGapWidget > QLabel {
+CommandGapWidget,
+SceneGapWidget {
     color: white;
+}
+
+SceneGapWidget {
+    font-size: 40px;
+    text-align: center;
 }
 
 CommandGapWidget {
