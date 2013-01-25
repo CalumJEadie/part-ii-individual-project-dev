@@ -84,7 +84,7 @@ class GraphicalEditor(QMainWindow):
         previewBoxLayout.addWidget(self._previewTextEdit)
         previewBox.setLayout(previewBoxLayout)
 
-        previewBox.setFixedWidth(300)
+        previewBox.setFixedWidth(400)
 
         return previewBox
 
@@ -122,7 +122,7 @@ class GraphicalEditor(QMainWindow):
 
     def setupWindow(self):
 
-        self.resize(1200,800)
+        # self.resize(1400,800)
         self.center()
         self.setWindowTitle('Graphical Editor')
         
@@ -228,7 +228,7 @@ class PaletteWidget(QToolBox):
 
     def setupUI(self):
 
-        self.setFixedWidth(300)
+        self.setFixedWidth(400)
 
         # Rather than use a lot of boiler plate code define abstract
         # structure of the palette and take care of layout later.
