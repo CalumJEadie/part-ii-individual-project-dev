@@ -348,13 +348,13 @@ class PaletteWidget(QToolBox):
                     YoutubeVideoGetTitleWidget(language.YoutubeVideoGetTitle(language.VideoGap()), self)
                 )
             ),
-            (
-                "Variables",
-                (
-                    GetWidget(language.GetVariableExpression("item"), self),
-                    SetWidget(language.SetVariableStatement("item", language.NumberGap()), self),
-                )
-            )
+            # (
+            #     "Variables",
+            #     (
+            #         GetWidget(language.GetVariableExpression("item"), self),
+            #         SetWidget(language.SetVariableStatement("item", language.NumberGap()), self),
+            #     )
+            # )
         )
 
         for (label, tools) in paletteContents:
