@@ -96,33 +96,39 @@ class GraphicalEditor(QMainWindow):
 
     def setupToolbar(self):
 
-        translateAction = QAction('Translate', self)
-        translateAction.setShortcut('Ctrl+T')
-        translateAction.setStatusTip('Translate Program')
-        translateAction.triggered.connect(self.translate)
-
-        runAction = QAction('Run', self)
-        runAction.setShortcut('Ctrl+R')
-        runAction.setStatusTip('Run Program')
+        runAction = QAction('Perform', self)
+        runAction.setStatusTip('Perform script')
+        runAction.setToolTip('Perform script')
         runAction.triggered.connect(self.run)
 
         clearAction = QAction('Clear', self)
-        clearAction.setShortcut('Ctrl+E')
-        clearAction.setStatusTip('Clear Program')
+        clearAction.setStatusTip('Clear script')
+        clearAction.setToolTip('Clear script')
         clearAction.triggered.connect(self._scriptEdit.clear)
 
-        loadExample1Action = QAction('Load Example 1', self)
-        loadExample1Action.setStatusTip('Replace current script with example 1')
+        translateAction = QAction('Translate', self)
+        translateAction.setStatusTip('Translate script into Python code')
+        translateAction.setToolTip('Translate script into Python code')
+        translateAction.triggered.connect(self.translate)
+
+        loadExample1Action = QAction('Load example script 1', self)
+        loadExample1Action.setStatusTip('Replace current script with example script 1')
+        loadExample1Action.setToolTip('Replace current script with example script 1')
         loadExample1Action.triggered.connect(self.loadExample1)
 
-        loadExample2Action = QAction('Load Example 2', self)
-        loadExample2Action.setStatusTip('Replace current script with example 2')
+        loadExample2Action = QAction('Load example script 2', self)
+        loadExample2Action.setStatusTip('Replace current script with example script 2')
+        loadExample1Action.setToolTip('Replace current script with example script 2')
         loadExample2Action.triggered.connect(self.loadExample2)
 
         toolbar = self.addToolBar('Tools')
-        toolbar.addAction(translateAction)
+        toolbar.setFloatable(False)
+        toolbar.setMovable(False)
+
         toolbar.addAction(runAction)
         toolbar.addAction(clearAction)
+        toolbar.addAction(translateAction)
+        toolbar.addSeparator()
         toolbar.addAction(loadExample1Action)
         toolbar.addAction(loadExample2Action)
 
