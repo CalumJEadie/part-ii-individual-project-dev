@@ -348,6 +348,7 @@ class PaletteWidget(QToolBox):
             box = QWidget()
             boxLayout = QVBoxLayout()
             for tool in tools:
+                tool.setReadOnly(True)
                 boxLayout.addWidget(tool)
             boxLayout.addStretch()
             box.setLayout(boxLayout)

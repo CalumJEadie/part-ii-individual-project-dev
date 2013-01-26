@@ -220,6 +220,12 @@ class MiniVideoSceneWidget(DraggableMixin, QLabel):
             language.VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0")
         )
 
+    def setReadOnly(self, ro):
+        """
+        :type ro: boolean
+        """
+        pass
+
 class MiniTextSceneWidget(DraggableMixin, QLabel):
 
     def __init__(self, parent):
@@ -240,6 +246,12 @@ class MiniTextSceneWidget(DraggableMixin, QLabel):
                 language.VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0")
             )
         )
+
+    def setReadOnly(self, ro):
+        """
+        :type ro: boolean
+        """
+        pass
 
 class VideoSceneWidget(SceneWidget):
 
@@ -422,6 +434,13 @@ class GetWidget(DraggableMixin, QFrame):
         """
         return language.GetVariableExpression(self._name.currentText())
 
+    def setReadOnly(self, ro):
+        """
+        :type ro: boolean
+        """
+        # Can't make combo box read only.
+        pass
+
 class SetWidget(DraggableMixin, QFrame):
 
     def __init__(self, setStatement, parent):
@@ -453,6 +472,13 @@ class SetWidget(DraggableMixin, QFrame):
         """
         return language.SetVariableStatement(self._name.currentText(), self._value.model())
 
+    def setReadOnly(self, ro):
+        """
+        :type ro: boolean
+        """
+        # Can't make combo box read only.
+        self._value.setReadOnly(ro)
+
 class TextValueWidget(DraggableMixin, QFrame):
 
     def __init__(self, text, parent):
@@ -473,6 +499,12 @@ class TextValueWidget(DraggableMixin, QFrame):
         """
         return language.TextValue(self._text.text())
 
+    def setReadOnly(self, ro):
+        """
+        :type ro: boolean
+        """
+        self._text.setReadOnly(ro)
+
 class NumberValueWidget(DraggableMixin, QFrame):
 
     def __init__(self, number, parent):
@@ -491,6 +523,12 @@ class NumberValueWidget(DraggableMixin, QFrame):
         :rtype: models.language.NumberValue
         """
         return language.NumberValue(float(self._number.text()))
+
+    def setReadOnly(self, ro):
+        """
+        :type ro: boolean
+        """
+        self._number.setReadOnly(ro)
 
 class VideoValueWidget(DraggableMixin, QFrame):
 
@@ -520,36 +558,11 @@ class VideoValueWidget(DraggableMixin, QFrame):
         """
         return language.VideoValue(self._value.text())
 
-class VideoCollectionDefnWidget(QWidget):
-
-    def __init__(self, parent):
-        super(VideoCollectionDefnWidget, self).__init__(parent)
-        self._setupUI()
-
-    def _setupUI(self):
-        self.setGeometry(QRect(60, 160, 191, 71))
-        self.setObjectName("widget_4")
-
-        self.horizontalLayout_11 = QHBoxLayout(self)
-        self.horizontalLayout_11.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout_11.setObjectName("horizontalLayout_11")
-
-        self.horizontalLayout_10 = QHBoxLayout()
-        self.horizontalLayout_10.setObjectName("horizontalLayout_10")
-
-        self.label_5 = QLabel(self)
-        self.label_5.setText("")
-        self.label_5.setPixmap(QPixmap("res/video-collection-64-64.png"))
-        self.label_5.setObjectName("label_5")
-
-        self.horizontalLayout_10.addWidget(self.label_5)
-
-        self.lineEdit = QLineEdit(self)
-        self.lineEdit.setObjectName("lineEdit")
-
-        self.horizontalLayout_10.addWidget(self.lineEdit)
-
-        self.horizontalLayout_11.addLayout(self.horizontalLayout_10)
+    def setReadOnly(self, ro):
+        """
+        :type ro: boolean
+        """
+        self._value.setReadOnly(ro)
 
 class GapWidget(QStackedWidget):
     """
@@ -572,6 +585,8 @@ class GapWidget(QStackedWidget):
         # self.setMinimumSize(QSize(10,10))
         self._child = None
 
+        self._readOnly = False
+
         self.fillGap(child)
 
     def model(self):
@@ -588,10 +603,13 @@ class GapWidget(QStackedWidget):
         return cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
 
     def dragEnterEvent(self, event):
-        if event.mimeData().hasFormat(LC_MIME_FORMAT):
-            languageComponent = self.extractLanguageComponent(event)
-            if self.isAcceptable(languageComponent):
-                event.accept()
+        if not self._readOnly:
+            if event.mimeData().hasFormat(LC_MIME_FORMAT):
+                languageComponent = self.extractLanguageComponent(event)
+                if self.isAcceptable(languageComponent):
+                    event.accept()
+                else:
+                    event.ignore()
             else:
                 event.ignore()
         else:
@@ -652,6 +670,12 @@ class GapWidget(QStackedWidget):
         :return: True, if gap accepts components of the type of `component`.
         """
         raise NotImplementedError
+
+    def setReadOnly(self, ro):
+        """
+        :type ro: boolean
+        """
+        self._readOnly = ro
 
 class NumberGapWidget(GapWidget):
 
@@ -764,6 +788,8 @@ class ListGapWidget(QLabel):
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.setWordWrap(True)
 
+        self._readOnly = False
+
     def extractLanguageComponent(self, event):
         """
         :type event: QDragDropEvent
@@ -772,10 +798,13 @@ class ListGapWidget(QLabel):
         return cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
 
     def dragEnterEvent(self, event):
-        if event.mimeData().hasFormat(LC_MIME_FORMAT):
-            languageComponent = self.extractLanguageComponent(event)
-            if self.isAcceptable(languageComponent):
-                event.accept()
+        if not self._readOnly:
+            if event.mimeData().hasFormat(LC_MIME_FORMAT):
+                languageComponent = self.extractLanguageComponent(event)
+                if self.isAcceptable(languageComponent):
+                    event.accept()
+                else:
+                    event.ignore()
             else:
                 event.ignore()
         else:
@@ -790,6 +819,12 @@ class ListGapWidget(QLabel):
         :return: True, if gap accepts components of the type of `component`.
         """
         raise NotImplementedError
+
+    def setReadOnly(self, ro):
+        """
+        :type ro: boolean
+        """
+        self._readOnly = ro
 
 class CommandGapWidget(ListGapWidget):
 
@@ -866,6 +901,14 @@ class NumberOperatorWidget(DraggableMixin, QFrame):
             self._operand2.model()
         )
 
+    def setReadOnly(self, ro):
+        """
+        :type ro: boolean
+        """
+        # Can't set combo box read only.
+        self._operand1.setReadOnly(ro)
+        self._operand2.setReadOnly(ro)
+
 class YoutubeVideoGetTitleWidget(DraggableMixin, QFrame):
 
     def __init__(self, videoGetTitle, parent):
@@ -888,6 +931,12 @@ class YoutubeVideoGetTitleWidget(DraggableMixin, QFrame):
         :rtype: models.language.YoutubeVideoGetTitle
         """
         return language.YoutubeVideoGetTitle(self._video.model())
+
+    def setReadOnly(self, ro):
+        """
+        :type ro: boolean
+        """
+        self._video.setReadOnly(ro)
 
 class YoutubeVideoGetRelatedWidget(DraggableMixin, QFrame):
 
@@ -915,6 +964,12 @@ class YoutubeVideoGetRelatedWidget(DraggableMixin, QFrame):
         """
         return language.YoutubeVideoGetRelated(self._video.model())
 
+    def setReadOnly(self, ro):
+        """
+        :type ro: boolean
+        """
+        self._video.setReadOnly(ro)
+
 class YoutubeVideoCollectionRandomWidget(DraggableMixin, QFrame):
 
     def __init__(self, videoCollectionRandom, parent):
@@ -940,3 +995,9 @@ class YoutubeVideoCollectionRandomWidget(DraggableMixin, QFrame):
         :rtype: models.language.YoutubeVideoCollectionRandom
         """
         return language.YoutubeVideoCollectionRandom(self._videoCollection.model())
+
+    def setReadOnly(self, ro):
+        """
+        :type ro: boolean
+        """
+        self._videoCollection.setReadOnly(ro)
