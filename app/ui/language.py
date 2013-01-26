@@ -580,15 +580,25 @@ class GapWidget(QStackedWidget):
         """
         raise NotImplementedError
 
+    def extractLanguageComponent(self, event):
+        """
+        :type event: QDragDropEvent
+        :rtype: language.LanguageComponent
+        """
+        return cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
+
     def dragEnterEvent(self, event):
         if event.mimeData().hasFormat(LC_MIME_FORMAT):
-            event.accept()
+            languageComponent = self.extractLanguageComponent(event)
+            if self.isAcceptable(languageComponent):
+                event.accept()
+            else:
+                event.ignore()
         else:
             event.ignore()
 
     def dropEvent(self, event):
-        lc = cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
-        self.fillGap(lc)
+        self.fillGap(self.extractLanguageComponent(event))
 
     def emptyGap(self):
         """
@@ -633,6 +643,16 @@ class GapWidget(QStackedWidget):
         """
         return self._child is not None
 
+    def isAcceptable(self, component):
+        """
+        Uses template design pattern.
+
+        :type component: language.LanguageComponent
+        :rtype: boolean
+        :return: True, if gap accepts components of the type of `component`.
+        """
+        raise NotImplementedError
+
 class NumberGapWidget(GapWidget):
 
     def __init__(self, child, parent):
@@ -651,6 +671,9 @@ class NumberGapWidget(GapWidget):
             return self._child.model()
         else:
             return language.NumberGap()
+
+    def isAcceptable(self, component):
+        return isinstance(component, language.NumberExpression)
 
 class TextGapWidget(GapWidget):
 
@@ -671,6 +694,9 @@ class TextGapWidget(GapWidget):
         else:
             return language.TextGap()
 
+    def isAcceptable(self, component):
+        return isinstance(component, language.TextExpression)
+
 class VideoGapWidget(GapWidget):
 
     def __init__(self, child, parent):
@@ -690,6 +716,9 @@ class VideoGapWidget(GapWidget):
             return self._child.model()
         else:
             return language.VideoGap()
+
+    def isAcceptable(self, component):
+        return isinstance(component, language.VideoExpression)
 
 class VideoCollectionGapWidget(GapWidget):
 
@@ -712,6 +741,9 @@ class VideoCollectionGapWidget(GapWidget):
         else:
             return language.VideoGap()
 
+    def isAcceptable(self, component):
+        return isinstance(component, language.VideoCollectionExpression)
+
 class ListGapWidget(QLabel):
     """
     Provides a gap that language components can dragged onto and added to
@@ -732,11 +764,32 @@ class ListGapWidget(QLabel):
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.setWordWrap(True)
 
+    def extractLanguageComponent(self, event):
+        """
+        :type event: QDragDropEvent
+        :rtype: language.LanguageComponent
+        """
+        return cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
+
     def dragEnterEvent(self, event):
         if event.mimeData().hasFormat(LC_MIME_FORMAT):
-            event.accept()
+            languageComponent = self.extractLanguageComponent(event)
+            if self.isAcceptable(languageComponent):
+                event.accept()
+            else:
+                event.ignore()
         else:
             event.ignore()
+
+    def isAcceptable(self, component):
+        """
+        Uses template design pattern.
+
+        :type component: language.LanguageComponent
+        :rtype: boolean
+        :return: True, if gap accepts components of the type of `component`.
+        """
+        raise NotImplementedError
 
 class CommandGapWidget(ListGapWidget):
 
@@ -751,6 +804,9 @@ class CommandGapWidget(ListGapWidget):
         lc = cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
         self.parent().addCommand(lc)
 
+    def isAcceptable(self, component):
+        return isinstance(component, language.Statement)
+
 class SceneGapWidget(ListGapWidget):
 
     def __init__(self, parent):
@@ -763,6 +819,9 @@ class SceneGapWidget(ListGapWidget):
     def dropEvent(self, event):
         lc = cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
         self.parent().addScene(lc)
+
+    def isAcceptable(self, component):
+        return isinstance(component, language.Scene)
 
 class NumberOperatorWidget(DraggableMixin, QFrame):
 
