@@ -64,10 +64,10 @@ class GraphicalEditor(QMainWindow):
 
         self._scriptEdit = ScriptEdit(self)
 
-        # Create stretchable space either side of act.
-        editorPaneLayout.addStretch(50)
+        # Editor should take up as much space as possible however leave some padding for visible seperation.
+        editorPaneLayout.addSpacing(10)
         editorPaneLayout.addWidget(self._scriptEdit)
-        editorPaneLayout.addStretch(50)
+        editorPaneLayout.addSpacing(10)
 
         editorPane = QWidget(parent)
         editorPane.setLayout(editorPaneLayout)
@@ -251,6 +251,7 @@ class ScriptEdit(QScrollArea):
     def __init__(self, parent=None):
         super(ScriptEdit, self).__init__(parent)
         self.setMinimumWidth(700)
+        self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         self.clear()
 
     def _setActWidget(self, actWidget):
