@@ -921,7 +921,7 @@ class YoutubeVideoGetTitleWidget(DraggableMixin, QFrame):
         self._video = VideoGapWidget(videoGetTitle.video, self)
 
         layout = QHBoxLayout()
-        layout.addWidget(QLabel("title of", self))
+        layout.addWidget(QLabel("title\nof", self))
         layout.addWidget(self._video)
 
         self.setLayout(layout)
@@ -953,7 +953,7 @@ class YoutubeVideoGetRelatedWidget(DraggableMixin, QFrame):
         icon = QLabel(self)
         icon.setPixmap(QPixmap("res/video-collection-64-64.png"))
         layout.addWidget(icon)
-        layout.addWidget(QLabel("related to", self))
+        layout.addWidget(QLabel("related\nto", self))
         layout.addWidget(self._video)
 
         self.setLayout(layout)
@@ -985,7 +985,7 @@ class YoutubeVideoCollectionRandomWidget(DraggableMixin, QFrame):
         icon = QLabel(self)
         icon.setPixmap(QPixmap("res/video-64-64.png"))
         layout.addWidget(icon)
-        layout.addWidget(QLabel("random from", self))
+        layout.addWidget(QLabel("random\nfrom", self))
         layout.addWidget(self._videoCollection)
 
         self.setLayout(layout)
