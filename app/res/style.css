@@ -119,7 +119,11 @@ CommentWidget {
     border: 0px;
 }
 
-GapWidget > QLabel,
+GapWidget > QLabel {
+    border-style: ridge;
+    border-width: 8px;
+}
+
 ListGapWidget {
     border-style: ridge;
     border-width: 5px;

@@ -11,11 +11,13 @@ from app.models import language
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-class GraphicalEditor(QMainWindow):
+# Externalise important strings.
+_GAP_ERROR_TEXT = """Your script could not be %s because there's a gap that needs to be filled.\n
+You can spot a gap that needs to be filled by it's thick border. Fill it in by dragging blocks of the same type onto it."""
+_TRANSLATE_GAP_ERROR_TEXT = _GAP_ERROR_TEXT % "translated"
+_PERFORM_GAP_ERROR_TEXT = _GAP_ERROR_TEXT % "performed"
 
-    d = os.path.dirname(__file__)
-    example1 = open(join(d,"example1.py")).read()
-    example2 = open(join(d,"example2.py")).read()
+class GraphicalEditor(QMainWindow):
     
     def __init__(self):
 
@@ -96,10 +98,10 @@ class GraphicalEditor(QMainWindow):
 
     def setupToolbar(self):
 
-        runAction = QAction('Perform', self)
-        runAction.setStatusTip('Perform script')
-        runAction.setToolTip('Perform script')
-        runAction.triggered.connect(self.run)
+        performAction = QAction('Perform', self)
+        performAction.setStatusTip('Perform script')
+        performAction.setToolTip('Perform script')
+        performAction.triggered.connect(self.perform)
 
         clearAction = QAction('Clear', self)
         clearAction.setStatusTip('Clear script')
@@ -125,7 +127,7 @@ class GraphicalEditor(QMainWindow):
         toolbar.setFloatable(False)
         toolbar.setMovable(False)
 
-        toolbar.addAction(runAction)
+        toolbar.addAction(performAction)
         toolbar.addAction(clearAction)
         toolbar.addAction(translateAction)
         toolbar.addSeparator()
@@ -150,16 +152,21 @@ class GraphicalEditor(QMainWindow):
             script = self._scriptEdit.toPython()
             self._previewTextEdit.setPlainText(script)
         except language.GapError:
-            self._previewTextEdit.setPlainText("Could not translate - encountered Gap.")
+            QMessageBox.information(self, "Found a gap",
+                _TRANSLATE_GAP_ERROR_TEXT, QMessageBox.Ok)
 
-    def run(self):
-        script = self._scriptEdit.toPython()
-        interpreter.interpret(script)
+    def perform(self):
+        try:
+            script = self._scriptEdit.toPython()
+            interpreter.interpret(script)
+        except language.GapError:
+            QMessageBox.information(self, "Found a gap",
+                _PERFORM_GAP_ERROR_TEXT, QMessageBox.Ok)
 
     def loadExample1(self):
         example = language.Act([
             language.TextScene(
-                "Displays the title of a video, click `run` to find out what it it!",
+                "Displays the title of a video, click `perform` to find out what it it!",
                 "",
                 language.NumberValue(2),
                 language.CommandSequence([]),
