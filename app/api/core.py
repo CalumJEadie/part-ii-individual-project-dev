@@ -14,11 +14,13 @@ logger.setLevel(logging.INFO)
 def display(text,duration):
 
     logger.info("display(text=%s,duration=%s)",text,duration)
-  
-    app = _initialise_qt()
 
-    d = core.FullscreenDisplayDialog(text)
-    time.sleep(duration)
+    # Display does not work on Pi so use ask_yes_no as substitute.
+    ask_yes_no(text)
+#    app = _initialise_qt()
+
+#    d = core.FullscreenDisplayDialog(text)
+#    time.sleep(duration)
 
 def ask_yes_no(text):
     """
