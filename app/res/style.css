@@ -168,3 +168,10 @@ PaletteWidget YoutubeVideoGetRelatedWidget:hover,
 PaletteWidget YoutubeVideoCollectionRandomWidget:hover {
     background: orange;
 }
+
+/* Widgets where highlight has been explicitly set */
+
+GapWidget[highlight="true"] > QLabel,
+ListWidget[highlight="true"] {
+    background: orange;
+}

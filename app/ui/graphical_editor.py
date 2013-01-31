@@ -46,8 +46,11 @@ class GraphicalEditor(QMainWindow):
 
         # Add toolbar and editor pane
         
-        horizontalLayout.addWidget(PaletteWidget(self))
-        horizontalLayout.addWidget(self.createEditorPane(centralwidget))
+        editorPane = self.createEditorPane(centralwidget)
+        palette = PaletteWidget(self._scriptEdit, self)
+        
+        horizontalLayout.addWidget(palette)
+        horizontalLayout.addWidget(editorPane)
         horizontalLayout.addWidget(self.createPreview(centralwidget))
 
         self.setCentralWidget(centralwidget)
@@ -273,6 +276,7 @@ class ScriptEdit(QScrollArea):
         # horizontal, vertical
         self.setWidget(container)
 
+    @Slot(language.Act)
     def setScript(self, script):
         """
         :type script: language.Act
@@ -296,6 +300,7 @@ class ScriptEdit(QScrollArea):
         """
         return self.toModel().translate()
 
+    @Slot()
     def clear(self):
         """
         Sets script to act with no scenes.
@@ -303,13 +308,55 @@ class ScriptEdit(QScrollArea):
         script = language.Act([])
         self.setScript(script)
 
+    @Slot(language.LanguageComponent)
+    def highlightAccepting(self, component):
+        """
+        Highlights all gaps in current script that could accept component.
+
+        :type component: language.LanguageComponent
+        """
+        for gap in self._acceptingGaps(component):
+            gap.highlight()
+
+    @Slot()
+    def unhighlightAll(self):
+        """
+        Unhighlights all language components in current script.
+        """
+        for gap in self._gaps():
+            gap.unhighlight()
+
+    def _gaps(self):
+        """
+        Returns all gap widgets in current script.
+
+        :rtype: QWidget sequence
+        """
+        gap_widget_types = (GapWidget, ListGapWidget)
+        child_lists = map(self._actWidget.findChildren, gap_widget_types)
+        # Flatten lists
+        return [child for child_list in child_lists for child in child_list]
+
+    def _acceptingGaps(self, component):
+        """
+        Returns all gap widgets that could accept language component.
+
+        :type component: language.LanguageComponent
+        :rtype: QWidget sequence
+        """
+        return filter(lambda gap: gap.isAcceptable(component), self._gaps())
+
 class PaletteWidget(QToolBox):
     """
     Component of interface that provides a palette of language components.
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, scriptEdit, parent=None):
+        """
+        :type scriptEdit: ScriptEdit
+        """
         super(PaletteWidget, self).__init__(parent)
+        self._scriptEdit = scriptEdit
         self.setupUI()
 
     def setupUI(self):
@@ -363,6 +410,8 @@ class PaletteWidget(QToolBox):
             boxLayout = QVBoxLayout()
             for tool in tools:
                 tool.setReadOnly(True)
+                tool.dragStarted.connect(self._scriptEdit.highlightAccepting)
+                tool.dragFinished.connect(self._scriptEdit.unhighlightAll)
                 boxLayout.addWidget(tool)
             boxLayout.addStretch()
             box.setLayout(boxLayout)

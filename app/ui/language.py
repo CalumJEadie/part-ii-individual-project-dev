@@ -188,13 +188,33 @@ class DraggableMixin(object):
       methods of parent class.
     """
 
+    # setDragEnabled only available on some widgets so have to implement startDrag
+    # and make sure it gets called by implementing mouseMoveEvent.
+    # See Rapid GUI Programing with PyQt pg 326.
+    
+    # Emitted whenever a drag of the widget has started.
+    dragStarted = Signal(language.LanguageComponent)
+
+    # Emitted whenever a drag of the widget has finished, whether successful or not.
+    dragFinished = Signal()
+    
     def startDrag(self):
-        data = cPickle.dumps(self.model())
+        lc = self.model()
+
+        # Notify other widgets that drag has started.
+        self.dragStarted.emit(lc)
+
+        data = cPickle.dumps(lc)
         mimeData = QMimeData()
         mimeData.setData(LC_MIME_FORMAT, data)
         drag = QDrag(self)
         drag.setMimeData(mimeData)
+
+        # Wait on drag
         drag.start(Qt.CopyAction)
+
+        # Notify other widgets that drag has finished.
+        self.dragFinished.emit()
 
     def mouseMoveEvent(self, event):
         self.startDrag()
@@ -677,6 +697,12 @@ class GapWidget(QStackedWidget):
         """
         self._readOnly = ro
 
+    def highlight(self):
+        self.setStyleSheet("background: orange")
+
+    def unhighlight(self):
+        self.setStyleSheet("")
+
 class NumberGapWidget(GapWidget):
 
     def __init__(self, child, parent):
@@ -825,6 +851,12 @@ class ListGapWidget(QLabel):
         :type ro: boolean
         """
         self._readOnly = ro
+
+    def highlight(self):
+        self.setStyleSheet("background: orange")
+
+    def unhighlight(self):
+        self.setStyleSheet("")
 
 class CommandGapWidget(ListGapWidget):
 
