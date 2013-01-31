@@ -147,3 +147,24 @@ YoutubeVideoGetRelatedWidget,
 YoutubeVideoCollectionRandomWidget {
     border-radius: 5px;
 }
+
+/* Highlight draggable widgets */
+
+/* Components in Palette */
+
+PaletteWidget MiniTextSceneWidget:hover,
+PaletteWidget MiniVideoSceneWidget:hover,
+PaletteWidget TextValueWidget:hover,
+PaletteWidget NumberValueWidget:hover,
+PaletteWidget VideoValueWidget:hover,
+PaletteWidget VideoCollectionValueWidget:hover,
+PaletteWidget SetWidget:hover,
+PaletteWidget GetWidget:hover,
+PaletteWidget NumberOperatorWidget:hover,
+PaletteWidget YoutubeVideoGetTitleWidget:hover,
+PaletteWidget YoutubeVideoGetTitleWidget:hover,
+PaletteWidget YoutubeVideoGetRelatedWidget:hover,
+PaletteWidget YoutubeVideoGetRelatedWidget:hover,
+PaletteWidget YoutubeVideoCollectionRandomWidget:hover {
+    background: orange;
+}
