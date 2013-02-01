@@ -258,10 +258,6 @@ class Act(LanguageComponent):
         super(Act, self).__init__(scenes)
 
     def translate(self):
-        # code = ""
-        # for scene in self._children:
-        #     code += "\n" + scene.translate()
-        # return code
          
         functions = collections.OrderedDict()
         function_num = 1
@@ -279,7 +275,7 @@ class Act(LanguageComponent):
 
         code = main_function + "\n\n"
         code += "\n".join(functions.values())
-        code += "\n\n" + generate_function_call("main")
+        code += "\n" + generate_function_call("main")
 
         return code
 
@@ -327,16 +323,24 @@ class Scene(LanguageComponent):
         if self._comment != "":
             code += CommentStatement("").translate()
             code += CommentStatement(self._comment).translate()
-        code += CommentStatement("Pre commands.").translate()
-        code += self._pre_commands.translate()
+        if len(self._pre_commands) > 0:
+            code += "\n"
+            code += CommentStatement("Pre commands.").translate()
+            code += self._pre_commands.translate()
+        else:
+            code += "\n"
         return code
 
     def translate_content(self):
         raise NotImplementedError
 
     def translate_after_content(self):
-        code = CommentStatement("Post commands.").translate()
-        code += self._post_commands.translate()
+        if len(self._post_commands) > 0:
+            code = "\n"
+            code += CommentStatement("Post commands.").translate()
+            code += self._post_commands.translate()
+        else:
+            code = "\n"
         return code
 
 class VideoScene(Scene):
