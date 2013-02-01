@@ -26,6 +26,8 @@ import app.api.youtube
 import collections
 import logging
 import show
+import re
+import collections
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -117,6 +119,41 @@ def translate_instance_method_0(instance_expr, method_name):
     code += SetVariableStatement(instance_var_name,instance_expr).translate()
     code += "%s.%s()" % (instance_var_name, method_name)
     return code
+
+def indent(code):
+    """
+    Indent each non empty line by 4 spaces.
+    """
+    def indent_line(line):
+        if line == "":
+            return ""
+        else:
+            return "    " + line
+    return '\n'.join(map(indent_line, code.splitlines()))
+
+def generate_function(name, body):
+    """
+    >>> generate_function("f", "pass")
+    'def f():\\n    pass'
+    """
+    return """def %s():
+%s""" % (name, indent(body))
+
+def generate_function_name(text):
+    """
+    Creates safe function name from arbitrary text.
+
+    Satisfies definition of identifiers at
+    http://docs.python.org/2/reference/lexical_analysis.html#identifiers
+
+    >>> generate_function_name("Example Text Scene")
+    'example_text_scene'
+
+    >>> generate_function_name("Example  Text  Scene!!!")
+    'example__text__scene___'
+    """
+    text = text.lower().replace(" ", "_")
+    return re.sub(r'[^a-z_]', "_", text)
 
 class LanguageComponent(object):
     """Base class for all components of the language."""
@@ -221,9 +258,29 @@ class Act(LanguageComponent):
         super(Act, self).__init__(scenes)
 
     def translate(self):
-        code = ""
+        # code = ""
+        # for scene in self._children:
+        #     code += "\n" + scene.translate()
+        # return code
+         
+        functions = collections.OrderedDict()
+        function_num = 1
+
         for scene in self._children:
-            code += "\n" + scene.translate()
+            name = "scene_%s" % function_num
+            function = generate_function(name, scene.translate())
+            functions[name] = function
+            function_num += 1
+
+        generate_function_call = lambda name: "%s()" % name
+
+        main_function_body = '\n'.join(map(generate_function_call, functions.keys()))
+        main_function = generate_function("main", main_function_body)
+
+        code = main_function + "\n\n"
+        code += "\n".join(functions.values())
+        code += "\n\n" + generate_function_call("main")
+
         return code
 
 class Scene(LanguageComponent):

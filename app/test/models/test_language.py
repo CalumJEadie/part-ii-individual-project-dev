@@ -4,11 +4,17 @@ Unit tests for language models.
 
 import unittest
 import logging
+import doctest
 
 from app.models.language import *
 from app.test import motivating_applications
 
 logging.basicConfig(level=logging.DEBUG,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+class TestDoctests(unittest.TestCase):
+
+    def test_doctests(self):
+        doctest.testmod(app.models.language)
 
 class SmartMusicPlayerTest(unittest.TestCase):
     """
@@ -118,7 +124,6 @@ class SmartMusicPlayerTest(unittest.TestCase):
             )
 
         ])
-
         print act1.translate()
 
 class Test(unittest.TestCase):
@@ -153,7 +158,6 @@ class Test(unittest.TestCase):
                 NumberValue(4)
             )
         )
-        print m.translate()
         # Can't use eval or exec here, would need more sophisticated methods
         # to check.
 
@@ -268,6 +272,21 @@ class Test(unittest.TestCase):
                 source = GetVariableExpression("curr_video")
             ).get_live_variables(),
             set(["clip_duration", "curr_video", "video_duration", "clip_offset"])
+        )
+
+    def test_indent(self):
+        """
+        Tests handling of multiple lines and empty lines.
+        """
+
+        self.assertEqual(
+            indent("""command1
+command2
+
+command3"""),"""    command1
+    command2
+
+    command3"""
         )
 
 if __name__ == "__main__":

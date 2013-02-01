@@ -48,8 +48,24 @@ from api import youtube,videoplayer"""
     # Previous approach didn't work either.
     
     def run(code):
-        from app.api.core import display,ask_yes_no
-        from app.api import youtube,videoplayer
-        exec(code)
+        import app.api.core
+        import app.api.youtube
+        import app.api.videoplayer
+
+        # At module level globals and locals are the same dictionary.
+        # Need this behaviour to function defintions to work correctly.
+        # Called as `exec(code)` different dictionaries were being used
+        # for globals and locals and so inside a function it wasn't possible
+        # to access other functions that had been defined in the script.
+        # The functions had been defined in the local scope of the module
+        # which wasn't accessible in the local scope of the function.
+        # See: http://stackoverflow.com/questions/871887/using-exec-with-recursive-functions
+        globals_ = {
+            "ask_yes_no,": app.api.core.ask_yes_no,
+            "display": app.api.core.display,
+            "youtube": app.api.youtube,
+            "videoplayer": app.api.videoplayer
+        }
+        exec(code, globals_, globals_)
 
     run(code)

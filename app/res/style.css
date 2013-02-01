@@ -175,3 +175,7 @@ GapWidget[highlight="true"] > QLabel,
 ListWidget[highlight="true"] {
     background: orange;
 }
+
+QPlainTextEdit {
+    font-family: Courier New, monospace;
+}

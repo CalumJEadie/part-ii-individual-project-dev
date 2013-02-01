@@ -19,7 +19,6 @@ def _setup_qt():
         app = QtGui.QApplication([])
     except RuntimeError:
         app = QtCore.QCoreApplication.instance()
-    return app
 
 class Test(unittest.TestCase):
 

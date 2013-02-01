@@ -22,5 +22,25 @@ print video.title()
 print video.duration()'''
         interpreter.interpret(code)
 
+    def test_function_call_outside_function(self):
+        code = '''def f():
+    print "f()"
+
+f()'''
+        interpreter.interpret(code)
+
+    def test_function_call_inside_function(self):
+        code = '''def f():
+    print "f()"
+
+def g():
+    print "g()"
+    f()
+
+f()
+g()'''
+        interpreter.interpret(code)
+
+
 if __name__ == "__main__":
     unittest.main()
