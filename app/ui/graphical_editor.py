@@ -1,3 +1,4 @@
+
 from PySide.QtCore import *
 from PySide.QtGui import *
 import os.path
@@ -248,8 +249,8 @@ class ScriptEdit(QScrollArea):
     Provides similiar interface to native editor classes like QLineEdit.
     """
 
-    # A change has been made.
-    changed = Signal()
+    # A change has been made and script is without gaps.
+    changed = Signal(str)
 
     def __init__(self, parent=None):
         super(ScriptEdit, self).__init__(parent)
@@ -289,6 +290,7 @@ class ScriptEdit(QScrollArea):
         Provides Language Component model interface to script.
 
         :rtype: language.Act
+        :raises: language.GapError 
         """
         return self._actWidget.model()
 
@@ -297,6 +299,7 @@ class ScriptEdit(QScrollArea):
         Provides Python interface to script.
 
         :rtype: str
+        :raises: language.GapError
         """
         return self.toModel().translate()
 
@@ -345,6 +348,30 @@ class ScriptEdit(QScrollArea):
         :rtype: QWidget sequence
         """
         return filter(lambda gap: gap.isAcceptable(component), self._gaps())
+
+    def event(self, event):
+        """
+        Reimplement so can handle script change events.
+        """
+        if event.type() == events.ScriptChangeType:
+            self.scriptChangeEvent(event)
+            # Return true to indicate have handled event.
+            # Rapid GUI Programming pg310
+            return True
+        else:
+            # Use base class implementation to handle other events.
+            return super(ScriptEdit, self).event(event)
+
+    def scriptChangeEvent(self, scriptChangeEvent):
+        """
+        Emit changed signal if there are no gaps.
+
+        :type scriptChangeEvent: events.ScriptChangeType
+        """
+        try:
+            self.changed.emit(self.toPython())
+        except language.GapError:
+            pass
 
 class PaletteWidget(QToolBox):
     """

@@ -4,6 +4,8 @@ Core UI.
 
 from PySide import QtGui, QtCore
 
+from app.ui import events
+
 class FullscreenDialog(object):
 
     def fullscreen(self):
@@ -113,3 +115,23 @@ class VerticallyGrowingPlainTextEdit(QtGui.QPlainTextEdit):
         docHeight = self.document().size().height()
         if self._heightMin <= docHeight <= self._heightMax:
             self.setMinimumHeight(docHeight)
+
+
+class Application(QtGui.QApplication):
+    """
+    Reimplementation that can propogate custom events.
+
+    Based on http://stackoverflow.com/questions/3180506/propagate-custom-qevent-to-parent-widget-in-qt-pyqt.
+    """
+
+    def notify(self, receiver, event):
+        if event.type() > QtCore.QEvent.User:
+            w = receiver
+            while(w):
+                # Note that this calls `event` method directly thus bypassing
+                # calling qApplications and receivers event filters
+                res = w.event(event)
+                if res and event.isAccepted():
+                    return res
+                w = w.parent()
+        return super(Application, self).notify(receiver, event)

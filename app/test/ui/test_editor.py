@@ -16,10 +16,11 @@ logging.basicConfig(level=logging.DEBUG,format='%(asctime)s - %(name)s - %(level
 
 def _setup_qt():
     try:
-        app = QtGui.QApplication([])
+        #app = QtGui.QApplication([])
+        application = app.ui.core.Application([])
     except RuntimeError:
-        app = QtCore.QCoreApplication.instance()
-    return app
+        application = QtCore.QCoreApplication.instance()
+    return application
 
 class Test(unittest.TestCase):
 

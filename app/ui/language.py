@@ -16,7 +16,7 @@ import cPickle
 
 from app.models import language
 from app.api import youtube
-from app.ui import core
+from app.ui import core, events
 
 from show import show
 
@@ -501,12 +501,18 @@ class SetWidget(DraggableMixin, QFrame):
 
 class TextValueWidget(DraggableMixin, QFrame):
 
+    # A change has been made.
+    changed = Signal()
+
     def __init__(self, text, parent):
         """
         :type text: language.TextValue
         """
         super(TextValueWidget, self).__init__(parent)
-        self._text = QLineEdit(text.value, self)
+
+        self._text = QLineEdit(text.value, self)       
+        self._text.textChanged.connect(lambda x: self._postScriptChangeEvent())
+
         layout = QHBoxLayout()
         layout.addWidget(QLabel("\"", self))
         layout.addWidget(self._text)
@@ -524,6 +530,26 @@ class TextValueWidget(DraggableMixin, QFrame):
         :type ro: boolean
         """
         self._text.setReadOnly(ro)
+
+    def _postScriptChangeEvent(self):
+        """
+        Trigger script change event to be propogated from this widget.
+        """
+        QApplication.postEvent(self, events.ScriptChangeEvent())
+
+    def event(self, event):
+        """
+        Override to ignore script change event.
+
+        Neccessary to ignore so that event will be propogated up. Default
+        implementation seems to silently accept user events without doing anything
+        with them.
+        """
+        if event.type() == events.ScriptChangeType:
+            event.ignore() # Don't want to process the event.
+            return False # Has been recognised but not processed.
+        else:
+            return super(TextValueWidget, self).event(event)
 
 class NumberValueWidget(DraggableMixin, QFrame):
 
