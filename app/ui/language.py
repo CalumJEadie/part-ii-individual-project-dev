@@ -81,7 +81,96 @@ class LanguageWidgetFactory(object):
             raise RuntimeError("Attempted to build language component with no associated builder.\n%s" % e)
 
 
-class ActWidget(QWidget):
+
+class DraggableMixin(object):
+    """
+    Provides draggable behavior to child class.
+
+    Child class:
+    - Should subclass QWidget.
+    - Should provide a method model() : () -> language.LanguageComponent.
+    - Should put DraggableMixin earlier in the Method Resolution Order so override
+      methods of parent class.
+    """
+
+    # setDragEnabled only available on some widgets so have to implement startDrag
+    # and make sure it gets called by implementing mouseMoveEvent.
+    # See Rapid GUI Programing with PyQt pg 326.
+    
+    # Emitted whenever a drag of the widget has started.
+    dragStarted = Signal(language.LanguageComponent)
+
+    # Emitted whenever a drag of the widget has finished, whether successful or not.
+    dragFinished = Signal()
+    
+    def startDrag(self):
+        lc = self.model()
+
+        # Notify other widgets that drag has started.
+        self.dragStarted.emit(lc)
+
+        data = cPickle.dumps(lc)
+        mimeData = QMimeData()
+        mimeData.setData(LC_MIME_FORMAT, data)
+        drag = QDrag(self)
+        drag.setMimeData(mimeData)
+
+        # Wait on drag
+        drag.start(Qt.CopyAction)
+
+        # Notify other widgets that drag has finished.
+        self.dragFinished.emit()
+
+    def mouseMoveEvent(self, event):
+        self.startDrag()
+        QWidget.mouseMoveEvent(self, event)
+
+class ChangeableMixin(object):
+    """
+    Provides changeable behavior to child class.
+
+    Child class:
+    - Should subclass QWidget.
+    - Should put DraggableMixin earlier in the Method Resolution Order so override
+      methods of parent class.
+    - Should subclass a subclass of QWidget that does not reimplement event().
+    - Should call _registerChangeSignal(signal) for each source of change signals
+      in it's scope. For example a widget with two line edits should call for both.
+    - Should call _postScriptChangeEvent whenever at internal manipulation changes
+      the language component it represents.
+    """
+
+    def _registerChangeSignal(self, signal):
+        """
+        Registers a source for signals that indicate a change in the
+        language component represented by this widget.
+        """
+        signal.connect(self._postScriptChangeEvent)
+
+    def _postScriptChangeEvent(self):
+        """
+        Send script change event to this widget.
+        """
+        QApplication.postEvent(self, events.ScriptChangeEvent())
+
+    def event(self, event):
+        """
+        Override to ignore script change event.
+
+        Neccessary to ignore so that event will be propogated up. Default
+        implementation seems to silently accept user events without doing anything
+        with them.
+        """
+        if event.type() == events.ScriptChangeType:
+            event.ignore() # Don't want to process the event.
+            return False # Has been recognised but not processed.
+        else:
+            # Assumes that child class does not inherit an implementation
+            # of event() that overrides QWidget.event().
+            return QWidget.event(self, event)
+
+
+class ActWidget(ChangeableMixin, QWidget):
     """
     Basic implementation of drag and drop. Append only.
     """
@@ -130,6 +219,8 @@ class ActWidget(QWidget):
         self._addAtEnd(sceneWidget)
         self._scenes.append(sceneWidget)
 
+        self._postScriptChangeEvent()
+
     def _addAtEnd(self, widget):
         """
         Adds widget to end of layout but before gap.
@@ -176,49 +267,6 @@ class CommentWidget(core.VerticallyGrowingPlainTextEdit):
 
         # self.setMaximumHeight(50)
         self.setMinimumHeight(100)
-
-class DraggableMixin(object):
-    """
-    Provides draggable behavior to child class.
-
-    Child class:
-    - Must subclass QWidget.
-    - Must provide a method model() : () -> language.LanguageComponent.
-    - Must put DraggableMixin earlier in the Method Resolution Order so override
-      methods of parent class.
-    """
-
-    # setDragEnabled only available on some widgets so have to implement startDrag
-    # and make sure it gets called by implementing mouseMoveEvent.
-    # See Rapid GUI Programing with PyQt pg 326.
-    
-    # Emitted whenever a drag of the widget has started.
-    dragStarted = Signal(language.LanguageComponent)
-
-    # Emitted whenever a drag of the widget has finished, whether successful or not.
-    dragFinished = Signal()
-    
-    def startDrag(self):
-        lc = self.model()
-
-        # Notify other widgets that drag has started.
-        self.dragStarted.emit(lc)
-
-        data = cPickle.dumps(lc)
-        mimeData = QMimeData()
-        mimeData.setData(LC_MIME_FORMAT, data)
-        drag = QDrag(self)
-        drag.setMimeData(mimeData)
-
-        # Wait on drag
-        drag.start(Qt.CopyAction)
-
-        # Notify other widgets that drag has finished.
-        self.dragFinished.emit()
-
-    def mouseMoveEvent(self, event):
-        self.startDrag()
-        QWidget.mouseMoveEvent(self, event)
 
 class MiniVideoSceneWidget(DraggableMixin, QLabel):
 
@@ -273,7 +321,7 @@ class MiniTextSceneWidget(DraggableMixin, QLabel):
         """
         pass
 
-class VideoSceneWidget(SceneWidget):
+class VideoSceneWidget(ChangeableMixin, SceneWidget):
 
     def __init__(self, scene, parent):
         """
@@ -283,6 +331,7 @@ class VideoSceneWidget(SceneWidget):
 
         self._comment = CommentWidget(scene.title + "\n" + scene.comment, self)
         self._comment.setMaximumHeight(50)
+        self._registerChangeSignal(self._comment.textChanged)
         self._preCommands = CommandSequenceWidget(scene.pre_commands, self)
         self._postCommands = CommandSequenceWidget(scene.post_commands, self)
 
@@ -333,7 +382,7 @@ class VideoSceneWidget(SceneWidget):
     def source(self):
         return self._source.model()
 
-class TextSceneWidget(SceneWidget):
+class TextSceneWidget(ChangeableMixin, SceneWidget):
 
     def __init__(self, scene, parent):
         """
@@ -343,6 +392,7 @@ class TextSceneWidget(SceneWidget):
 
         self._comment = CommentWidget(scene.title + "\n" + scene.comment, self)
         self._comment.setMaximumHeight(50)
+        self._registerChangeSignal(self._comment.textChanged)
         self._preCommands = CommandSequenceWidget(scene.pre_commands, self)
         self._postCommands = CommandSequenceWidget(scene.post_commands, self)
 
@@ -383,7 +433,7 @@ class TextSceneWidget(SceneWidget):
     def text(self):
         return self._text.model()
 
-class CommandSequenceWidget(QWidget):
+class CommandSequenceWidget(ChangeableMixin, QWidget):
     """
     Basic implementation of drag and drop. Append only.
     """
@@ -418,6 +468,8 @@ class CommandSequenceWidget(QWidget):
         self._addAtEnd(commandWidget)
         self._commands.append(commandWidget)
 
+        self._postScriptChangeEvent()
+
     def _addAtEnd(self, widget):
         """
         Adds widget to end of layout but before gap.
@@ -429,7 +481,7 @@ class CommandSequenceWidget(QWidget):
 # TODO: Use live variables.
 VARIABLE_NAMES = ["item", "curr_video", "curr_duration", "curr_offset"]
 
-class GetWidget(DraggableMixin, QFrame):
+class GetWidget(ChangeableMixin, DraggableMixin, QFrame):
 
     def __init__(self, getExpression, parent):
         """
@@ -441,6 +493,7 @@ class GetWidget(DraggableMixin, QFrame):
         for name in VARIABLE_NAMES:
             self._name.addItem(name)
         self._name.setCurrentIndex(self._name.findText(getExpression.name))
+        self._registerChangeSignal(self._name.currentIndexChanged)
 
         layout = QHBoxLayout()
         layout.addWidget(QLabel("get"))
@@ -461,7 +514,7 @@ class GetWidget(DraggableMixin, QFrame):
         # Can't make combo box read only.
         pass
 
-class SetWidget(DraggableMixin, QFrame):
+class SetWidget(ChangeableMixin, DraggableMixin, QFrame):
 
     def __init__(self, setStatement, parent):
         """
@@ -473,6 +526,7 @@ class SetWidget(DraggableMixin, QFrame):
         for name in VARIABLE_NAMES:
             self._name.addItem(name)
         self._name.setCurrentIndex(self._name.findText(setStatement.name))
+        self._registerChangeSignal(self._name.currentIndexChanged)
 
         # Use empty NumberGapWidget for convenience.
         # TODO: Generalise.
@@ -499,10 +553,7 @@ class SetWidget(DraggableMixin, QFrame):
         # Can't make combo box read only.
         self._value.setReadOnly(ro)
 
-class TextValueWidget(DraggableMixin, QFrame):
-
-    # A change has been made.
-    changed = Signal()
+class TextValueWidget(ChangeableMixin, DraggableMixin, QFrame):
 
     def __init__(self, text, parent):
         """
@@ -511,7 +562,7 @@ class TextValueWidget(DraggableMixin, QFrame):
         super(TextValueWidget, self).__init__(parent)
 
         self._text = QLineEdit(text.value, self)       
-        self._text.textChanged.connect(lambda x: self._postScriptChangeEvent())
+        self._registerChangeSignal(self._text.textChanged)
 
         layout = QHBoxLayout()
         layout.addWidget(QLabel("\"", self))
@@ -531,27 +582,7 @@ class TextValueWidget(DraggableMixin, QFrame):
         """
         self._text.setReadOnly(ro)
 
-    def _postScriptChangeEvent(self):
-        """
-        Trigger script change event to be propogated from this widget.
-        """
-        QApplication.postEvent(self, events.ScriptChangeEvent())
-
-    def event(self, event):
-        """
-        Override to ignore script change event.
-
-        Neccessary to ignore so that event will be propogated up. Default
-        implementation seems to silently accept user events without doing anything
-        with them.
-        """
-        if event.type() == events.ScriptChangeType:
-            event.ignore() # Don't want to process the event.
-            return False # Has been recognised but not processed.
-        else:
-            return super(TextValueWidget, self).event(event)
-
-class NumberValueWidget(DraggableMixin, QFrame):
+class NumberValueWidget(ChangeableMixin, DraggableMixin, QFrame):
 
     def __init__(self, number, parent):
         """
@@ -560,6 +591,8 @@ class NumberValueWidget(DraggableMixin, QFrame):
         super(NumberValueWidget, self).__init__(parent)
         self._number = QLineEdit(number.value, self)
         self._number.setValidator(QDoubleValidator())
+        self._registerChangeSignal(self._number.textChanged)
+
         layout = QHBoxLayout()
         layout.addWidget(self._number)
         self.setLayout(layout)
@@ -576,7 +609,7 @@ class NumberValueWidget(DraggableMixin, QFrame):
         """
         self._number.setReadOnly(ro)
 
-class VideoValueWidget(DraggableMixin, QFrame):
+class VideoValueWidget(ChangeableMixin, DraggableMixin, QFrame):
 
     def __init__(self, video, parent):
         """
@@ -584,6 +617,7 @@ class VideoValueWidget(DraggableMixin, QFrame):
         """
         super(VideoValueWidget, self).__init__(parent)
         self._value = QLineEdit(video.value, self)
+        self._registerChangeSignal(self._value.textChanged)
         # TODO: Add validator
         # video_id_re = QRegExp(youtube.VIDEO_ID_RE)
         # self._value.setValidator(QRegExpValidator(video_id_re, self))
@@ -610,7 +644,7 @@ class VideoValueWidget(DraggableMixin, QFrame):
         """
         self._value.setReadOnly(ro)
 
-class GapWidget(QStackedWidget):
+class GapWidget(ChangeableMixin, QStackedWidget):
     """
     Provides a gap that language components can be dragged into and represented
     within.
@@ -664,6 +698,18 @@ class GapWidget(QStackedWidget):
     def dropEvent(self, event):
         self.fillGap(self.extractLanguageComponent(event))
 
+    def _emptyGap(self):
+        """
+        Remove widget from layout and delete.
+        """
+        # Remove from layout.
+        # Ownership revert to application.
+        self.removeWidget(self._child)
+        # Delete that widgets making up the language subtree that had filled the gap.
+        self._child.setParent(None)
+        # Remove reference from GapWidget to the old child.
+        self._child = None
+
     def emptyGap(self):
         """
         Removes language compoment currently in gap.
@@ -673,13 +719,9 @@ class GapWidget(QStackedWidget):
         if not self.isFull():
             raise RuntimeError("Gap is currently not occupied.")
 
-        # Remove from layout.
-        # Ownership revert to application.
-        self.removeWidget(self._child)
-        # Delete that widgets making up the language subtree that had filled the gap.
-        self._child.setParent(None)
-        # Remove reference from GapWidget to the old child.
-        self._child = None
+        self._emptyGap()
+
+        self._postScriptChangeEvent()
 
     def fillGap(self, child):
         """
@@ -691,7 +733,7 @@ class GapWidget(QStackedWidget):
         :type child: language.LanguageComponent
         """
         if self.isFull():
-            self.emptyGap()
+            self._emptyGap()
 
         # Possible that language component might be a gap, in which case correct
         # behavior is to keep empty.
@@ -699,6 +741,8 @@ class GapWidget(QStackedWidget):
             self._child = LanguageWidgetFactory.build(child, self)
             self.insertWidget(1, self._child)
             self.setCurrentIndex(1)
+
+        self._postScriptChangeEvent()
 
     def isFull(self):
         """
@@ -916,7 +960,7 @@ class SceneGapWidget(ListGapWidget):
     def isAcceptable(self, component):
         return isinstance(component, language.Scene)
 
-class NumberOperatorWidget(DraggableMixin, QFrame):
+class NumberOperatorWidget(ChangeableMixin, DraggableMixin, QFrame):
 
     OPERATORS = {
         "+": language.Add,
@@ -941,6 +985,7 @@ class NumberOperatorWidget(DraggableMixin, QFrame):
         self._operator.addItem("+")
         self._operator.addItem("-")
         self._operator.addItem("*")
+        self._registerChangeSignal(self._operator.currentIndexChanged)
 
         layout = QHBoxLayout()
         layout.addWidget(self._operand1)

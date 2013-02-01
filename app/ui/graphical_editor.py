@@ -112,11 +112,6 @@ class GraphicalEditor(QMainWindow):
         clearAction.setToolTip('Clear script')
         clearAction.triggered.connect(self._scriptEdit.clear)
 
-        translateAction = QAction('Translate', self)
-        translateAction.setStatusTip('Translate script into Python code')
-        translateAction.setToolTip('Translate script into Python code')
-        translateAction.triggered.connect(self.translate)
-
         loadExample1Action = QAction('Load example script 1', self)
         loadExample1Action.setStatusTip('Replace current script with example script 1')
         loadExample1Action.setToolTip('Replace current script with example script 1')
@@ -133,7 +128,6 @@ class GraphicalEditor(QMainWindow):
 
         toolbar.addAction(performAction)
         toolbar.addAction(clearAction)
-        toolbar.addAction(translateAction)
         toolbar.addSeparator()
         toolbar.addAction(loadExample1Action)
         toolbar.addAction(loadExample2Action)
@@ -284,6 +278,8 @@ class ScriptEdit(QScrollArea):
         """
         actWidget = LanguageWidgetFactory.build(script, self)
         self._setActWidget(actWidget)
+
+        self.changed.emit(self.toPython())
 
     def toModel(self):
         """
