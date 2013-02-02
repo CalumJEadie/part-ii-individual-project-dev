@@ -6,6 +6,7 @@
  * grass-green: #339900
  * orange: #ff6600;
  * brick-red: #FF0000;
+ * deep-pink: #FF6699;
  */
 
 QWidget {
@@ -29,12 +30,18 @@ TextGapWidget {
 
 VideoSceneWidget,
 MiniVideoSceneWidget,
-VideoGapWidget > QLabel,
-VideoCollectionGapWidget > QLabel {
+VideoGapWidget > QLabel {
     border-color: #FF0000;
     border-width: 2px;
     border-style: solid;
     background: white;
+}
+
+VideoCollectionGapWidget > QLabel {
+    border-color: #FF6699;
+    border-width: 2px;
+    border-style: solid;
+    background: white;   
 }
 
 TextValueWidget > QLabel {
@@ -80,15 +87,10 @@ VideoValueWidget > QLineEdit {
 
 VideoCollectionWidget,
 YoutubeVideoGetRelatedWidget {
-    border-color: #FF0000;
+    border-color: #FF6699;
     border-width: 2px;
     border-style: solid;
     background: white;
-}
-
-VideoCollectionWidget > QLineEdit {
-    background: white;
-    color: #FF0000;
 }
 
 SceneGapWidget {
