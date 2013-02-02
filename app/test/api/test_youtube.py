@@ -68,13 +68,29 @@ class TestVideoCollection(unittest.TestCase):
         videos = youtube.VideoCollection.from_web_urls(self.urls)
         self.assertEqual(len(videos),len(self.urls))
 
-class TestSearch(unittest.TestCase):
+class Test(unittest.TestCase):
     """
-    Unit tests for youtube.search
+    Unit tests for module levels methods.
     """
 
-    def test(self):
+    def test_search(self):
         videos = youtube.search("music")
+        self.assertGreater(len(videos), 0)
+
+    def test_top_rated(self):
+        videos = youtube.top_rated()
+        self.assertGreater(len(videos), 0)
+
+    def test_most_viewed(self):
+        videos = youtube.most_viewed()
+        self.assertGreater(len(videos), 0)
+
+    def test_recently_featured(self):
+        videos = youtube.recently_featured()
+        self.assertGreater(len(videos), 0)
+
+    def test_most_recent(self):
+        videos = youtube.most_recent()
         self.assertGreater(len(videos), 0)
 
 if __name__ == "__main__":

@@ -224,7 +224,7 @@ class VideoCollection(collections.Sequence):
         videos = []
         i = 0
         for video in self:
-            if i > 3:
+            if i > 1:
                 videos.append("...")
                 break
             videos.append(video)
@@ -243,3 +243,27 @@ def search(search_terms):
     query.racy = 'exclude'
     feed = yt_service.YouTubeQuery(query)
     return VideoCollection.from_feed(feed)
+
+def top_rated():
+    """
+    :rtype: VideoCollection
+    """
+    return VideoCollection.from_feed(yt_service.GetTopRatedVideoFeed())
+
+def most_viewed():
+    """
+    :rtype: VideoCollection
+    """
+    return VideoCollection.from_feed(yt_service.GetMostViewedVideoFeed())
+
+def recently_featured():
+    """
+    :rtype: VideoCollection
+    """
+    return VideoCollection.from_feed(yt_service.GetRecentlyFeaturedVideoFeed())
+
+def most_recent():
+    """
+    :rtype: VideoCollection
+    """
+    return VideoCollection.from_feed(yt_service.GetMostRecentVideoFeed())

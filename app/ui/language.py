@@ -73,7 +73,11 @@ class LanguageWidgetFactory(object):
             language.YoutubeVideoGetRelated: lambda lc, p: YoutubeVideoGetRelatedWidget(lc, p),
             language.YoutubeVideoCollectionRandom: lambda lc, p: YoutubeVideoCollectionRandomWidget(lc, p),
             language.YoutubeSearch: lambda lc, p: YoutubeSearchWidget(lc, p),
-            language.Act: lambda lc,p: ActWidget(lc, p)
+            language.Act: lambda lc,p: ActWidget(lc, p),
+            language.YoutubeTopRated: lambda lc, p: YoutubeTopRatedWidget(p),
+            language.YoutubeMostViewed: lambda lc, p: YoutubeMostViewedWidget(p),
+            language.YoutubeRecentlyFeatured: lambda lc, p: YoutubeRecentlyFeaturedWidget(p),
+            language.YoutubeMostRecent: lambda lc, p: YoutubeMostRecentWidget(p),
         }
 
         try:
@@ -1144,3 +1148,50 @@ class YoutubeSearchWidget(DraggableMixin, QFrame):
         :type ro: boolean
         """
         self._query.setReadOnly(ro)
+
+
+
+class VideoCollectionFunction0Widget(DraggableMixin, QFrame):
+
+    def __init__(self, lcClass, label, parent):
+        """
+        :type lcClass: LanguageComponent class
+        :type label: string
+        :type parent: QWidget
+        """
+        super(VideoCollectionFunction0Widget, self).__init__(parent)
+
+        self.model = lambda: lcClass()
+
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+        layout = QHBoxLayout()
+        icon = QLabel(self)
+        icon.setPixmap(QPixmap("res/video-collection-64-64.png"))
+        layout.addWidget(icon)
+        layout.addWidget(QLabel(label, self))
+
+        self.setLayout(layout)
+
+    def setReadOnly(self, ro):
+        pass
+
+class YoutubeTopRatedWidget(VideoCollectionFunction0Widget):
+
+    def __init__(self, parent):
+        super(YoutubeTopRatedWidget, self).__init__(language.YoutubeTopRated, "top\nrated", parent)
+
+class YoutubeMostViewedWidget(VideoCollectionFunction0Widget):
+
+    def __init__(self, parent):
+        super(YoutubeMostViewedWidget, self).__init__(language.YoutubeMostViewed, "most\nviewed", parent)
+
+class YoutubeRecentlyFeaturedWidget(VideoCollectionFunction0Widget):
+
+    def __init__(self, parent):
+        super(YoutubeRecentlyFeaturedWidget, self).__init__(language.YoutubeRecentlyFeatured, "recently\nfeatured", parent)
+
+class YoutubeMostRecentWidget(VideoCollectionFunction0Widget):
+
+    def __init__(self, parent):
+        super(YoutubeMostRecentWidget, self).__init__(language.YoutubeMostRecent, "most\nrecent", parent)

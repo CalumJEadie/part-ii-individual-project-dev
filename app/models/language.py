@@ -68,6 +68,10 @@ def get_fresh_variable_name():
     return "tmp_%s" % get_fresh_variable_name.count
 get_fresh_variable_name.count = 0
 
+def translate_function_0(function_name):
+    """Generates code for 0-ary function application."""
+    return "%s()" % (function_name)
+
 def translate_function_1(function_name, operand1):
     """Generates code for 1-ary function application."""
     code = ""
@@ -691,3 +695,23 @@ class YoutubeVideoCollectionRandom(VideoExpression):
 
     def translate(self):
         return translate_instance_method_0(self._video_collection_expr, "random")
+
+class YoutubeTopRated(VideoCollectionExpression):
+    
+    def translate(self):
+        return translate_function_0("youtube.top_rated")
+
+class YoutubeMostViewed(VideoCollectionExpression):
+    
+    def translate(self):
+        return translate_function_0("youtube.most_viewed")
+
+class YoutubeRecentlyFeatured(VideoCollectionExpression):
+
+    def translate(self):
+        return translate_function_0("youtube.recently_featured")
+
+class YoutubeMostRecent(VideoCollectionExpression):
+    
+    def translate(self):
+        return translate_function_0("youtube.most_recent")
