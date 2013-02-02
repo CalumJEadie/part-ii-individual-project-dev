@@ -68,5 +68,14 @@ class TestVideoCollection(unittest.TestCase):
         videos = youtube.VideoCollection.from_web_urls(self.urls)
         self.assertEqual(len(videos),len(self.urls))
 
+class TestSearch(unittest.TestCase):
+    """
+    Unit tests for youtube.search
+    """
+
+    def test(self):
+        videos = youtube.search("music")
+        self.assertGreater(len(videos), 0)
+
 if __name__ == "__main__":
     unittest.main()

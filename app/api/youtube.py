@@ -110,7 +110,7 @@ class Video:
         entry = yt_service.GetYouTubeVideoEntry(video_id=video_id)
         return cls(entry)
 
-    def __str__(self):
+    def __repr__(self):
         return "Video(title=%s, duration=%s, best_streaming_url=%s)" % (self.title(), self.duration(), self.best_streaming_url())
 
     def title(self):
@@ -219,9 +219,27 @@ class VideoCollection(collections.Sequence):
         """
         return random.choice(self._videos)
 
-def search(query):
+    def __repr__(self):
+        # Only show first few as Video.__str__ is expensive
+        videos = []
+        i = 0
+        for video in self:
+            if i > 3:
+                videos.append("...")
+                break
+            videos.append(video)
+            i += 1
+        return str(videos)
+
+def search(search_terms):
     """
     :rtype: VideoCollection
     """
-    # TODO
-    raise NotImplementedError
+    query = gdata.youtube.service.YouTubeVideoQuery()
+    query.vq = search_terms
+    # relevance, viewCount, published, or rating
+    query.orderby = 'viewCount'
+     # Exclude restricted content for child safety
+    query.racy = 'exclude'
+    feed = yt_service.YouTubeQuery(query)
+    return VideoCollection.from_feed(feed)
