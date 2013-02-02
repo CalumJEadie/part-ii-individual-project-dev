@@ -403,7 +403,7 @@ class PaletteWidget(QToolBox):
                     VideoValueWidget(language.VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0"), self),
                     YoutubeVideoCollectionRandomWidget(language.YoutubeVideoCollectionRandom(language.VideoGap()), self),
                     YoutubeVideoGetRelatedWidget(language.YoutubeVideoGetRelated(language.VideoGap()), self),
-                    YoutubeSearchWidget(language.YoutubeSearch(language.TextValue("music videos")), self)
+                    YoutubeSearchWidget(language.YoutubeSearch(language.TextValue("music")), self)
                 )
             ),
             (

@@ -13,6 +13,11 @@ QWidget {
     font-size: 18px;
 }
 
+MiniTextSceneWidget,
+MiniVideoSceneWidget {
+    font-size: 36px;
+}
+
 TextSceneWidget,
 MiniTextSceneWidget,
 TextGapWidget > QLabel,
@@ -192,3 +197,4 @@ ListWidget[highlight="true"] {
 QPlainTextEdit {
     font-family: Courier New, monospace;
 }
+

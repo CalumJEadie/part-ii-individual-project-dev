@@ -262,6 +262,7 @@ class MiniVideoSceneWidget(DraggableMixin, QLabel):
 
     def __init__(self, parent):
         super(MiniVideoSceneWidget, self).__init__(parent)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.setText("Video Scene")
 
     def model(self):
@@ -288,6 +289,7 @@ class MiniTextSceneWidget(DraggableMixin, QLabel):
 
     def __init__(self, parent):
         super(MiniTextSceneWidget, self).__init__(parent)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.setText("Text Scene")
 
     def model(self):
@@ -550,8 +552,9 @@ class TextValueWidget(ChangeableMixin, DraggableMixin, QFrame):
         :type text: language.TextValue
         """
         super(TextValueWidget, self).__init__(parent)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
-        self._text = QLineEdit(text.value, self)       
+        self._text = core.HGrowingLineEdit(text.value, self)       
         self._registerChangeSignal(self._text.textChanged)
 
         layout = QHBoxLayout()
@@ -579,7 +582,9 @@ class NumberValueWidget(ChangeableMixin, DraggableMixin, QFrame):
         :type number: language.NumberValue
         """
         super(NumberValueWidget, self).__init__(parent)
-        self._number = QLineEdit(number.value, self)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+        self._number = core.HGrowingLineEdit(number.value, self)
         self._number.setValidator(QDoubleValidator())
         self._registerChangeSignal(self._number.textChanged)
 
@@ -606,7 +611,9 @@ class VideoValueWidget(ChangeableMixin, DraggableMixin, QFrame):
         :type video: language.VideoValue
         """
         super(VideoValueWidget, self).__init__(parent)
-        self._value = QLineEdit(video.value, self)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        
+        self._value = core.HGrowingLineEdit(video.value, self)
         self._registerChangeSignal(self._value.textChanged)
         # TODO: Add validator
         # video_id_re = QRegExp(youtube.VIDEO_ID_RE)
@@ -651,7 +658,8 @@ class GapWidget(ChangeableMixin, QStackedWidget):
         super(GapWidget, self).__init__(parent)
         self.setAcceptDrops(True)
         # self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        # self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         # self.setMinimumSize(QSize(10,10))
         self._child = None
 
@@ -968,6 +976,8 @@ class NumberOperatorWidget(ChangeableMixin, DraggableMixin, QFrame):
         assert operator in self.OPERATORS.keys()
         super(NumberOperatorWidget, self).__init__(parent)
 
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
         self._operand1 = NumberGapWidget(operand1, self)
         self._operand2 = NumberGapWidget(operand2, self)
 
@@ -1011,6 +1021,8 @@ class YoutubeVideoGetTitleWidget(DraggableMixin, QFrame):
 
         super(YoutubeVideoGetTitleWidget, self).__init__(parent)
 
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
         self._video = VideoGapWidget(videoGetTitle.video, self)
 
         layout = QHBoxLayout()
@@ -1039,6 +1051,8 @@ class YoutubeVideoGetRelatedWidget(DraggableMixin, QFrame):
         """
 
         super(YoutubeVideoGetRelatedWidget, self).__init__(parent)
+
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         self._video = VideoGapWidget(videoGetRelated.video, self)
 
@@ -1072,6 +1086,8 @@ class YoutubeVideoCollectionRandomWidget(DraggableMixin, QFrame):
 
         super(YoutubeVideoCollectionRandomWidget, self).__init__(parent)
 
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
         self._videoCollection = VideoCollectionGapWidget(videoCollectionRandom.video_collection, self)
 
         layout = QHBoxLayout()
@@ -1103,6 +1119,8 @@ class YoutubeSearchWidget(DraggableMixin, QFrame):
         """
 
         super(YoutubeSearchWidget, self).__init__(parent)
+
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         self._query = TextGapWidget(youtubeSearch.query, self)
 

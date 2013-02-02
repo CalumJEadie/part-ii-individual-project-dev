@@ -108,9 +108,9 @@ class VerticallyGrowingPlainTextEdit(QtGui.QPlainTextEdit):
 
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
-        self.document().contentsChanged.connect(self.sizeChange)
+        self.document().contentsChanged.connect(self._sizeChange)
 
-    def sizeChange(self):
+    def _sizeChange(self):
         # Need to get font at size change event as CSS not applied at __init__.
         fm = QtGui.QFontMetrics(self.font())
 
@@ -119,6 +119,26 @@ class VerticallyGrowingPlainTextEdit(QtGui.QPlainTextEdit):
         numLines = self.document().size().height()
         self.setMinimumHeight(numLines * lineHeight)
 
+class HGrowingLineEdit(QtGui.QLineEdit):
+
+    minVisibleLength = 6
+    maxVisibleLength = 30
+
+    def __init__(self, text, parent=None):
+        super(HGrowingLineEdit, self).__init__(text, parent)
+        # Need to notify layout when size has changed.
+        self.textChanged.connect(self.updateGeometry)
+        # sizeHint is the only acceptable size.
+        self.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+
+    def sizeHint(self):
+        fm = QtGui.QFontMetrics(self.font())
+        # Make sure that at least minVisibleLength characters can be seen
+        # and at most maxVisibleLength
+        contentsWidth = fm.width(self.text())+10
+        width = max(self.minVisibleLength * fm.averageCharWidth(), contentsWidth)
+        width = min(width, self.maxVisibleLength * fm.averageCharWidth())
+        return QtCore.QSize(width, self.minimumHeight())
 
 class Application(QtGui.QApplication):
     """
