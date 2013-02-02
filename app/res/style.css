@@ -86,7 +86,8 @@ VideoValueWidget > QLineEdit {
 }
 
 VideoCollectionWidget,
-YoutubeVideoGetRelatedWidget {
+YoutubeVideoGetRelatedWidget,
+YoutubeSearchWidget {
     border-color: #FF6699;
     border-width: 2px;
     border-style: solid;

@@ -218,3 +218,10 @@ class VideoCollection(collections.Sequence):
         :rtype: Video
         """
         return random.choice(self._videos)
+
+def search(query):
+    """
+    :rtype: VideoCollection
+    """
+    # TODO
+    raise NotImplementedError

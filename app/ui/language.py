@@ -72,6 +72,7 @@ class LanguageWidgetFactory(object):
             language.YoutubeVideoGetTitle: lambda lc, p: YoutubeVideoGetTitleWidget(lc, p),
             language.YoutubeVideoGetRelated: lambda lc, p: YoutubeVideoGetRelatedWidget(lc, p),
             language.YoutubeVideoCollectionRandom: lambda lc, p: YoutubeVideoCollectionRandomWidget(lc, p),
+            language.YoutubeSearch: lambda lc, p: YoutubeSearchWidget(lc, p),
             language.Act: lambda lc,p: ActWidget(lc, p)
         }
 
@@ -1104,3 +1105,35 @@ class YoutubeVideoCollectionRandomWidget(DraggableMixin, QFrame):
         :type ro: boolean
         """
         self._videoCollection.setReadOnly(ro)
+
+class YoutubeSearchWidget(DraggableMixin, QFrame):
+
+    def __init__(self, youtubeSearch, parent):
+        """
+        :type youtubeSearch: language.YoutubeSearch
+        """
+
+        super(YoutubeSearchWidget, self).__init__(parent)
+
+        self._query = TextGapWidget(youtubeSearch.query, self)
+
+        layout = QHBoxLayout()
+        icon = QLabel(self)
+        icon.setPixmap(QPixmap("res/video-collection-64-64.png"))
+        layout.addWidget(icon)
+        layout.addWidget(QLabel("search", self))
+        layout.addWidget(self._query)
+
+        self.setLayout(layout)
+
+    def model(self):
+        """
+        :rtype: models.language.YoutubeSearch
+        """
+        return language.YoutubeSearch(self._query.model())
+
+    def setReadOnly(self, ro):
+        """
+        :type ro: boolean
+        """
+        self._query.setReadOnly(ro)

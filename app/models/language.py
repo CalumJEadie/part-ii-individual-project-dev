@@ -666,6 +666,8 @@ class YoutubeVideoGetRelated(VideoCollectionExpression):
 
 class YoutubeSearch(VideoCollectionExpression):
 
+    query = property(lambda self: self._text_expr)
+
     def __init__(self,text_expr):
         """
         :type text_expr: <:TextExpression
@@ -674,7 +676,7 @@ class YoutubeSearch(VideoCollectionExpression):
         self._text_expr = text_expr
 
     def translate(self):
-        return translate_function_2("youtube.search", self._text_expr)
+        return translate_function_1("youtube.search", self._text_expr)
 
 class YoutubeVideoCollectionRandom(VideoExpression):
 
