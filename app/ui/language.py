@@ -256,18 +256,7 @@ class CommentWidget(core.VerticallyGrowingPlainTextEdit):
 
     def __init__(self, text, parent):
         super(CommentWidget, self).__init__(text, parent)
-        # self.setLineWrapMode(QPlainTextEdit.WidgetWidth)
-
-        # self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        # Qt.ScrollBarAsNeeded
-        # self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        # fm = QFontMetrics(self.font())
-        # h = fm.height() * 1.6
-        # self.setMinimumHeight(h)
-
-        # self.setMaximumHeight(50)
-        self.setMinimumHeight(100)
+        # self.update()
 
 class MiniVideoSceneWidget(DraggableMixin, QLabel):
 

@@ -106,15 +106,18 @@ class VerticallyGrowingPlainTextEdit(QtGui.QPlainTextEdit):
     def __init__(self, text, parent=None):
         super(VerticallyGrowingPlainTextEdit, self).__init__(text, parent)
 
+        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
         self.document().contentsChanged.connect(self.sizeChange)
 
-        self._heightMin = 0
-        self._heightMax = 65000
-
     def sizeChange(self):
-        docHeight = self.document().size().height()
-        if self._heightMin <= docHeight <= self._heightMax:
-            self.setMinimumHeight(docHeight)
+        # Need to get font at size change event as CSS not applied at __init__.
+        fm = QtGui.QFontMetrics(self.font())
+
+        # Adjust for line spacing.
+        lineHeight = fm.height() * 1.4
+        numLines = self.document().size().height()
+        self.setMinimumHeight(numLines * lineHeight)
 
 
 class Application(QtGui.QApplication):
