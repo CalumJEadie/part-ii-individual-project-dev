@@ -1,3 +1,13 @@
+/*
+ * Colour-blind safe colour scheme.
+ *
+ * Based on https://bugzilla.mozilla.org/show_bug.cgi?id=578994.
+ *
+ * grass-green: #339900
+ * orange: #ff6600;
+ * brick-red: #FF0000;
+ */
+
 QWidget {
     font-size: 18px;
 }
@@ -7,34 +17,34 @@ MiniTextSceneWidget,
 TextGapWidget > QLabel,
 TextValueWidget,
 YoutubeVideoGetTitleWidget {
-    border-color: green;
+    border-color: #339900;
     border-width: 2px;
     border-style: solid;
     background: white;
 }
 
 TextGapWidget {
-    color: green;
+    color: #339900;
 }
 
 VideoSceneWidget,
 MiniVideoSceneWidget,
 VideoGapWidget > QLabel,
 VideoCollectionGapWidget > QLabel {
-    border-color: red;
+    border-color: #FF0000;
     border-width: 2px;
     border-style: solid;
     background: white;
 }
 
 TextValueWidget > QLabel {
-    color: green;
+    color: #339900;
     font-size: 36px;
 }
 
 TextValueWidget > QLineEdit {
     background: white;
-    color: green;
+    color: #339900;
 }
 
 NumberValueWidget,
@@ -57,7 +67,7 @@ NumberValueWidget > QLineEdit {
 
 VideoValueWidget,
 YoutubeVideoCollectionRandomWidget {
-    border-color: red;
+    border-color: #FF0000;
     border-width: 2px;
     border-style: solid;
     background: white;
@@ -65,12 +75,12 @@ YoutubeVideoCollectionRandomWidget {
 
 VideoValueWidget > QLineEdit {
     background: white;
-    color: red;
+    color: #FF0000;
 }
 
 VideoCollectionWidget,
 YoutubeVideoGetRelatedWidget {
-    border-color: red;
+    border-color: #FF0000;
     border-width: 2px;
     border-style: solid;
     background: white;
@@ -78,7 +88,7 @@ YoutubeVideoGetRelatedWidget {
 
 VideoCollectionWidget > QLineEdit {
     background: white;
-    color: red;
+    color: #FF0000;
 }
 
 SceneGapWidget {
@@ -87,10 +97,10 @@ SceneGapWidget {
 }
 
 CommandGapWidget {
-    border-color: orange;
+    border-color: #ff6600;
     border-style: solid;
     background: white;
-    color: orange;
+    color: #ff6600;
 }
 
 SceneGapWidget {
@@ -108,7 +118,7 @@ GetWidget {
 
 SetWidget {
     background: white;
-    border-color: orange;
+    border-color: #ff6600;
     border-width: 2px;
     border-style: solid;
 }
@@ -166,14 +176,14 @@ PaletteWidget YoutubeVideoGetTitleWidget:hover,
 PaletteWidget YoutubeVideoGetRelatedWidget:hover,
 PaletteWidget YoutubeVideoGetRelatedWidget:hover,
 PaletteWidget YoutubeVideoCollectionRandomWidget:hover {
-    background: orange;
+    background: #ff6600;
 }
 
 /* Widgets where highlight has been explicitly set */
 
 GapWidget[highlight="true"] > QLabel,
 ListWidget[highlight="true"] {
-    background: orange;
+    background: #ff6600;
 }
 
 QPlainTextEdit {
