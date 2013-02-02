@@ -97,6 +97,7 @@ class Video:
         """
         self._entry = entry
         self._best_streaming_url = None
+        self._comments = None
 
     @classmethod
     def from_web_url(cls,url):
@@ -162,6 +163,20 @@ class Video:
         if self._best_streaming_url is None:
             self._best_streaming_url = self.streaming_url("best")
         return self._best_streaming_url
+
+    def random_comment(self):
+        """
+        Uses memoisation for performance.
+
+        :rtype: string
+        """
+        if self._comments is None:
+            comment_feed = yt_service.GetYouTubeVideoCommentFeed(video_id=self._video_id())
+            self._comments = []
+            for comment in comment_feed.entry:
+                # Store comment body and author name
+                self._comments.append("%s: %s" % (comment.author[0].name.text, comment.content.text))
+        return random.choice(self._comments)
 
 class VideoCollection(collections.Sequence):
     """

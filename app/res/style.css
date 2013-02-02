@@ -22,7 +22,8 @@ TextSceneWidget,
 MiniTextSceneWidget,
 TextGapWidget > QLabel,
 TextValueWidget,
-YoutubeVideoGetTitleWidget {
+YoutubeVideoGetTitleWidget,
+YoutubeVideoRandomCommentWidget {
     border-color: #339900;
     border-width: 2px;
     border-style: solid;
@@ -162,6 +163,7 @@ SetWidget,
 GetWidget,
 NumberOperatorWidget,
 YoutubeVideoGetTitleWidget,
+YoutubeVideoRandomCommentWidget,
 YoutubeVideoGetRelatedWidget,
 YoutubeVideoCollectionRandomWidget,
 YoutubeSearchWidget,
@@ -183,8 +185,7 @@ PaletteWidget SetWidget:hover,
 PaletteWidget GetWidget:hover,
 PaletteWidget NumberOperatorWidget:hover,
 PaletteWidget YoutubeVideoGetTitleWidget:hover,
-PaletteWidget YoutubeVideoGetTitleWidget:hover,
-PaletteWidget YoutubeVideoGetRelatedWidget:hover,
+PaletteWidget YoutubeVideoRandomCommentWidget:hover,
 PaletteWidget YoutubeVideoGetRelatedWidget:hover,
 PaletteWidget YoutubeVideoCollectionRandomWidget:hover,
 PaletteWidget YoutubeSearchWidget:hover,

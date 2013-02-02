@@ -517,6 +517,20 @@ class YoutubeVideoGetDescription(TextExpression):
     def translate(self):
         return translate_instance_method_0(self._video, "description")
 
+class YoutubeVideoRandomComment(TextExpression):
+
+    video = property(lambda self: self._video)
+
+    def __init__(self,video):
+        """
+        :type video: <:VideoExpression
+        """
+        super(YoutubeVideoRandomComment, self).__init__([video])
+        self._video = video
+
+    def translate(self):
+        return translate_instance_method_0(self._video, "random_comment")
+
 class NumberExpression(Expression):
     """Base class for expressions that evaluate to type Number."""
     pass

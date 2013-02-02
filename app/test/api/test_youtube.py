@@ -46,6 +46,17 @@ class TestVideoGangnam(unittest.TestCase):
         related = video.related()
         self.assertGreater(len(related),5)
 
+    def test_random_comment(self):
+        gangnam_style_url = "http://www.youtube.com/watch?v=9bZkp7q19f0"
+        video = youtube.Video.from_web_url(gangnam_style_url)
+
+        comment1 = video.random_comment()
+        comment2 = video.random_comment()
+        comment3 = video.random_comment()
+
+        self.assertNotEqual(comment1, comment2) # Expect them to be different, may fail.
+        self.assertNotEqual(comment2, comment3) # Expect them to be different, may fail.
+
 class TestVideoCollection(unittest.TestCase):
     """
     Unit tests for the VideoCollection class.

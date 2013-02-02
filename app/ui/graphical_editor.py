@@ -421,7 +421,8 @@ class PaletteWidget(QToolBox):
                 "Text",
                 (
                     TextValueWidget(language.TextValue(""), self),
-                    YoutubeVideoGetTitleWidget(language.YoutubeVideoGetTitle(language.VideoGap()), self)
+                    YoutubeVideoGetTitleWidget(language.YoutubeVideoGetTitle(language.VideoGap()), self),
+                    YoutubeVideoRandomCommentWidget(language.YoutubeVideoRandomComment(language.VideoGap()), self)
                 )
             ),
             # (

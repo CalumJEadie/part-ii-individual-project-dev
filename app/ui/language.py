@@ -70,6 +70,7 @@ class LanguageWidgetFactory(object):
             language.TextScene: lambda lc, p: TextSceneWidget(lc, p),
             language.VideoScene: lambda lc, p: VideoSceneWidget(lc, p),
             language.YoutubeVideoGetTitle: lambda lc, p: YoutubeVideoGetTitleWidget(lc, p),
+            language.YoutubeVideoRandomComment: lambda lc, p: YoutubeVideoRandomCommentWidget(lc, p),
             language.YoutubeVideoGetRelated: lambda lc, p: YoutubeVideoGetRelatedWidget(lc, p),
             language.YoutubeVideoCollectionRandom: lambda lc, p: YoutubeVideoCollectionRandomWidget(lc, p),
             language.YoutubeSearch: lambda lc, p: YoutubeSearchWidget(lc, p),
@@ -1040,6 +1041,37 @@ class YoutubeVideoGetTitleWidget(DraggableMixin, QFrame):
         :rtype: models.language.YoutubeVideoGetTitle
         """
         return language.YoutubeVideoGetTitle(self._video.model())
+
+    def setReadOnly(self, ro):
+        """
+        :type ro: boolean
+        """
+        self._video.setReadOnly(ro)
+
+class YoutubeVideoRandomCommentWidget(DraggableMixin, QFrame):
+
+    def __init__(self, videoRandomComment, parent):
+        """
+        :type videoRandomComment: language.YoutubeVideoRandomComment
+        """
+
+        super(YoutubeVideoRandomCommentWidget, self).__init__(parent)
+
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+        self._video = VideoGapWidget(videoRandomComment.video, self)
+
+        layout = QHBoxLayout()
+        layout.addWidget(QLabel("random\ncomment\nfrom", self))
+        layout.addWidget(self._video)
+
+        self.setLayout(layout)
+
+    def model(self):
+        """
+        :rtype: models.language.YoutubeVideoRandomComment
+        """
+        return language.YoutubeVideoRandomComment(self._video.model())
 
     def setReadOnly(self, ro):
         """
