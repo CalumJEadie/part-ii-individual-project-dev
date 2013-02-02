@@ -162,7 +162,8 @@ GetWidget,
 NumberOperatorWidget,
 YoutubeVideoGetTitleWidget,
 YoutubeVideoGetRelatedWidget,
-YoutubeVideoCollectionRandomWidget {
+YoutubeVideoCollectionRandomWidget,
+YoutubeSearchWidget {
     border-radius: 5px;
 }
 
@@ -183,7 +184,8 @@ PaletteWidget YoutubeVideoGetTitleWidget:hover,
 PaletteWidget YoutubeVideoGetTitleWidget:hover,
 PaletteWidget YoutubeVideoGetRelatedWidget:hover,
 PaletteWidget YoutubeVideoGetRelatedWidget:hover,
-PaletteWidget YoutubeVideoCollectionRandomWidget:hover {
+PaletteWidget YoutubeVideoCollectionRandomWidget:hover,
+PaletteWidget YoutubeSearchWidget:hover {
     background: #ff6600;
 }
 
