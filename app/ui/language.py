@@ -195,6 +195,46 @@ class ChangeableMixin(object):
             # of event() that overrides QWidget.event().
             return QWidget.event(self, event)
 
+# class SignalEventMappingMixin(object):
+#     """
+#     Provides ability for a widget to post an event in response to recieving a signal.
+#     """
+
+#     def _event_types....
+#         """Can't create state directly in mixin so """
+#         if not hasattr(self, _event_types) 
+
+#     def _registerSignalEventMapping(self, signal, event_type, event_class):
+#         """
+#         :type signal: QtCore.Signal
+#         :type event_type: QtCore.QEvent.Type
+#         :type event_class: QtCore.QEvent
+#         """
+#         try:
+#             self._event_types
+#         except NameError:
+#             self._event_types = ()
+
+#         signal.connect(lambda: QApplication.postEvent(self, event_class()))
+#         self._event_types.append(event_type)
+
+#     def event(self, event):
+#         """
+#         Override to ignore any registered events.
+
+#         Neccessary to ignore so that event will be propogated up. Default
+#         implementation seems to silently accept user events without doing anything
+#         with them.
+
+#         :type event: QtCore.QEvent
+#         """
+#         if event.type() in self._event_types:
+#             event.ignore() # Don't want to process the event.
+#             return False # Has been recognised but not processed.
+#         else:
+#             # Assumes that child class does not inherit an implementation
+#             # of event() that overrides QWidget.event().
+#             return QWidget.event(self, event)
 
 class ActWidget(ChangeableMixin, QWidget):
     """
@@ -508,6 +548,8 @@ class GetWidget(ChangeableMixin, DraggableMixin, QFrame):
 
         self._type = getExpression.type
         self._name = QComboBox(self)
+        # Allow user to add and edit names
+        self._name.setEditable(True)
         for name in VARIABLE_NAMES:
             self._name.addItem(name)
         self._name.setCurrentIndex(self._name.findText(getExpression.name))
