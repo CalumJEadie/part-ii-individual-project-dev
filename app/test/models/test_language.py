@@ -55,23 +55,23 @@ class SmartMusicPlayerTest(unittest.TestCase):
         scene3 = VideoScene(
             title = "Play video",
             comment = "",
-            duration = GetVariableExpression("clip_duration"),
+            duration = NumberGetVariableExpression("clip_duration"),
             pre_commands = CommandSequence([
-                SetVariableStatement("clip_duration", NumberValue(1)),
-                SetVariableStatement("video_duration", YoutubeVideoGetDuration(curr_video)),
-                SetVariableStatement("clip_offset",
+                NumberSetVariableStatement("clip_duration", NumberValue(1)),
+                NumberSetVariableStatement("video_duration", YoutubeVideoGetDuration(curr_video)),
+                NumberSetVariableStatement("clip_offset",
                     GetRandomNumberBetweenInterval(
                         NumberValue(0),
                         Subtract(
-                            GetVariableExpression("video_duration"),
-                            GetVariableExpression("clip_duration")
+                            NumberGetVariableExpression("video_duration"),
+                            NumberGetVariableExpression("clip_duration")
                         )
                     )
                 )
             ]),
             post_commands = CommandSequence([]),
-            offset = GetVariableExpression("clip_offset"),
-            source = GetVariableExpression("curr_video")
+            offset = NumberGetVariableExpression("clip_offset"),
+            source = VideoGetVariableExpression("curr_video")
         )
         
     def test_translate_inner_loop_scenes(self):
@@ -104,23 +104,23 @@ class SmartMusicPlayerTest(unittest.TestCase):
             VideoScene(
                 title = "Play video",
                 comment = "",
-                duration = GetVariableExpression("clip_duration"),
+                duration = NumberGetVariableExpression("clip_duration"),
                 pre_commands = CommandSequence([
-                    SetVariableStatement("clip_duration", NumberValue(1)),
-                    SetVariableStatement("video_duration", YoutubeVideoGetDuration(curr_video)),
-                    SetVariableStatement("clip_offset",
+                    NumberSetVariableStatement("clip_duration", NumberValue(1)),
+                    NumberSetVariableStatement("video_duration", YoutubeVideoGetDuration(curr_video)),
+                    NumberSetVariableStatement("clip_offset",
                         GetRandomNumberBetweenInterval(
                             NumberValue(0),
                             Subtract(
-                                GetVariableExpression("video_duration"),
-                                GetVariableExpression("clip_duration")
+                                NumberGetVariableExpression("video_duration"),
+                                NumberGetVariableExpression("clip_duration")
                             )
                         )
                     )
                 ]),
                 post_commands = CommandSequence([]),
-                offset = GetVariableExpression("clip_offset"),
-                source = GetVariableExpression("curr_video")
+                offset = NumberGetVariableExpression("clip_offset"),
+                source = VideoGetVariableExpression("curr_video")
             )
 
         ])
@@ -214,64 +214,83 @@ class Test(unittest.TestCase):
     def test_get_live_variables(self):
 
         self.assertEqual(
-            GetVariableExpression("a").get_live_variables(),
+            NumberGetVariableExpression("a").get_live_variables(Type.NUMBER),
             set(["a"])
         )
 
         self.assertEqual(
-            TextValue("one").get_live_variables(),
+            TextValue("one").get_live_variables(Type.TEXT),
             set([])
         )
 
         self.assertEqual(
-            NumberValue(1).get_live_variables(),
+            NumberValue(1).get_live_variables(Type.NUMBER),
             set([])
         )
 
         self.assertEqual(
-            SetVariableStatement("a",NumberValue(1)).get_live_variables(),
+            NumberSetVariableStatement("a",NumberValue(1)).get_live_variables(Type.NUMBER),
             set()
         )
 
-        self.assertEqual(
-            CommandSequence([
-                SetVariableStatement("a",NumberValue(1)),
-                SetVariableStatement("b",TextValue("one")),
-                SetVariableStatement("c",
-                    Add(
-                        GetVariableExpression("a"),
-                        GetVariableExpression("b")
-                    )
+        
+        cs = CommandSequence([
+            NumberSetVariableStatement("a", NumberValue(1)),
+            NumberSetVariableStatement("b", NumberValue(2)),
+            NumberSetVariableStatement("c",
+                Add(
+                    NumberGetVariableExpression("a"),
+                    NumberGetVariableExpression("b")
                 )
-            ]).get_live_variables(),
-            set(["a","b"])
-        )      
+            ),
+            TypedSetVariableStatement(Type.TEXT, "d", TextValue("one")),
+            TypedSetVariableStatement(Type.TEXT, "e",
+                GetVariableExpression(Type.TEXT, "d")
+            )
+        ])
 
         self.assertEqual(
-            VideoScene(
-                title = "Play video",
-                comment = "",
-                duration = GetVariableExpression("clip_duration"),
-                pre_commands = CommandSequence([
-                    SetVariableStatement("clip_duration", NumberValue(1)),
-                    SetVariableStatement("video_duration", YoutubeVideoGetDuration(
-                        GetVariableExpression("curr_video")
-                    )),
-                    SetVariableStatement("clip_offset",
-                        GetRandomNumberBetweenInterval(
-                            NumberValue(0),
-                            Subtract(
-                                GetVariableExpression("video_duration"),
-                                GetVariableExpression("clip_duration")
-                            )
+            cs.get_live_variables(Type.NUMBER),
+            set(["a","b"])
+        )
+
+        self.assertEqual(
+            cs.get_live_variables(Type.TEXT),
+            set(["d"])
+        )
+
+        cs = VideoScene(
+            title = "Play video",
+            comment = "",
+            duration = NumberGetVariableExpression("clip_duration"),
+            pre_commands = CommandSequence([
+                NumberSetVariableStatement("clip_duration", NumberValue(1)),
+                NumberSetVariableStatement("video_duration", YoutubeVideoGetDuration(
+                    VideoGetVariableExpression("curr_video")
+                )),
+                NumberSetVariableStatement("clip_offset",
+                    GetRandomNumberBetweenInterval(
+                        NumberValue(0),
+                        Subtract(
+                            NumberGetVariableExpression("video_duration"),
+                            NumberGetVariableExpression("clip_duration")
                         )
                     )
-                ]),
-                post_commands = CommandSequence([]),
-                offset = GetVariableExpression("clip_offset"),
-                source = GetVariableExpression("curr_video")
-            ).get_live_variables(),
-            set(["clip_duration", "curr_video", "video_duration", "clip_offset"])
+                )
+            ]),
+            post_commands = CommandSequence([]),
+            offset = NumberGetVariableExpression("clip_offset"),
+            source = VideoGetVariableExpression("curr_video")
+        )
+
+        self.assertEqual(
+            cs.get_live_variables(Type.NUMBER),
+            set(["clip_duration", "video_duration", "clip_offset"])
+        )
+
+        self.assertEqual(
+            cs.get_live_variables(Type.VIDEO),
+            set(["curr_video"])
         )
 
     def test_indent(self):

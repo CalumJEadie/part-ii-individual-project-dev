@@ -23,7 +23,9 @@ MiniTextSceneWidget,
 TextGapWidget > QLabel,
 TextValueWidget,
 YoutubeVideoGetTitleWidget,
-YoutubeVideoRandomCommentWidget {
+YoutubeVideoRandomCommentWidget,
+TextGetWidget,
+TextSetWidget {
     border-color: #339900;
     border-width: 2px;
     border-style: solid;
@@ -36,14 +38,18 @@ TextGapWidget {
 
 VideoSceneWidget,
 MiniVideoSceneWidget,
-VideoGapWidget > QLabel {
+VideoGapWidget > QLabel,
+VideoGetWidget,
+VideoSetWidget {
     border-color: #FF0000;
     border-width: 2px;
     border-style: solid;
     background: white;
 }
 
-VideoCollectionGapWidget > QLabel {
+VideoCollectionGapWidget > QLabel,
+VideoCollectionGetWidget,
+VideoCollectionSetWidget {
     border-color: #FF6699;
     border-width: 2px;
     border-style: solid;
@@ -62,7 +68,9 @@ TextValueWidget > QLineEdit {
 
 NumberValueWidget,
 NumberOperatorWidget,
-NumberGapWidget > QLabel {
+NumberGapWidget > QLabel,
+NumberGetWidget,
+NumberSetWidget {
     border-color: blue;
     border-width: 2px;
     border-style: solid;
@@ -117,20 +125,6 @@ SceneGapWidget {
     border-color: black;
     border-style: solid;
     background: white;
-}
-
-GetWidget {
-    background: white;
-    border-color: purple;
-    border-width: 2px;
-    border-style: solid;
-}
-
-SetWidget {
-    background: white;
-    border-color: #ff6600;
-    border-width: 2px;
-    border-style: solid;
 }
 
 CommentWidget {

@@ -35,7 +35,7 @@ smart_music_player = Act([
     VideoScene(
         title = "Play video",
         comment = "",
-        duration = GetVariableExpression("clip_duration"),
+        duration = GetVariableExpression(Type.NUMBER, "clip_duration"),
         pre_commands = CommandSequence([
             SetVariableStatement("clip_duration", NumberValue(1)),
             SetVariableStatement("video_duration", YoutubeVideoGetDuration(curr_video)),
@@ -43,15 +43,15 @@ smart_music_player = Act([
                 GetRandomNumberBetweenInterval(
                     NumberValue(0),
                     Subtract(
-                        GetVariableExpression("video_duration"),
-                        GetVariableExpression("clip_duration")
+                        GetVariableExpression(Type.NUMBER, "video_duration"),
+                        GetVariableExpression(Type.NUMBER, "clip_duration")
                     )
                 )
             )
         ]),
         post_commands = CommandSequence([]),
-        offset = GetVariableExpression("clip_offset"),
-        source = GetVariableExpression("curr_video")
+        offset = GetVariableExpression(Type.NUMBER, "clip_offset"),
+        source = GetVariableExpression(Type.VIDEO, "curr_video")
     )
 
 ])

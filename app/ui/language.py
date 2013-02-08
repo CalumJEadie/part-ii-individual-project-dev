@@ -15,6 +15,7 @@ import logging
 import cPickle
 
 from app.models import language
+from app.models.language import Type
 from app.api import youtube
 from app.ui import core, events
 
@@ -25,6 +26,21 @@ logger.setLevel(logging.INFO)
 
 # MIME format for language components.
 LC_MIME_FORMAT = "application/x-language-component"
+
+# Define here for effeciency.
+TYPE_TO_GET_VARIABLE_EXPRESSION = {
+    Type.NUMBER: language.NumberGetVariableExpression,
+    Type.TEXT: language.TextGetVariableExpression,
+    Type.VIDEO: language.VideoGetVariableExpression,
+    Type.VIDEO_COLLECTION: language.VideoCollectionGetVariableExpression
+}
+
+TYPE_TO_SET_VARIABLE_STATEMENT = {
+    Type.NUMBER: language.NumberSetVariableStatement,
+    Type.TEXT: language.TextSetVariableStatement,
+    Type.VIDEO: language.VideoSetVariableStatement,
+    Type.VIDEO_COLLECTION: language.VideoCollectionSetVariableStatement
+}
 
 class LanguageWidgetFactory(object):
     """
@@ -64,8 +80,14 @@ class LanguageWidgetFactory(object):
             language.Multiply: lambda lc, p: NumberOperatorWidget("*", lc.op1, lc.op2, p),
             language.TextValue: lambda lc, p: TextValueWidget(lc, p),
             language.VideoValue: lambda lc, p: VideoValueWidget(lc, p),
-            language.GetVariableExpression: lambda lc, p: GetWidget(lc, p),
-            language.SetVariableStatement: lambda lc, p: SetWidget(lc, p),
+            language.NumberGetVariableExpression: lambda lc, p: NumberGetWidget(lc, p),
+            language.NumberSetVariableStatement: lambda lc, p: NumberSetWidget(lc, p),
+            language.TextGetVariableExpression: lambda lc, p: TextGetWidget(lc, p),
+            language.TextSetVariableStatement: lambda lc, p: TextSetWidget(lc, p),
+            language.VideoGetVariableExpression: lambda lc, p: VideoGetWidget(lc, p),
+            language.VideoSetVariableStatement: lambda lc, p: VideoSetWidget(lc, p),
+            language.VideoCollectionGetVariableExpression: lambda lc, p: VideoCollectionGetWidget(lc, p),
+            language.VideoCollectionSetVariableStatement: lambda lc, p: VideoCollectionSetWidget(lc, p),
             language.CommandSequence: lambda lc, p: CommandSequenceWidget(lc, p),
             language.TextScene: lambda lc, p: TextSceneWidget(lc, p),
             language.VideoScene: lambda lc, p: VideoSceneWidget(lc, p),
@@ -85,8 +107,6 @@ class LanguageWidgetFactory(object):
             return builders[lc.__class__](lc, parent)
         except KeyError as e:
             raise RuntimeError("Attempted to build language component with no associated builder.\n%s" % e)
-
-
 
 class DraggableMixin(object):
     """
@@ -486,6 +506,7 @@ class GetWidget(ChangeableMixin, DraggableMixin, QFrame):
         """
         super(GetWidget, self).__init__(parent)
 
+        self._type = getExpression.type
         self._name = QComboBox(self)
         for name in VARIABLE_NAMES:
             self._name.addItem(name)
@@ -502,7 +523,7 @@ class GetWidget(ChangeableMixin, DraggableMixin, QFrame):
         """
         :rtype: models.language.GetExpression
         """
-        return language.GetVariableExpression(self._name.currentText())
+        return TYPE_TO_GET_VARIABLE_EXPRESSION[self._type](self._name.currentText())
 
     def setReadOnly(self, ro):
         """
@@ -511,13 +532,39 @@ class GetWidget(ChangeableMixin, DraggableMixin, QFrame):
         # Can't make combo box read only.
         pass
 
+class NumberGetWidget(GetWidget):
+
+    def __init__(self, getExpression, parent):
+        assert getExpression.type == Type.NUMBER
+        super(NumberGetWidget, self).__init__(getExpression, parent)
+
+class TextGetWidget(GetWidget):
+
+    def __init__(self, getExpression, parent):
+        assert getExpression.type == Type.TEXT
+        super(TextGetWidget, self).__init__(getExpression, parent)
+
+class VideoGetWidget(GetWidget):
+
+    def __init__(self, getExpression, parent):
+        assert getExpression.type == Type.VIDEO
+        super(VideoGetWidget, self).__init__(getExpression, parent)
+
+class VideoCollectionGetWidget(GetWidget):
+
+    def __init__(self, getExpression, parent):
+        assert getExpression.type == Type.VIDEO_COLLECTION
+        super(VideoCollectionGetWidget, self).__init__(getExpression, parent)
+
 class SetWidget(ChangeableMixin, DraggableMixin, QFrame):
 
     def __init__(self, setStatement, parent):
         """
-        :type setStatement: language.SetVariableStatement
+        :type setStatement: language.TypedSetVariableStatement
         """
         super(SetWidget, self).__init__(parent)
+
+        self._type = setStatement.type
 
         self._name = QComboBox()
         for name in VARIABLE_NAMES:
@@ -525,9 +572,14 @@ class SetWidget(ChangeableMixin, DraggableMixin, QFrame):
         self._name.setCurrentIndex(self._name.findText(setStatement.name))
         self._registerChangeSignal(self._name.currentIndexChanged)
 
-        # Use empty NumberGapWidget for convenience.
-        # TODO: Generalise.
-        self._value = NumberGapWidget(setStatement.value, self)
+        if self._type == Type.NUMBER:
+            self._value = NumberGapWidget(setStatement.value, self)
+        elif self._type == Type.TEXT:
+            self._value = TextGapWidget(setStatement.value, self)
+        elif self._type == Type.VIDEO:
+            self._value = VideoGapWidget(setStatement.value, self)
+        elif self._type == Type.VIDEO_COLLECTION:
+            self._value = VideoCollectionGapWidget(setStatement.value, self)
 
         layout = QHBoxLayout()
         layout.addWidget(QLabel("set"))
@@ -539,9 +591,9 @@ class SetWidget(ChangeableMixin, DraggableMixin, QFrame):
 
     def model(self):
         """
-        :rtype: models.language.SetVariableStatement
+        :rtype: models.language.TypedSetVariableStatement
         """
-        return language.SetVariableStatement(self._name.currentText(), self._value.model())
+        return TYPE_TO_SET_VARIABLE_STATEMENT[self._type](self._name.currentText(), self._value.model())
 
     def setReadOnly(self, ro):
         """
@@ -549,6 +601,30 @@ class SetWidget(ChangeableMixin, DraggableMixin, QFrame):
         """
         # Can't make combo box read only.
         self._value.setReadOnly(ro)
+
+class NumberSetWidget(SetWidget):
+
+    def __init__(self, setExpression, parent):
+        assert setExpression.type == Type.NUMBER
+        super(NumberSetWidget, self).__init__(setExpression, parent)
+
+class TextSetWidget(SetWidget):
+
+    def __init__(self, setExpression, parent):
+        assert setExpression.type == Type.TEXT
+        super(TextSetWidget, self).__init__(setExpression, parent)
+
+class VideoSetWidget(SetWidget):
+
+    def __init__(self, setExpression, parent):
+        assert setExpression.type == Type.VIDEO
+        super(VideoSetWidget, self).__init__(setExpression, parent)
+
+class VideoCollectionSetWidget(SetWidget):
+
+    def __init__(self, setExpression, parent):
+        assert setExpression.type == Type.VIDEO_COLLECTION
+        super(VideoCollectionSetWidget, self).__init__(setExpression, parent)
 
 class TextValueWidget(ChangeableMixin, DraggableMixin, QFrame):
 
@@ -796,7 +872,8 @@ class NumberGapWidget(GapWidget):
             return language.NumberGap()
 
     def isAcceptable(self, component):
-        return isinstance(component, language.NumberExpression)
+        return isinstance(component, language.NumberExpression) or \
+            isinstance(component, language.NumberGetVariableExpression)
 
 class TextGapWidget(GapWidget):
 
@@ -818,7 +895,8 @@ class TextGapWidget(GapWidget):
             return language.TextGap()
 
     def isAcceptable(self, component):
-        return isinstance(component, language.TextExpression)
+        return isinstance(component, language.TextExpression) or \
+            isinstance(component, language.TextGetVariableExpression)
 
 class VideoGapWidget(GapWidget):
 
@@ -841,7 +919,8 @@ class VideoGapWidget(GapWidget):
             return language.VideoGap()
 
     def isAcceptable(self, component):
-        return isinstance(component, language.VideoExpression)
+        return isinstance(component, language.VideoExpression) or \
+            isinstance(component, language.VideoGetVariableExpression)
 
 class VideoCollectionGapWidget(GapWidget):
 
@@ -865,7 +944,8 @@ class VideoCollectionGapWidget(GapWidget):
             return language.VideoGap()
 
     def isAcceptable(self, component):
-        return isinstance(component, language.VideoCollectionExpression)
+        return isinstance(component, language.VideoCollectionExpression) or \
+            isinstance(component, language.VideoCollectionGetVariableExpression)
 
 class ListGapWidget(QLabel):
     """

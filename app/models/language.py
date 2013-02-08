@@ -32,6 +32,10 @@ import collections
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+class Type():
+    """Type enum."""
+    TEXT, NUMBER, VIDEO, VIDEO_COLLECTION = range(4)
+
 class LanguageException(Exception):
     """Base class for exceptions."""
     pass
@@ -177,7 +181,7 @@ class LanguageComponent(object):
         """
         raise NotImplementedError
 
-    def get_live_variables(self):
+    def get_live_variables(self, type):
         """
         Returns list of variable names for variable that are live on entrance
         to the language component.
@@ -185,6 +189,7 @@ class LanguageComponent(object):
         Analysis will **overestimate** for safety and returns variables that
         **may be** live.
 
+        :type type: Type enum
         :rtype: string set
         """
         # Implement naive recursive strategy.
@@ -192,7 +197,7 @@ class LanguageComponent(object):
         # implement the base case.
         live_variables = set()
         for child in self._children:
-           live_variables |= child.get_live_variables()
+           live_variables |= child.get_live_variables(type)
         return live_variables
 
 class Gap(LanguageComponent):
@@ -454,22 +459,84 @@ class SetVariableStatement(Statement):
     #     """
     #     return []
 
+class TypedSetVariableStatement(SetVariableStatement):
+    """
+    Adds type enforcement to SetVariableStatement with a type property.
+    """
+
+    type = property(lambda self: self._type)
+
+    def __init__(self, type, name, value):
+        """
+        :type type: Type enum
+        :type name: string
+        :type value: <: TextExpression | NumberExpression | VideoExpression | VideoCollectionExpression
+        """
+        super(TypedSetVariableStatement, self).__init__(name, value)
+        self._type = type
+
+class NumberSetVariableStatement(TypedSetVariableStatement):
+    
+    def __init__(self, name, value):
+        super(NumberSetVariableStatement, self).__init__(Type.NUMBER, name, value)
+
+class TextSetVariableStatement(TypedSetVariableStatement):
+    
+    def __init__(self, name, value):
+        super(TextSetVariableStatement, self).__init__(Type.TEXT, name, value)
+
+class VideoSetVariableStatement(TypedSetVariableStatement):
+    
+    def __init__(self, name, value):
+        super(VideoSetVariableStatement, self).__init__(Type.VIDEO, name, value)
+
+class VideoCollectionSetVariableStatement(TypedSetVariableStatement):
+    
+    def __init__(self, name, value):
+        super(VideoCollectionSetVariableStatement, self).__init__(Type.VIDEO_COLLECTION, name, value)
+
 class GetVariableExpression(LanguageComponent):
 
+    type = property(lambda self: self._type)
     name = property(lambda self: self._name)
 
-    def __init__(self, name):
+    def __init__(self, type, name):
         """
+        :type type: Type enum
         :type name: string
         """
         self._name = name
+        self._type = type
 
     def translate(self):
         return self._name
 
-    def get_live_variables(self):
+    def get_live_variables(self, type):
         """Base case."""
-        return set([self._name])
+        if type == self._type:
+            return set([self._name])
+        else:
+            return set([])
+
+class NumberGetVariableExpression(GetVariableExpression):
+    
+    def __init__(self, name):
+        super(NumberGetVariableExpression, self).__init__(Type.NUMBER, name)
+
+class TextGetVariableExpression(GetVariableExpression):
+    
+    def __init__(self, name):
+        super(TextGetVariableExpression, self).__init__(Type.TEXT, name)
+
+class VideoGetVariableExpression(GetVariableExpression):
+    
+    def __init__(self, name):
+        super(VideoGetVariableExpression, self).__init__(Type.VIDEO, name)
+
+class VideoCollectionGetVariableExpression(GetVariableExpression):
+    
+    def __init__(self, name):
+        super(VideoCollectionGetVariableExpression, self).__init__(Type.VIDEO_COLLECTION, name)
 
 class TextExpression(Expression):
     """Base class for expressions that evaluate to type Text."""
