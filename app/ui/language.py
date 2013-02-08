@@ -571,8 +571,8 @@ class GetWidget(ChangeableMixin, DraggableMixin, QFrame):
         """
         :type ro: boolean
         """
-        # Can't make combo box read only.
-        pass
+        # Can't simply stop user from changing selected item but can disable editing.
+        self._name.setEditable(not ro)
 
 class NumberGetWidget(GetWidget):
 
@@ -609,6 +609,8 @@ class SetWidget(ChangeableMixin, DraggableMixin, QFrame):
         self._type = setStatement.type
 
         self._name = QComboBox()
+        # Allow user to add and edit names
+        self._name.setEditable(True)
         for name in VARIABLE_NAMES:
             self._name.addItem(name)
         self._name.setCurrentIndex(self._name.findText(setStatement.name))
@@ -641,7 +643,8 @@ class SetWidget(ChangeableMixin, DraggableMixin, QFrame):
         """
         :type ro: boolean
         """
-        # Can't make combo box read only.
+        # Can't simply stop user from changing selected item but can disable editing.
+        self._name.setEditable(not ro)
         self._value.setReadOnly(ro)
 
 class NumberSetWidget(SetWidget):

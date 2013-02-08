@@ -360,10 +360,10 @@ class ScriptEdit(QScrollArea):
             # Return true to indicate have handled event.
             # Rapid GUI Programming pg310
             return True
-        elif event.type() == events.LiveNumberVariablesChangeType:
-            self.liveNumberVariablesChanged.emit(self.liveNumberVariables())
-            print self.liveNumberVariables()
-            return True
+        # elif event.type() == events.LiveNumberVariablesChangeType:
+        #     self.liveNumberVariablesChanged.emit(self.liveNumberVariables())
+        #     print self.liveNumberVariables()
+        #     return True
         else:
             # Use base class implementation to handle other events.
             return super(ScriptEdit, self).event(event)
