@@ -406,6 +406,9 @@ class VideoSceneWidget(ChangeableMixin, SceneWidget):
         """
         super(VideoSceneWidget, self).__init__(parent)
 
+        
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
         self._comment = CommentWidget(scene.title + "\n" + scene.comment, self)
         self._comment.setMaximumHeight(50)
         self._registerChangeSignal(self._comment.textChanged)
@@ -466,6 +469,9 @@ class TextSceneWidget(ChangeableMixin, SceneWidget):
         :type scene: TextScene
         """
         super(TextSceneWidget, self).__init__(parent)
+
+        
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         self._comment = CommentWidget(scene.title + "\n" + scene.comment, self)
         self._comment.setMaximumHeight(50)
