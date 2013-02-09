@@ -187,16 +187,16 @@ class GraphicalEditor(QMainWindow):
         example = language.Act([
             language.TextScene(
                 "Use this space to write about a scene, this one displays the title of Gangnam Style.",
-                "The Gangnam Style video is identified by it's web page and saved for later in the variable `current video`.",
+                "The Gangnam Style video is identified by it's web page and saved for later in the variable `curr video`.",
                 language.NumberValue(2),
                 language.CommandSequence([
                     language.VideoSetVariableStatement(
-                        "current video",
+                        "curr video",
                         language.VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0")
                     )
                 ]),
                 language.CommandSequence([]),
-                language.YoutubeVideoGetTitle(language.VideoGetVariableExpression("current video"))
+                language.YoutubeVideoGetTitle(language.VideoGetVariableExpression("curr video"))
             ),
             language.VideoScene(
                 "This scene plays Gangnam Style.",
@@ -205,7 +205,7 @@ class GraphicalEditor(QMainWindow):
                 language.CommandSequence([]),
                 language.CommandSequence([]),
                 language.NumberValue(0),
-                language.VideoGetVariableExpression("current video")
+                language.VideoGetVariableExpression("curr video")
             ),
             language.TextScene(
                 "Display title of a related video.",
@@ -213,16 +213,16 @@ class GraphicalEditor(QMainWindow):
                 language.NumberValue(2),
                 language.CommandSequence([
                     language.VideoSetVariableStatement(
-                        "current video",
+                        "curr video",
                         language.YoutubeVideoCollectionRandom(
                             language.YoutubeVideoGetRelated(
-                                language.VideoGetVariableExpression("current video")
+                                language.VideoGetVariableExpression("curr video")
                             )
                         )
                     )
                 ]),
                 language.CommandSequence([]),
-                language.YoutubeVideoGetTitle(language.VideoGetVariableExpression("current video"))
+                language.YoutubeVideoGetTitle(language.VideoGetVariableExpression("curr video"))
             ),
             language.VideoScene(
                 "This scene plays the related video.",
@@ -231,7 +231,7 @@ class GraphicalEditor(QMainWindow):
                 language.CommandSequence([]),
                 language.CommandSequence([]),
                 language.NumberValue(0),
-                language.VideoGetVariableExpression("current video")
+                language.VideoGetVariableExpression("curr video")
             )
         ])
         self._scriptEdit.setScript(example)
@@ -471,8 +471,8 @@ class PaletteWidget(QToolBox):
                     NumberSetWidget(language.NumberSetVariableStatement("number 1", language.NumberGap()), self),
                     TextGetWidget(language.TextGetVariableExpression("text 1"), self),
                     TextSetWidget(language.TextSetVariableStatement("text 1", language.TextGap()), self),
-                    VideoGetWidget(language.VideoGetVariableExpression("current video"), self),
-                    VideoSetWidget(language.VideoSetVariableStatement("current video", language.VideoGap()), self),
+                    VideoGetWidget(language.VideoGetVariableExpression("curr video"), self),
+                    VideoSetWidget(language.VideoSetVariableStatement("curr video", language.VideoGap()), self),
                     VideoCollectionGetWidget(language.VideoCollectionGetVariableExpression("collection 1"), self),
                     VideoCollectionSetWidget(language.VideoCollectionSetVariableStatement("collection 1", language.VideoCollectionGap()), self),
                 )

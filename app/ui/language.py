@@ -36,7 +36,7 @@ LC_MIME_FORMAT = "application/x-language-component"
 # names for other use cases.
 NUMBER_VARIABLE_NAMES = ["duration", "offset", "number 1", "number 2", "number 3"]
 TEXT_VARIABLE_NAMES = ["title", "comment", "text 1", "text 2", "text 3"]
-VIDEO_VARIABLE_NAMES = ["current video", "video 1", "video 2", "video 3"]
+VIDEO_VARIABLE_NAMES = ["curr video", "video 1", "video 2", "video 3"]
 # Not obvious how to make combo box display many lines so shortern from video collection -> collection.
 VIDEO_COLLECTION_VARIABLE_NAMES = ["collection 1", "collection 2", "collection 3"]
 
@@ -625,7 +625,7 @@ class SetWidget(ChangeableMixin, DraggableMixin, QFrame):
         :type setStatement: language.TypedSetVariableStatement
         """
         super(SetWidget, self).__init__(parent)
-        
+
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         self._type = setStatement.type
