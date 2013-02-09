@@ -147,21 +147,32 @@ def generate_function(name, body):
     return """def %s():
 %s""" % (name, indent(body))
 
-def generate_function_name(text):
+def generate_safe_identifier(text):
     """
-    Creates safe function name from arbitrary text.
+    Create safe identifier name from arbitrary text.
 
     Satisfies definition of identifiers at
     http://docs.python.org/2/reference/lexical_analysis.html#identifiers
 
-    >>> generate_function_name("Example Text Scene")
+    `identifier ::=  (letter|"_") (letter | digit | "_")*`
+
+    >>> generate_safe_identifier("Example Text Scene")
     'example_text_scene'
 
-    >>> generate_function_name("Example  Text  Scene!!!")
+    >>> generate_safe_identifier("Example  Text  Scene!!!")
     'example__text__scene___'
+
+    >>> generate_safe_identifier("current video")
+    'current_video'
+
+    >>> generate_safe_identifier("111")
+    '_11'
     """
     text = text.lower().replace(" ", "_")
-    return re.sub(r'[^a-z_]', "_", text)
+    # Make sure starts with (letter|"_")
+    text = re.sub(r'^([^a-z_])', "_", text)
+    # Make sure rest of identifier is made up of (letter | digit | "_")
+    return re.sub(r'[^a-z0-9_]', "_", text)
 
 class LanguageComponent(object):
     """Base class for all components of the language."""
@@ -444,12 +455,16 @@ class SetVariableStatement(Statement):
         self._value = value
 
     def translate(self):
+        """
+        >>> SetVariableStatement("number 1", NumberValue(10)).translate()
+        'number_1 = 10\\n'
+        """
         value_code = self._value.translate()
         up_to, last = partition_on_last_newline(value_code)
         code = up_to
         if up_to != "":
             code += "\n"
-        code += "%s = %s\n" % (self._name,last)
+        code += "%s = %s\n" % (generate_safe_identifier(self._name),last)
         return code
 
     # def get_live_variables(self):
@@ -509,7 +524,7 @@ class GetVariableExpression(LanguageComponent):
         self._type = type
 
     def translate(self):
-        return self._name
+        return generate_safe_identifier(self._name)
 
     def get_live_variables(self, type):
         """Base case."""
