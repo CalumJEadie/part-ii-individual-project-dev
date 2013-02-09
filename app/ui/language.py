@@ -111,11 +111,13 @@ class LanguageWidgetFactory(object):
             language.CommandSequence: lambda lc, p: CommandSequenceWidget(lc, p),
             language.TextScene: lambda lc, p: TextSceneWidget(lc, p),
             language.VideoScene: lambda lc, p: VideoSceneWidget(lc, p),
+            language.IfScene: lambda lc, p: IfSceneWidget(lc, p),
             language.YoutubeVideoGetTitle: lambda lc, p: YoutubeVideoGetTitleWidget(lc, p),
             language.YoutubeVideoRandomComment: lambda lc, p: YoutubeVideoRandomCommentWidget(lc, p),
             language.YoutubeVideoGetRelated: lambda lc, p: YoutubeVideoGetRelatedWidget(lc, p),
             language.YoutubeVideoCollectionRandom: lambda lc, p: YoutubeVideoCollectionRandomWidget(lc, p),
             language.YoutubeSearch: lambda lc, p: YoutubeSearchWidget(lc, p),
+            language.SceneSequence: lambda lc, p: SceneSequenceWidget(lc, p),
             language.Act: lambda lc,p: ActWidget(lc, p),
             language.YoutubeTopRated: lambda lc, p: YoutubeTopRatedWidget(p),
             language.YoutubeMostViewed: lambda lc, p: YoutubeMostViewedWidget(p),
@@ -256,17 +258,17 @@ class ChangeableMixin(object):
 #             # of event() that overrides QWidget.event().
 #             return QWidget.event(self, event)
 
-class ActWidget(ChangeableMixin, QWidget):
+class SceneSequenceWidget(ChangeableMixin, QWidget):
     """
     Basic implementation of drag and drop. Append only.
     """
 
-    def __init__(self, act, parent):
+    def __init__(self, sceneSequence, parent):
         """
-        :type act: language.Act
+        :type sceneSequence: language.SceneSequence
         """
 
-        super(ActWidget, self).__init__(parent)
+        super(SceneSequenceWidget, self).__init__(parent)
 
         self._scenes = []
         self._gap = SceneGapWidget(self)
@@ -274,28 +276,17 @@ class ActWidget(ChangeableMixin, QWidget):
         self._layout = QVBoxLayout()
         self._layout.addSpacing(10)
         self._layout.addWidget(self._gap)
-        for scene in act.scenes:
+        for scene in sceneSequence.scenes:
             self.addScene(scene)
         self._layout.addStretch(10)
 
         self.setLayout(self._layout)
 
-    # def _setupUI(self):
-    #     layout = QVBoxLayout()
-    #     layout.addSpacing(10)
-    #     for scene in self._scenes:
-    #         layout.addWidget(scene)
-    #     layout.addStretch(10)
-        # self.setLayout(layout)
-
     def model(self):
         """
-        :rtype: models.language.Act
+        :rtype: models.language.SceneSequence
         """
-        return language.Act(map(lambda x: x.model(), self._scenes))
-
-    # def mousePressEvent(self,event):
-    #     self.changed.emit(self.model().translate())
+        return language.SceneSequence(map(lambda x: x.model(), self._scenes))
 
     def addScene(self, scene):
         """
@@ -318,6 +309,23 @@ class ActWidget(ChangeableMixin, QWidget):
         # Place scene in center of act
         self._layout.insertWidget(self._layout.indexOf(self._gap), widget, alignment=Qt.AlignHCenter)
         # self.updateGeometry()
+
+class ActWidget(SceneSequenceWidget):
+    """
+    Basic implementation of drag and drop. Append only.
+    """
+
+    def __init__(self, act, parent):
+        """
+        :type act: language.Act
+        """
+        super(ActWidget, self).__init__(language.SceneSequence(act.scenes), parent)
+
+    def model(self):
+        """
+        :rtype: models.language.Act
+        """
+        return language.Act(map(lambda x: x.model(), self._scenes))
 
 class SceneWidget(QFrame):
 
@@ -394,6 +402,31 @@ class MiniTextSceneWidget(DraggableMixin, QLabel):
             language.YoutubeVideoGetTitle(
                 language.VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0")
             )
+        )
+
+    def setReadOnly(self, ro):
+        """
+        :type ro: boolean
+        """
+        pass
+
+class MiniIfSceneWidget(DraggableMixin, QLabel):
+
+    def __init__(self, parent):
+        super(MiniIfSceneWidget, self).__init__(parent)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.setText("If Scene")
+
+    def model(self):
+        """
+        :rtype: models.language.IfScene
+        """
+        return language.IfScene(
+            "Example If Scene",
+            "",
+            language.TextGap(),
+            language.SceneSequence([]),
+            language.SceneSequence([])
         )
 
     def setReadOnly(self, ro):
@@ -519,6 +552,61 @@ class TextSceneWidget(ChangeableMixin, SceneWidget):
 
     def text(self):
         return self._text.model()
+
+class IfSceneWidget(ChangeableMixin, QFrame):
+
+    def __init__(self, scene, parent):
+        """
+        :type scene: IfScene
+        """
+        super(IfSceneWidget, self).__init__(parent)
+
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+        self._comment = CommentWidget(scene.title + "\n" + scene.comment, self)
+        self._comment.setMaximumHeight(50)
+        self._registerChangeSignal(self._comment.textChanged)
+
+        self._question = TextGapWidget(scene.question, self)
+        self._true_scene_sequence = SceneSequenceWidget(scene.true_scene_sequence, self)
+        self._false_scene_sequence = SceneSequenceWidget(scene.false_scene_sequence, self)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self._comment)
+        layout.addWidget(self._question)
+        layout.addWidget(self._true_scene_sequence)
+        layout.addWidget(self._false_scene_sequence)
+
+        self.setLayout(layout)
+
+    def title(self):
+        before, sep, after = self._comment.toPlainText().partition("\n")
+        return before
+
+    def comment(self):
+        before, sep, after = self._comment.toPlainText().partition("\n")
+        return after
+
+    def question(self):
+        return self._question.model()
+
+    def true_scene_sequence(self):
+        return self._true_scene_sequence.model()
+
+    def false_scene_sequence(self):
+        return self._false_scene_sequence.model()
+
+    def model(self):
+        """
+        :rtype: models.language.IfScene
+        """
+        return language.IfScene(
+            self.title(),
+            self.comment(),
+            self.question(),
+            self.true_scene_sequence(),
+            self.false_scene_sequence()
+        )
 
 class CommandSequenceWidget(ChangeableMixin, QWidget):
     """
@@ -1120,7 +1208,8 @@ class SceneGapWidget(ListGapWidget):
         self.parent().addScene(lc)
 
     def isAcceptable(self, component):
-        return isinstance(component, language.Scene)
+        return isinstance(component, language.Scene) or \
+            isinstance(component, language.IfScene)
 
 class NumberOperatorWidget(ChangeableMixin, DraggableMixin, QFrame):
 
