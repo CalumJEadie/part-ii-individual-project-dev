@@ -247,10 +247,11 @@ class ScriptEdit(QScrollArea):
     changed = Signal(str)
 
     # Set of live variables changed.
-    liveNumberVariablesChanged = Signal(set)
-    liveTextVariablesChanged = Signal(set)
-    liveVideoVariablesChanged = Signal(set)
-    liveVideoCollectionVariablesChanged = Signal(set)
+    # List used as need to keep order within combo box consistent, for simplicity of implementation.
+    liveNumberVariablesChanged = Signal(list)
+    liveTextVariablesChanged = Signal(list)
+    liveVideoVariablesChanged = Signal(list)
+    liveVideoCollectionVariablesChanged = Signal(list)
 
     def __init__(self, parent=None):
         super(ScriptEdit, self).__init__(parent)
@@ -390,6 +391,22 @@ class ScriptEdit(QScrollArea):
 
     def _liveVideoCollectionVariables(self):
         return self._actWidget.get_live_variable(language.Type.VIDEO_COLLECTION)
+
+    @Slot(list)
+    def setLiveNumberVariables(names):
+        self.liveNumberVariablesChanged.emit(names)
+
+    @Slot(list)
+    def setLiveTextVariables(names):
+        self.liveTextVariablesChanged.emit(names)
+
+    @Slot(list)
+    def setLiveVideoVariables(names):
+        self.liveVideoVariablesChanged.emit(names)
+
+    @Slot(list)
+    def setLiveVideoCollectionVariables(names):
+        self.liveVideoCollectionVariablesChanged.emit(names)
 
 class PaletteWidget(QToolBox):
     """
