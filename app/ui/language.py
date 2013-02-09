@@ -563,6 +563,8 @@ class GetWidget(ChangeableMixin, DraggableMixin, QFrame):
         """
         super(GetWidget, self).__init__(parent)
 
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
         self._type = getExpression.type
         self._name = QComboBox(self)
         ## Allow user to add and edit names
@@ -623,6 +625,8 @@ class SetWidget(ChangeableMixin, DraggableMixin, QFrame):
         :type setStatement: language.TypedSetVariableStatement
         """
         super(SetWidget, self).__init__(parent)
+        
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         self._type = setStatement.type
 
