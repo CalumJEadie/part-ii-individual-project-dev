@@ -285,15 +285,15 @@ class CommandSequence(LanguageComponent, collections.Sequence):
         code += "\n"
         return code
 
-class SceneCollection(LanguageComponent):
+class SceneSequence(LanguageComponent):
     """
-    Represent a linear sequence of scenes.
+    Represents a linear sequence of scenes.
     """
 
     scenes = property(lambda self: self._children)
 
     def __init__(self, scenes):
-        super(SceneCollection, self).__init__(scenes)
+        super(SceneSequence, self).__init__(scenes)
 
     def translate(self):
         code = ""
@@ -305,7 +305,7 @@ class SceneCollection(LanguageComponent):
             code += "pass\n"
         return code
 
-class Act(SceneCollection):
+class Act(SceneSequence):
     """
     Highest level container. Analagous to a program.
 
@@ -516,16 +516,16 @@ class IfScene(LanguageComponent):
     title = property(lambda self: self._title)
     comment = property(lambda self: self._comment)
     question = property(lambda self: self._question)
-    true_act = property(lambda self: self._true_act)
-    false_act = property(lambda self: self._false_act)
+    true_scene_sequence = property(lambda self: self._true_scene_sequence)
+    false_scene_sequence = property(lambda self: self._false_scene_sequence)
 
-    def __init__(self, title, comment, questions, true_act, false_act):
+    def __init__(self, title, comment, questions, true_scene_sequence, false_scene_sequence):
         """
         :type title: string
         :type comment: string
         :type question: <:TextExpression
-        :type true_act: SceneSequence
-        :type false_act: SceneSequence
+        :type true_scene_sequence: SceneSequence
+        :type false_scene_sequence: SceneSequence
         """
         super(IfScene, self).__init__([question])
         self._title = title
