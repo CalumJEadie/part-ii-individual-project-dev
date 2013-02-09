@@ -27,7 +27,20 @@ logger.setLevel(logging.INFO)
 # MIME format for language components.
 LC_MIME_FORMAT = "application/x-language-component"
 
-# Define here for effeciency.
+# Use static variable set for simplicity of implementation.
+# Use Jorma Sajaniemi's Roles of Variables research to inform what variables to
+# provide in static sets.
+# http://www.cs.joensuu.fi/~saja/var_roles/role_intro.html
+
+# Provide variables for likely uses based on motivating applications and general
+# names for other use cases.
+NUMBER_VARIABLE_NAMES = ["duration", "offset", "number 1", "number 2", "number 3"]
+TEXT_VARIABLE_NAMES = ["title", "comment", "text 1", "text 2", "text 3"]
+VIDEO_VARIABLE_NAMES = ["current video", "video 1", "video 2", "video 3"]
+# Not obvious how to make combo box display many lines so shortern from video collection -> collection.
+VIDEO_COLLECTION_VARIABLE_NAMES = ["collection 1", "collection 2", "collection 3"]
+
+# Use mappings to avoid large large switch and define here to avoid redefines in every function.
 TYPE_TO_GET_VARIABLE_EXPRESSION = {
     Type.NUMBER: language.NumberGetVariableExpression,
     Type.TEXT: language.TextGetVariableExpression,
@@ -40,6 +53,13 @@ TYPE_TO_SET_VARIABLE_STATEMENT = {
     Type.TEXT: language.TextSetVariableStatement,
     Type.VIDEO: language.VideoSetVariableStatement,
     Type.VIDEO_COLLECTION: language.VideoCollectionSetVariableStatement
+}
+
+TYPE_TO_VARIABLE_NAMES = {
+    Type.NUMBER: NUMBER_VARIABLE_NAMES,
+    Type.TEXT: TEXT_VARIABLE_NAMES,
+    Type.VIDEO: VIDEO_VARIABLE_NAMES,
+    Type.VIDEO_COLLECTION: VIDEO_COLLECTION_VARIABLE_NAMES   
 }
 
 class LanguageWidgetFactory(object):
@@ -535,9 +555,6 @@ class CommandSequenceWidget(ChangeableMixin, QWidget):
         """
         self._layout.insertWidget(self._layout.indexOf(self._gap), widget)
 
-# TODO: Use live variables.
-VARIABLE_NAMES = ["item", "curr_video", "curr_duration", "curr_offset"]
-
 class GetWidget(ChangeableMixin, DraggableMixin, QFrame):
 
     def __init__(self, getExpression, parent):
@@ -548,9 +565,9 @@ class GetWidget(ChangeableMixin, DraggableMixin, QFrame):
 
         self._type = getExpression.type
         self._name = QComboBox(self)
-        # Allow user to add and edit names
-        self._name.setEditable(True)
-        for name in VARIABLE_NAMES:
+        ## Allow user to add and edit names
+        #self._name.setEditable(True)
+        for name in TYPE_TO_VARIABLE_NAMES[self._type]:
             self._name.addItem(name)
         self._name.setCurrentIndex(self._name.findText(getExpression.name))
         self._registerChangeSignal(self._name.currentIndexChanged)
@@ -571,8 +588,9 @@ class GetWidget(ChangeableMixin, DraggableMixin, QFrame):
         """
         :type ro: boolean
         """
-        # Can't simply stop user from changing selected item but can disable editing.
-        self._name.setEditable(not ro)
+        ## Can't simply stop user from changing selected item but can disable editing.
+        #self._name.setEditable(not ro)
+        pass
 
 class NumberGetWidget(GetWidget):
 
@@ -609,9 +627,9 @@ class SetWidget(ChangeableMixin, DraggableMixin, QFrame):
         self._type = setStatement.type
 
         self._name = QComboBox()
-        # Allow user to add and edit names
-        self._name.setEditable(True)
-        for name in VARIABLE_NAMES:
+        ## Allow user to add and edit names
+        #self._name.setEditable(True)
+        for name in TYPE_TO_VARIABLE_NAMES[self._type]:
             self._name.addItem(name)
         self._name.setCurrentIndex(self._name.findText(setStatement.name))
         self._registerChangeSignal(self._name.currentIndexChanged)
@@ -643,8 +661,8 @@ class SetWidget(ChangeableMixin, DraggableMixin, QFrame):
         """
         :type ro: boolean
         """
-        # Can't simply stop user from changing selected item but can disable editing.
-        self._name.setEditable(not ro)
+        ## Can't simply stop user from changing selected item but can disable editing.
+        #self._name.setEditable(not ro)
         self._value.setReadOnly(ro)
 
 class NumberSetWidget(SetWidget):
