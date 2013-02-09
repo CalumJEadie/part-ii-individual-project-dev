@@ -211,6 +211,24 @@ class LanguageComponent(object):
            live_variables |= child.get_live_variables(type)
         return live_variables
 
+    def get_all_live_variables(self):
+        """
+        :rtype: string set
+        """
+        return self.get_live_variables(Type.NUMBER) | \
+            self.get_live_variables(Type.TEXT) | \
+            self.get_live_variables(Type.VIDEO) | \
+            self.get_live_variables(Type.VIDEO_COLLECTION)
+
+    def get_all_live_variables_sorted_type_name(self):
+        """
+        Returns all live variables sorted by type then name.
+        """
+        return sorted(self.get_live_variables(Type.NUMBER)) + \
+            sorted(self.get_live_variables(Type.TEXT)) + \
+            sorted(self.get_live_variables(Type.VIDEO)) + \
+            sorted(self.get_live_variables(Type.VIDEO_COLLECTION))
+
 class Gap(LanguageComponent):
     """
     Base class for gaps, components to represent an incomplete part of the syntax
@@ -278,24 +296,52 @@ class Act(LanguageComponent):
         super(Act, self).__init__(scenes)
 
     def translate(self):
-         
-        functions = collections.OrderedDict()
-        function_num = 1
+        
+        code = ""
 
-        for scene in self._children:
-            name = "scene_%s" % function_num
-            function = generate_function(name, scene.translate())
-            functions[name] = function
-            function_num += 1
+        # Handle empty act
+        if len(self._children) > 0:
 
-        generate_function_call = lambda name: "%s()" % name
+            functions = collections.OrderedDict()
+            function_num = 1
 
-        main_function_body = '\n'.join(map(generate_function_call, functions.keys()))
-        main_function = generate_function("main", main_function_body)
+            # Define sensible default values in case for variable in case user
+            # does not initalise them.
 
-        code = main_function + "\n\n"
-        code += "\n".join(functions.values())
-        code += "\n" + generate_function_call("main")
+            # Sort so that undeterministic order changing due from use of set doesn't
+            # distract the user.
+            
+            live_number_variables = sorted(self.get_live_variables(Type.NUMBER))
+            live_text_variables = sorted(self.get_live_variables(Type.TEXT))
+            live_video_variables = sorted(self.get_live_variables(Type.VIDEO))
+            live_video_collection_variables = sorted(self.get_live_variables(Type.VIDEO_COLLECTION))
+
+            global_var_defn = ""
+            for variable in live_number_variables:
+                global_var_defn += SetVariableStatement(variable, NumberValue(0)).translate()
+            for variable in live_text_variables:
+                global_var_defn += SetVariableStatement(variable, TextValue("")).translate()
+            for variable in live_video_variables:
+                global_var_defn += SetVariableStatement(variable, VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0")).translate()
+            for variable in live_video_collection_variables:
+                global_var_defn += SetVariableStatement(variable, VideoCollectionValue([])).translate()
+
+            for scene in self._children:
+                name = "scene_%s" % function_num
+                function = generate_function(name, scene.translate())
+                functions[name] = function
+                function_num += 1
+
+            generate_function_call = lambda name: "%s()" % name
+
+            main_function_body = '\n'.join(map(generate_function_call, functions.keys()))
+            main_function = generate_function("main", main_function_body)
+
+            if global_var_defn != "":
+                code += global_var_defn + "\n"
+            code += main_function + "\n\n"
+            code += "\n".join(functions.values())
+            code += "\n" + generate_function_call("main")
 
         return code
 
@@ -340,15 +386,29 @@ class Scene(LanguageComponent):
 
     def translate_before_content(self):
         code = CommentStatement(self._title).translate()
+
         if self._comment != "":
             code += CommentStatement("").translate()
             code += CommentStatement(self._comment).translate()
+
+        # In Python module/global scope is read-only shadow within the local function/
+        # method scope so can access variables but not change them. Need to be able
+        # to change the variables do declare any variables that might be changed as
+        # global.
+        # See: http://stereochro.me/ideas/global-in-python
+        live_variables = self.get_all_live_variables_sorted_type_name()
+        if len(live_variables) > 0:
+            code += "\n"
+            for variable in live_variables:
+                code += "global %s\n" % generate_safe_identifier(variable)
+
         if len(self._pre_commands) > 0:
             code += "\n"
             code += CommentStatement("Pre commands.").translate()
             code += self._pre_commands.translate()
         else:
             code += "\n"
+
         return code
 
     def translate_content(self):
@@ -467,12 +527,8 @@ class SetVariableStatement(Statement):
         code += "%s = %s\n" % (generate_safe_identifier(self._name),last)
         return code
 
-    # def get_live_variables(self):
-    #     """
-    #     Later may want to implement a better estimate by taking into account
-    #     variables being dereferenced by setting to a new value.
-    #     """
-    #     return []
+    # Do not need to implement `get_live_variables` as do not have typed variables
+    # and is not used for **user** variables.
 
 class TypedSetVariableStatement(SetVariableStatement):
     """
@@ -489,6 +545,17 @@ class TypedSetVariableStatement(SetVariableStatement):
         """
         super(TypedSetVariableStatement, self).__init__(name, value)
         self._type = type
+
+    def get_live_variables(self, type):
+        """
+        Base case. Need include variables dereferenced to know what is changed and
+        hence what to make global. May need to change from use of "live" to a different
+        term to describe this kind of analysis.
+        """
+        if type == self._type:
+            return set([self._name])
+        else:
+            return set([])
 
 class NumberSetVariableStatement(TypedSetVariableStatement):
     
@@ -748,7 +815,7 @@ class VideoCollectionValue(VideoCollectionExpression):
         self._web_urls = web_urls
 
     def translate(self):
-        return "youtube.VideoCollection.from_web_urls('%s')" % self._web_urls
+        return "youtube.VideoCollection.from_web_urls(%s)" % self._web_urls
 
 class YoutubeVideoGetRelated(VideoCollectionExpression):
 

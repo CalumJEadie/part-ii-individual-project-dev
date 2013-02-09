@@ -230,7 +230,7 @@ class Test(unittest.TestCase):
 
         self.assertEqual(
             NumberSetVariableStatement("a",NumberValue(1)).get_live_variables(Type.NUMBER),
-            set()
+            set(["a"])
         )
 
         
@@ -251,12 +251,12 @@ class Test(unittest.TestCase):
 
         self.assertEqual(
             cs.get_live_variables(Type.NUMBER),
-            set(["a","b"])
+            set(["a","b", "c"])
         )
 
         self.assertEqual(
             cs.get_live_variables(Type.TEXT),
-            set(["d"])
+            set(["d", "e"])
         )
 
         cs = VideoScene(
