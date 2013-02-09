@@ -285,22 +285,44 @@ class CommandSequence(LanguageComponent, collections.Sequence):
         code += "\n"
         return code
 
-class Act(LanguageComponent):
+class SceneCollection(LanguageComponent):
     """
-    Highest level container. Analagous to a program.
+    Represent a linear sequence of scenes.
     """
 
     scenes = property(lambda self: self._children)
 
     def __init__(self, scenes):
+        super(SceneCollection, self).__init__(scenes)
+
+    def translate(self):
+        code = ""
+        # Handle empty scene collection
+        if len(self._children) > 0:
+            for scene in self._children:
+                code += scene.translate() + "\n"
+        else:
+            code += "pass\n"
+        return code
+
+class Act(SceneCollection):
+    """
+    Highest level container. Analagous to a program.
+
+    Responsible for translating entire program. Uses recursive translation strategy
+    where each component responsible for it's own translation subject to some
+    basic rules about new lines and indentation.
+    """
+
+    def __init__(self, scenes):
         super(Act, self).__init__(scenes)
 
     def translate(self):
-        
-        code = ""
 
         # Handle empty act
         if len(self._children) > 0:
+
+            code = ""
 
             # functions = collections.OrderedDict()
             # function_num = 1
@@ -337,14 +359,17 @@ class Act(LanguageComponent):
             # main_function_body = '\n'.join(map(generate_function_call, functions.keys()))
             # main_function = generate_function("main", main_function_body)
 
-            # if global_var_defn != "":
-            #     code += global_var_defn + "\n"
+            if global_var_defn != "":
+                code += global_var_defn + "\n"
             # code += main_function + "\n\n"
             # code += "\n".join(functions.values())
             # code += "\n" + generate_function_call("main")
-             
-            for scene in self._children:
-                code += scene.translate() + "\n"
+            
+            code += super(Act, self).translate()
+
+        else:
+
+            code = super(Act, self).translate()
 
         return code
 
