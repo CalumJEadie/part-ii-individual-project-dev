@@ -301,7 +301,9 @@ class ActWidget(ChangeableMixin, QWidget):
         """
         :type scene: language.Scene
         """
+
         sceneWidget = LanguageWidgetFactory.build(scene, self)
+
         self._addAtEnd(sceneWidget)
         self._scenes.append(sceneWidget)
 
@@ -313,7 +315,9 @@ class ActWidget(ChangeableMixin, QWidget):
 
         :type widget: QWidget
         """
-        self._layout.insertWidget(self._layout.indexOf(self._gap), widget)
+        # Place scene in center of act
+        self._layout.insertWidget(self._layout.indexOf(self._gap), widget, alignment=Qt.AlignHCenter)
+        # self.updateGeometry()
 
 class SceneWidget(QFrame):
 
@@ -406,7 +410,7 @@ class VideoSceneWidget(ChangeableMixin, SceneWidget):
         """
         super(VideoSceneWidget, self).__init__(parent)
 
-        
+
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         self._comment = CommentWidget(scene.title + "\n" + scene.comment, self)
@@ -1037,8 +1041,10 @@ class ListGapWidget(QLabel):
         """
         super(ListGapWidget, self).__init__(text, parent)
         self.setAcceptDrops(True)
+        # Preferred - The sizeHint() is best, but the widget can be shrunk and still be useful.
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.setWordWrap(True)
+        self.setAlignment(Qt.AlignHCenter)
 
         self._readOnly = False
 

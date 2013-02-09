@@ -9,6 +9,24 @@
  * deep-pink: #FF6699;
  */
 
+/* debugging */
+
+/*
+ScriptEdit {
+    border-color: purple;
+    border-width: 1px;
+    border-style: solid;
+    background: purple;
+}
+
+ActWidget {
+    border-color: black;
+    border-width: 1px;
+    border-style: solid;
+    background: black;
+}
+*/
+
 QWidget {
     font-size: 18px;
 }

@@ -257,6 +257,8 @@ class ScriptEdit(QScrollArea):
         super(ScriptEdit, self).__init__(parent)
         self.setMinimumWidth(700)
         self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.setAlignment(Qt.AlignHCenter) # Place script in center of edit
+        self.setWidgetResizable(True) # Neccessary to take advantage of available space.
         self.clear()
 
     def _setActWidget(self, actWidget):
@@ -265,18 +267,9 @@ class ScriptEdit(QScrollArea):
         """
         self._actWidget = actWidget
 
-        container = QWidget()
-
-        containerLayout = QHBoxLayout()
-        containerLayout.addStretch()
-        containerLayout.addWidget(actWidget)
         actWidget.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-        actWidget.setMinimumSize(QSize(650,2000))
-        containerLayout.addStretch()
 
-        container.setLayout(containerLayout)
-        # horizontal, vertical
-        self.setWidget(container)
+        self.setWidget(self._actWidget)
 
     @Slot(language.Act)
     def setScript(self, script):
