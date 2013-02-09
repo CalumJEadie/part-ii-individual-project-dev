@@ -124,7 +124,7 @@ class SmartMusicPlayerTest(unittest.TestCase):
             )
 
         ])
-        print act1.translate()
+        # print act1.translate()
 
 class Test(unittest.TestCase):
     """
@@ -307,6 +307,51 @@ command3"""),"""    command1
 
     command3"""
         )
+
+    def test_if_scene(self):
+
+        # Simple if scene
+        act = Act([
+            IfScene("Simple If Scene", "",
+                TextValue("question?"),
+                SceneSequence([
+                ]),
+                SceneSequence([
+                ])
+            )
+        ])
+        # print act.translate()
+
+        # If scene with complex question and scene sequence in both branches.
+        curr_video = VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0") # PSY - GANGNAM STYLE
+
+        act = Act([
+            IfScene("Complex If Scene", "",
+                GetVariableExpression(Type.TEXT, "question"),
+                SceneSequence([
+                    TextScene(
+                        title = "Show video title",
+                        comment = "",
+                        duration = NumberValue(2),
+                        text = YoutubeVideoGetTitle(curr_video),
+                        pre_commands = CommandSequence([]),
+                        post_commands = CommandSequence([])
+                    )
+                ]),
+                SceneSequence([
+                    TextScene(
+                        title = "Show video description",
+                        comment = "",
+                        duration = NumberValue(2),
+                        text = YoutubeVideoGetDescription(curr_video),
+                        pre_commands = CommandSequence([]),
+                        post_commands = CommandSequence([])
+                    )
+                ])
+            )
+        ])
+        # print act.translate()
+
 
 if __name__ == "__main__":
     unittest.main()

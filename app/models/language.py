@@ -141,11 +141,28 @@ def indent(code):
 
 def generate_function(name, body):
     """
+    :type name: string
+    :type body: string
+
     >>> generate_function("f", "pass")
     'def f():\\n    pass'
     """
     return """def %s():
 %s""" % (name, indent(body))
+
+def generate_if(condition, true_body, false_body):
+    """
+    :type name: string
+    :type true_body: string
+    :type false_body: string
+
+    >>> generate_if("True", "pass", "pass")
+    'if True:\\n    pass\\nelse:\\n    pass'
+    """
+    return """if %s:
+%s
+else:
+%s""" % (condition, indent(true_body), indent(false_body))
 
 def generate_safe_identifier(text):
     """
@@ -519,7 +536,7 @@ class IfScene(LanguageComponent):
     true_scene_sequence = property(lambda self: self._true_scene_sequence)
     false_scene_sequence = property(lambda self: self._false_scene_sequence)
 
-    def __init__(self, title, comment, questions, true_scene_sequence, false_scene_sequence):
+    def __init__(self, title, comment, question, true_scene_sequence, false_scene_sequence):
         """
         :type title: string
         :type comment: string
@@ -531,6 +548,8 @@ class IfScene(LanguageComponent):
         self._title = title
         self._comment = comment
         self._question = question
+        self._true_scene_sequence = true_scene_sequence
+        self._false_scene_sequence = false_scene_sequence
 
     def translate(self):
         """
@@ -539,7 +558,28 @@ class IfScene(LanguageComponent):
         Postconditions:
         - Will end in a new line.
         """
-        raise NotImplementedError
+        code = CommentStatement(self._title).translate()
+
+        if self._comment != "":
+            code += CommentStatement("").translate()
+            code += CommentStatement(self._comment).translate()
+
+        code += "\n"
+
+        # Need to break up condition code as may span many lines when evaluating
+        # question value.
+        condition_code = translate_function_1("core.ask_yes_no", self._question)
+        up_to, last = partition_on_last_newline(condition_code)
+        if up_to != "":
+            code += up_to + "\n"
+        code += generate_if(
+            last,
+            self._true_scene_sequence.translate(),
+            self._false_scene_sequence.translate()
+        )
+        code += "\n"
+
+        return code
 
 class Statement(LanguageComponent):
 
