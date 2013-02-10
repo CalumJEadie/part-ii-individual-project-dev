@@ -563,29 +563,39 @@ class IfSceneWidget(ChangeableMixin, QFrame):
 
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
-        self._comment = CommentWidget(scene.title + "\n" + scene.comment, self)
-        self._comment.setMaximumHeight(50)
-        self._registerChangeSignal(self._comment.textChanged)
+        # self._comment = CommentWidget(scene.title + "\n" + scene.comment, self)
+        # self._comment.setMaximumHeight(50)
+        # self._registerChangeSignal(self._comment.textChanged)
 
         self._question = TextGapWidget(scene.question, self)
         self._true_scene_sequence = SceneSequenceWidget(scene.true_scene_sequence, self)
         self._false_scene_sequence = SceneSequenceWidget(scene.false_scene_sequence, self)
 
-        layout = QVBoxLayout()
-        layout.addWidget(self._comment)
-        layout.addWidget(self._question)
-        layout.addWidget(self._true_scene_sequence)
-        layout.addWidget(self._false_scene_sequence)
+        headLayout = QHBoxLayout()
+        headLayout.addWidget(QLabel("if the answer to asking", self))
+        headLayout.addWidget(self._question)
+        headLayout.addWidget(QLabel("is yes, then do:", self))
+
+        layout = QGridLayout()
+        # layout.addWidget(self._comment)
+        # PySide.QtGui.QGridLayout.addWidget(arg__1, row, column, rowSpan, columnSpan[, alignment=0])
+        layout.addLayout(headLayout, 0, 0, 1, 3)
+        layout.addWidget(self._true_scene_sequence, 1, 1, 1, 2)
+        layout.addWidget(QLabel("otherwise, do:", self), 2, 0, 1, 2)
+        layout.addWidget(self._false_scene_sequence, 3, 1, 1, 2)
+        layout.addWidget(QLabel("end of scene", self), 4, 0, 1, 2)
 
         self.setLayout(layout)
 
     def title(self):
-        before, sep, after = self._comment.toPlainText().partition("\n")
-        return before
+        # before, sep, after = self._comment.toPlainText().partition("\n")
+        # return before
+        return "If Scene"
 
     def comment(self):
-        before, sep, after = self._comment.toPlainText().partition("\n")
-        return after
+        # before, sep, after = self._comment.toPlainText().partition("\n")
+        # return after
+        return ""
 
     def question(self):
         return self._question.model()

@@ -568,7 +568,7 @@ class IfScene(LanguageComponent):
 
         # Need to break up condition code as may span many lines when evaluating
         # question value.
-        condition_code = translate_function_1("core.ask_yes_no", self._question)
+        condition_code = translate_function_1("ask_yes_no", self._question)
         up_to, last = partition_on_last_newline(condition_code)
         if up_to != "":
             code += up_to + "\n"

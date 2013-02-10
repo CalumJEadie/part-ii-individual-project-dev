@@ -37,7 +37,8 @@ MiniIfSceneWidget {
     font-size: 36px;
 }
 
-MiniIfSceneWidget {
+MiniIfSceneWidget,
+IfSceneWidget {
     border-color: purple;
     border-width: 2px;
     border-style: solid;
@@ -171,6 +172,7 @@ ListGapWidget {
 
 TextSceneWidget,
 VideoSceneWidget,
+IfSceneWidget,
 MiniTextSceneWidget,
 MiniVideoSceneWidget,
 MiniIfSceneWidget,
