@@ -427,7 +427,8 @@ class PaletteWidget(QToolBox):
                 (
                     MiniTextSceneWidget(self),
                     MiniVideoSceneWidget(self),
-                    MiniIfSceneWidget(self)
+                    MiniIfSceneWidget(self),
+                    MiniWhileSceneWidget(self)
                 )
             ),
             (

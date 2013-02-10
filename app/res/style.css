@@ -33,12 +33,15 @@ QWidget {
 
 MiniTextSceneWidget,
 MiniVideoSceneWidget,
-MiniIfSceneWidget {
+MiniIfSceneWidget,
+MiniWhileSceneWidget {
     font-size: 36px;
 }
 
 MiniIfSceneWidget,
-IfSceneWidget {
+IfSceneWidget,
+MiniWhileSceneWidget,
+WhileSceneWidget {
     border-color: purple;
     border-width: 2px;
     border-style: solid;
@@ -173,9 +176,11 @@ ListGapWidget {
 TextSceneWidget,
 VideoSceneWidget,
 IfSceneWidget,
+WhileSceneWidget,
 MiniTextSceneWidget,
 MiniVideoSceneWidget,
 MiniIfSceneWidget,
+MiniWhileSceneWidget,
 GapWidget > QLabel,
 ListGapWidget,
 TextValueWidget,
@@ -201,6 +206,7 @@ VideoCollectionFunction0Widget {
 PaletteWidget MiniTextSceneWidget:hover,
 PaletteWidget MiniVideoSceneWidget:hover,
 PaletteWidget MiniIfSceneWidget:hover,
+PaletteWidget MiniWhileSceneWidget:hover,
 PaletteWidget TextValueWidget:hover,
 PaletteWidget NumberValueWidget:hover,
 PaletteWidget VideoValueWidget:hover,

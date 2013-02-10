@@ -112,6 +112,7 @@ class LanguageWidgetFactory(object):
             language.TextScene: lambda lc, p: TextSceneWidget(lc, p),
             language.VideoScene: lambda lc, p: VideoSceneWidget(lc, p),
             language.IfScene: lambda lc, p: IfSceneWidget(lc, p),
+            language.WhileScene: lambda lc, p: WhileSceneWidget(lc, p),
             language.YoutubeVideoGetTitle: lambda lc, p: YoutubeVideoGetTitleWidget(lc, p),
             language.YoutubeVideoRandomComment: lambda lc, p: YoutubeVideoRandomCommentWidget(lc, p),
             language.YoutubeVideoGetRelated: lambda lc, p: YoutubeVideoGetRelatedWidget(lc, p),
@@ -435,6 +436,30 @@ class MiniIfSceneWidget(DraggableMixin, QLabel):
         """
         pass
 
+class MiniWhileSceneWidget(DraggableMixin, QLabel):
+
+    def __init__(self, parent):
+        super(MiniWhileSceneWidget, self).__init__(parent)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.setText("While Scene")
+
+    def model(self):
+        """
+        :rtype: models.language.WhileScene
+        """
+        return language.WhileScene(
+            "Example While Scene",
+            "",
+            language.TextGap(),
+            language.SceneSequence([])
+        )
+
+    def setReadOnly(self, ro):
+        """
+        :type ro: boolean
+        """
+        pass
+
 class VideoSceneWidget(ChangeableMixin, SceneWidget):
 
     def __init__(self, scene, parent):
@@ -557,7 +582,7 @@ class IfSceneWidget(ChangeableMixin, QFrame):
 
     def __init__(self, scene, parent):
         """
-        :type scene: IfScene
+        :type scene: language.IfScene
         """
         super(IfSceneWidget, self).__init__(parent)
 
@@ -616,6 +641,63 @@ class IfSceneWidget(ChangeableMixin, QFrame):
             self.question(),
             self.true_scene_sequence(),
             self.false_scene_sequence()
+        )
+
+class WhileSceneWidget(ChangeableMixin, QFrame):
+
+    def __init__(self, scene, parent):
+        """
+        :type scene: language.WhileScene
+        """
+        super(WhileSceneWidget, self).__init__(parent)
+
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+        # self._comment = CommentWidget(scene.title + "\n" + scene.comment, self)
+        # self._comment.setMaximumHeight(50)
+        # self._registerChangeSignal(self._comment.textChanged)
+
+        self._question = TextGapWidget(scene.question, self)
+        self._scene_sequence = SceneSequenceWidget(scene.scene_sequence, self)
+
+        headLayout = QHBoxLayout()
+        headLayout.addWidget(QLabel("while the answer to asking", self))
+        headLayout.addWidget(self._question)
+        headLayout.addWidget(QLabel("is yes, repeatedly do:", self))
+
+        layout = QGridLayout()
+        # layout.addWidget(self._comment)
+        # PySide.QtGui.QGridLayout.addWidget(arg__1, row, column, rowSpan, columnSpan[, alignment=0])
+        layout.addLayout(headLayout, 0, 0, 1, 3)
+        layout.addWidget(self._scene_sequence, 1, 1, 1, 2)
+
+        self.setLayout(layout)
+
+    def title(self):
+        # before, sep, after = self._comment.toPlainText().partition("\n")
+        # return before
+        return "While Scene"
+
+    def comment(self):
+        # before, sep, after = self._comment.toPlainText().partition("\n")
+        # return after
+        return ""
+
+    def question(self):
+        return self._question.model()
+
+    def scene_sequence(self):
+        return self._scene_sequence.model()
+
+    def model(self):
+        """
+        :rtype: models.language.WhileScene
+        """
+        return language.WhileScene(
+            self.title(),
+            self.comment(),
+            self.question(),
+            self.scene_sequence()
         )
 
 class CommandSequenceWidget(ChangeableMixin, QWidget):
@@ -1219,7 +1301,8 @@ class SceneGapWidget(ListGapWidget):
 
     def isAcceptable(self, component):
         return isinstance(component, language.Scene) or \
-            isinstance(component, language.IfScene)
+            isinstance(component, language.IfScene) or \
+            isinstance(component, language.WhileScene)
 
 class NumberOperatorWidget(ChangeableMixin, DraggableMixin, QFrame):
 
