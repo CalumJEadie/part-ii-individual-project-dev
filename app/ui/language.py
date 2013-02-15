@@ -416,14 +416,14 @@ class MiniIfSceneWidget(DraggableMixin, QLabel):
     def __init__(self, parent):
         super(MiniIfSceneWidget, self).__init__(parent)
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.setText("If Scene")
+        self.setText("Decision Scene")
 
     def model(self):
         """
         :rtype: models.language.IfScene
         """
         return language.IfScene(
-            "Example If Scene",
+            "Example Decision Scene",
             "",
             language.TextGap(),
             language.SceneSequence([]),
@@ -441,14 +441,14 @@ class MiniWhileSceneWidget(DraggableMixin, QLabel):
     def __init__(self, parent):
         super(MiniWhileSceneWidget, self).__init__(parent)
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.setText("While Scene")
+        self.setText("Repeat Scene")
 
     def model(self):
         """
         :rtype: models.language.WhileScene
         """
         return language.WhileScene(
-            "Example While Scene",
+            "Example Repeat Scene",
             "",
             language.TextGap(),
             language.SceneSequence([])
@@ -608,14 +608,13 @@ class IfSceneWidget(ChangeableMixin, QFrame):
         layout.addWidget(self._true_scene_sequence, 1, 1, 1, 2)
         layout.addWidget(QLabel("otherwise, do:", self), 2, 0, 1, 2)
         layout.addWidget(self._false_scene_sequence, 3, 1, 1, 2)
-        layout.addWidget(QLabel("end of scene", self), 4, 0, 1, 2)
 
         self.setLayout(layout)
 
     def title(self):
         # before, sep, after = self._comment.toPlainText().partition("\n")
         # return before
-        return "If Scene"
+        return "Decision Scene"
 
     def comment(self):
         # before, sep, after = self._comment.toPlainText().partition("\n")
@@ -676,7 +675,7 @@ class WhileSceneWidget(ChangeableMixin, QFrame):
     def title(self):
         # before, sep, after = self._comment.toPlainText().partition("\n")
         # return before
-        return "While Scene"
+        return "Repeat Scene"
 
     def comment(self):
         # before, sep, after = self._comment.toPlainText().partition("\n")
