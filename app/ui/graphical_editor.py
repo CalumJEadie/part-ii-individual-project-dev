@@ -432,10 +432,15 @@ class PaletteWidget(QToolBox):
                 )
             ),
             (
-                "Video and Video Collections",
+                "Video",
                 (
                     VideoValueWidget(language.VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0"), self),
-                    YoutubeVideoCollectionRandomWidget(language.YoutubeVideoCollectionRandom(language.VideoGap()), self),
+                    YoutubeVideoCollectionRandomWidget(language.YoutubeVideoCollectionRandom(language.VideoGap()), self)
+                )
+            ),
+            (
+                "Video Collections",
+                (
                     YoutubeVideoGetRelatedWidget(language.YoutubeVideoGetRelated(language.VideoGap()), self),
                     YoutubeSearchWidget(language.YoutubeSearch(language.TextValue("music")), self),
                     YoutubeTopRatedWidget(self),
@@ -460,15 +465,20 @@ class PaletteWidget(QToolBox):
                 )
             ),
             (
-                "Variables",
+                "Variable Values",
                 (
                     NumberGetWidget(language.NumberGetVariableExpression("number 1"), self),
-                    NumberSetWidget(language.NumberSetVariableStatement("number 1", language.NumberGap()), self),
                     TextGetWidget(language.TextGetVariableExpression("text 1"), self),
-                    TextSetWidget(language.TextSetVariableStatement("text 1", language.TextGap()), self),
                     VideoGetWidget(language.VideoGetVariableExpression("curr video"), self),
-                    VideoSetWidget(language.VideoSetVariableStatement("curr video", language.VideoGap()), self),
                     VideoCollectionGetWidget(language.VideoCollectionGetVariableExpression("collection 1"), self),
+                )
+            ),
+            (
+                "Variable Commands",
+                (
+                    NumberSetWidget(language.NumberSetVariableStatement("number 1", language.NumberGap()), self),
+                    TextSetWidget(language.TextSetVariableStatement("text 1", language.TextGap()), self),
+                    VideoSetWidget(language.VideoSetVariableStatement("curr video", language.VideoGap()), self),
                     VideoCollectionSetWidget(language.VideoCollectionSetVariableStatement("collection 1", language.VideoCollectionGap()), self),
                 )
             )
