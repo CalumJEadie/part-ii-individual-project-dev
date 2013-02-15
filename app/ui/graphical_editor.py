@@ -20,6 +20,9 @@ _PERFORM_GAP_ERROR_TEXT = _GAP_ERROR_TEXT % "performed"
 
 # Externalise key behavior
 EMPTY_GAP_ANIMATION_INTERVAL = 2000
+PALETTE_WIDTH = 350
+SCRIPT_EDIT_MIN_WIDTH = 700
+PREVIEW_WIDTH = 350
 
 class GraphicalEditor(QMainWindow):
     
@@ -88,7 +91,7 @@ class GraphicalEditor(QMainWindow):
         """
 
         self._previewTextEdit = QPlainTextEdit()
-        self._previewTextEdit.setFixedWidth(350)
+        self._previewTextEdit.setFixedWidth(PREVIEW_WIDTH)
         self._previewTextEdit.setReadOnly(True)
 
         # previewBox = QGroupBox("Preview")
@@ -258,7 +261,7 @@ class ScriptEdit(QScrollArea):
 
     def __init__(self, parent=None):
         super(ScriptEdit, self).__init__(parent)
-        self.setMinimumWidth(700)
+        self.setMinimumWidth(SCRIPT_EDIT_MIN_WIDTH)
         self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         self.setAlignment(Qt.AlignHCenter) # Place script in center of edit
         self.setWidgetResizable(True) # Neccessary to take advantage of available space.
@@ -458,7 +461,7 @@ class PaletteWidget(QToolBox):
 
     def setupUI(self):
 
-        self.setFixedWidth(350)
+        self.setFixedWidth(PALETTE_WIDTH)
 
         # Rather than use a lot of boiler plate code define abstract
         # structure of the palette and take care of layout later.
