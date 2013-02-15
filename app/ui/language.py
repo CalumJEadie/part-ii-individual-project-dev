@@ -1227,7 +1227,7 @@ class ListGapWidget(QLabel):
         super(ListGapWidget, self).__init__(text, parent)
         self.setAcceptDrops(True)
         # Preferred - The sizeHint() is best, but the widget can be shrunk and still be useful.
-        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        # self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.setWordWrap(True)
         self.setAlignment(Qt.AlignHCenter)
 
@@ -1299,6 +1299,7 @@ class SceneGapWidget(ListGapWidget):
         :type parent: ActWidget
         """
         super(SceneGapWidget, self).__init__("drag text or video scene here", parent)
+        self.setMinimumHeight(50)
 
     def dropEvent(self, event):
         lc = cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
