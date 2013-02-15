@@ -596,18 +596,21 @@ class IfSceneWidget(ChangeableMixin, QFrame):
         self._true_scene_sequence = SceneSequenceWidget(scene.true_scene_sequence, self)
         self._false_scene_sequence = SceneSequenceWidget(scene.false_scene_sequence, self)
 
+        # Use stretchs so that get center alignment.
         headLayout = QHBoxLayout()
+        headLayout.addStretch()
         headLayout.addWidget(QLabel("if the answer to asking", self))
         headLayout.addWidget(self._question)
         headLayout.addWidget(QLabel("is yes, then do:", self))
+        headLayout.addStretch()
 
-        layout = QGridLayout()
+        layout = QVBoxLayout()
         # layout.addWidget(self._comment)
         # PySide.QtGui.QGridLayout.addWidget(arg__1, row, column, rowSpan, columnSpan[, alignment=0])
-        layout.addLayout(headLayout, 0, 0, 1, 3)
-        layout.addWidget(self._true_scene_sequence, 1, 1, 1, 2)
-        layout.addWidget(QLabel("otherwise, do:", self), 2, 0, 1, 2)
-        layout.addWidget(self._false_scene_sequence, 3, 1, 1, 2)
+        layout.addLayout(headLayout, alignment=Qt.AlignHCenter)
+        layout.addWidget(self._true_scene_sequence, alignment=Qt.AlignHCenter)
+        layout.addWidget(QLabel("otherwise, do:", self), alignment=Qt.AlignHCenter)
+        layout.addWidget(self._false_scene_sequence, alignment=Qt.AlignHCenter)
 
         self.setLayout(layout)
 
@@ -659,16 +662,19 @@ class WhileSceneWidget(ChangeableMixin, QFrame):
         self._question = TextGapWidget(scene.question, self)
         self._scene_sequence = SceneSequenceWidget(scene.scene_sequence, self)
 
+        # Use stretchs so that get center alignment.
         headLayout = QHBoxLayout()
+        headLayout.addStretch()
         headLayout.addWidget(QLabel("while the answer to asking", self))
         headLayout.addWidget(self._question)
         headLayout.addWidget(QLabel("is yes, repeatedly do:", self))
+        headLayout.addStretch()
 
-        layout = QGridLayout()
+        layout = QVBoxLayout()
         # layout.addWidget(self._comment)
         # PySide.QtGui.QGridLayout.addWidget(arg__1, row, column, rowSpan, columnSpan[, alignment=0])
-        layout.addLayout(headLayout, 0, 0, 1, 3)
-        layout.addWidget(self._scene_sequence, 1, 1, 1, 2)
+        layout.addLayout(headLayout, alignment=Qt.AlignHCenter)
+        layout.addWidget(self._scene_sequence, alignment=Qt.AlignHCenter)
 
         self.setLayout(layout)
 
