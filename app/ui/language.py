@@ -1227,7 +1227,7 @@ class ListGapWidget(QLabel):
         super(ListGapWidget, self).__init__(text, parent)
         self.setAcceptDrops(True)
         # Preferred - The sizeHint() is best, but the widget can be shrunk and still be useful.
-        # self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         self.setWordWrap(True)
         self.setAlignment(Qt.AlignHCenter)
 
@@ -1283,6 +1283,9 @@ class CommandGapWidget(ListGapWidget):
         :type parent: CommandSequenceWidget
         """
         super(CommandGapWidget, self).__init__("drag command here", parent)
+        # self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.setMaximumWidth(300)
+        self.setMargin(5)
 
     def dropEvent(self, event):
         lc = cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
