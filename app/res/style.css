@@ -38,6 +38,15 @@ MiniWhileSceneWidget {
     font-size: 36px;
 }
 
+/*NumberOperatorWidget QComboBox {
+    height: 30px;
+    font-size: 30px;
+
+    border: 1px solid gray;
+    border-radius: 3px;
+    padding: 1px 10px 1px 3px;
+}*/
+
 MiniIfSceneWidget,
 IfSceneWidget,
 MiniWhileSceneWidget,
