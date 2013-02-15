@@ -1008,6 +1008,11 @@ class GapWidget(ChangeableMixin, QStackedWidget):
 
         self._readOnly = False
 
+        # Similiar to a semaphore.
+        # 0 - no highlight
+        # >0 - highlight
+        self._highlightLevel = 0
+
         self.fillGap(child)
 
     def model(self):
@@ -1079,9 +1084,13 @@ class GapWidget(ChangeableMixin, QStackedWidget):
         # Possible that language component might be a gap, in which case correct
         # behavior is to keep empty.
         if not isinstance(child, language.Gap):
+            # Not a gap
             self._child = LanguageWidgetFactory.build(child, self)
             self.insertWidget(1, self._child)
             self.setCurrentIndex(1)
+        else:
+            # Gap
+            pass
 
         self._postScriptChangeEvent()
 
@@ -1108,10 +1117,39 @@ class GapWidget(ChangeableMixin, QStackedWidget):
         """
         self._readOnly = ro
 
-    def highlight(self):
-        self.setStyleSheet("background: orange")
+    def increaseHighlight(self):
+        """
+        Use highlight levels so that many mechanisms can alter
+        highlighting at the same time.
+
+        0 - no highlight
+        >0 - highlight
+        """
+        self._highlightLevel += 1
+        if self._highlightLevel > 0:
+            self.setStyleSheet("background: orange")
+
+    def decreaseHighlight(self):
+        """
+        Use highlight levels so that many mechanisms can alter
+        highlighting at the same time.
+
+        0 - no highlight
+        >0 - highlight
+        """
+        self._highlightLevel = max(0, self._highlightLevel-1)
+        if self._highlightLevel == 0:
+            self.setStyleSheet("")
 
     def unhighlight(self):
+        """
+        Use highlight levels so that many mechanisms can alter
+        highlighting at the same time.
+
+        0 - no highlight
+        >0 - highlight
+        """
+        self._highlightLevel = 0
         self.setStyleSheet("")
 
 class NumberGapWidget(GapWidget):
@@ -1269,8 +1307,11 @@ class ListGapWidget(QLabel):
         """
         self._readOnly = ro
 
-    def highlight(self):
+    def increaseHighlight(self):
         self.setStyleSheet("background: orange")
+
+    def decreaseHighlight(self):
+        raise NotImplementedError
 
     def unhighlight(self):
         self.setStyleSheet("")

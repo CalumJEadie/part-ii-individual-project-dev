@@ -18,6 +18,9 @@ You can spot a gap that needs to be filled by it's thick border. Fill it in by d
 _TRANSLATE_GAP_ERROR_TEXT = _GAP_ERROR_TEXT % "translated"
 _PERFORM_GAP_ERROR_TEXT = _GAP_ERROR_TEXT % "performed"
 
+# Externalise key behavior
+EMPTY_GAP_ANIMATION_INTERVAL = 2000
+
 class GraphicalEditor(QMainWindow):
     
     def __init__(self):
@@ -261,6 +264,13 @@ class ScriptEdit(QScrollArea):
         self.setWidgetResizable(True) # Neccessary to take advantage of available space.
         self.clear()
 
+        self._emptyGapsAnimationTimer = QTimer()
+        self._emptyGapsAnimationTimer.setInterval(EMPTY_GAP_ANIMATION_INTERVAL)
+        self._emptyGapsAnimationTimer.timeout.connect(self._animateEmptyGaps)
+        self._gapsHighlighted = False
+
+        self._startEmptyGapsAnimation()
+
     def _setActWidget(self, actWidget):
         """
         :type actWidget: QWidget
@@ -315,7 +325,7 @@ class ScriptEdit(QScrollArea):
         :type component: language.LanguageComponent
         """
         for gap in self._acceptingGaps(component):
-            gap.highlight()
+            gap.increaseHighlight()
 
     @Slot()
     def unhighlightAll(self):
@@ -344,6 +354,17 @@ class ScriptEdit(QScrollArea):
         :rtype: QWidget sequence
         """
         return filter(lambda gap: gap.isAcceptable(component), self._gaps())
+
+    def _emptyGaps(self):
+        """
+        Returns all gap widgets that are empty.
+
+        Specifically subclasses of GapWidget rather than ListGapWidget.
+
+        :rtype: GapWidget sequence
+        """
+        gaps = filter(lambda gap: isinstance(gap, GapWidget), self._gaps())
+        return filter(lambda gap: not gap.isFull(), gaps)
 
     def event(self, event):
         """
@@ -400,6 +421,27 @@ class ScriptEdit(QScrollArea):
     @Slot(list)
     def setLiveVideoCollectionVariables(names):
         self.liveVideoCollectionVariablesChanged.emit(names)
+
+    def _startEmptyGapsAnimation(self):
+        self._emptyGapsAnimationTimer.start()
+
+    def _animateEmptyGaps(self):
+        """
+        Perform animation of empty gaps.
+
+        Gap highlight level mechanism makes sure don't interfere
+        with other mechanisms.
+        """
+        emptyGaps = self._emptyGaps()
+
+        if self._gapsHighlighted:
+            for gap in emptyGaps:
+                gap.decreaseHighlight()
+        else:
+            for gap in emptyGaps:
+                gap.increaseHighlight()
+
+        self._gapsHighlighted = not self._gapsHighlighted
 
 class PaletteWidget(QToolBox):
     """
