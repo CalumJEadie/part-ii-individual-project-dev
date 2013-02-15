@@ -55,10 +55,14 @@ class GraphicalEditor(QMainWindow):
         
         editorPane = self.createEditorPane(centralwidget)
         palette = PaletteWidget(self._scriptEdit, self)
+        preview = self.createPreview(centralwidget)
+
+        splitter = QSplitter()
+        splitter.addWidget(editorPane)
+        splitter.addWidget(preview)
         
         horizontalLayout.addWidget(palette)
-        horizontalLayout.addWidget(editorPane)
-        horizontalLayout.addWidget(self.createPreview(centralwidget))
+        horizontalLayout.addWidget(splitter)
 
         self.setCentralWidget(centralwidget)
 
