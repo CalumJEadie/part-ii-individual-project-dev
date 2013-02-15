@@ -491,7 +491,7 @@ class PaletteWidget(QToolBox):
                 "Video Collections",
                 (
                     YoutubeVideoGetRelatedWidget(language.YoutubeVideoGetRelated(language.VideoGap()), self),
-                    YoutubeSearchWidget(language.YoutubeSearch(language.TextValue("music")), self),
+                    YoutubeSearchWidget(language.YoutubeSearch(language.TextValue("keywords")), self),
                     YoutubeTopRatedWidget(self),
                     YoutubeMostViewedWidget(self),
                     YoutubeRecentlyFeaturedWidget(self),
