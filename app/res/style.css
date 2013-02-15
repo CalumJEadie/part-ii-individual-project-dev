@@ -145,10 +145,10 @@ SceneGapWidget {
 }
 
 CommandGapWidget {
-    border-color: #ff6600;
+    border-color: grey;
     border-style: solid;
     background: white;
-    color: #ff6600;
+    color: grey;
 }
 
 SceneGapWidget {
