@@ -13,9 +13,9 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 # Guarantees provided by cache.
-MAX_NOT_CACHED_GET_TIME = 10 # seconds
+MAX_NOT_CACHED_GET_TIME = 20 # seconds
 MAX_CACHED_GET_TIME = 1 # seconds
-MIN_VIDEO_READY_FILE_SIZE = long(0.25 * 2**20) # bytes, 0.25 MB
+MIN_VIDEO_READY_FILE_SIZE = long(0.1 * 2**20) # bytes, 0.1 MB
 
 _CACHE_DIR = "/tmp/diss/videocache"
 _OUTPUT_TEMPLATE = "%(cache_dir)s/%(id)s"
@@ -52,10 +52,22 @@ def get(video):
         return video_path
     else:
         video_path = _download(video, _CACHE_DIR)
-        # Wait until 1 MB of file has been downloaded.
-        # Do this niavely by waiting for a time period.
-        time.sleep(9)
+        # Busy wait until file is ready.
+        # Assume won't be ready immediately.
+        time.sleep(5)
+        while not _is_ready(video_path):
+            logger.info("%s not ready, waiting." % video_path)
+            time.sleep(1)
         return video_path
+
+def _is_ready(path):
+    """
+    Returns true if video at path is ready to be played.
+    """
+    return os.path.exists(path) and \
+        os.path.isfile(path) and \
+        os.access(path, os.R_OK) and \
+        os.path.getsize(path) > MIN_VIDEO_READY_FILE_SIZE
 
 def _ensure_dir_exists(dir_):
     """
