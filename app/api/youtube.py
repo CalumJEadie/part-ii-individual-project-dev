@@ -97,6 +97,7 @@ class Video:
         """
         self._entry = entry
         self._best_streaming_url = None
+        self._worst_streaming_url = None
         self._comments = None
 
     @classmethod
@@ -112,7 +113,7 @@ class Video:
         return cls(entry)
 
     def __repr__(self):
-        return "Video(title=%s, duration=%s, best_streaming_url=%s)" % (self.title(), self.duration(), self.best_streaming_url())
+        return "Video(title=%s, duration=%s)" % (self.title(), self.duration())
 
     def title(self):
         return self._entry.media.title.text
@@ -135,10 +136,10 @@ class Video:
         # related_feed = yt_service.GetYouTubeRelatedVideoFeed(uri=self._entry.id.text)
         
         # Instead get video_id from the URI.
-        related_feed = yt_service.GetYouTubeRelatedVideoFeed(video_id=self._video_id())
+        related_feed = yt_service.GetYouTubeRelatedVideoFeed(video_id=self.video_id())
         return VideoCollection.from_feed(related_feed)
 
-    def _video_id(self):
+    def video_id(self):
         """
         :rtype: string
         """
@@ -164,6 +165,16 @@ class Video:
             self._best_streaming_url = self.streaming_url("best")
         return self._best_streaming_url
 
+    def worst_streaming_url(self):
+        """
+        Returns url for streaming video using worst available format.
+
+        Use memoisation for performance.
+        """
+        if self._worst_streaming_url is None:
+            self._worst_streaming_url = self.streaming_url("worst")
+        return self._worst_streaming_url
+
     def random_comment(self):
         """
         Uses memoisation for performance.
@@ -171,7 +182,7 @@ class Video:
         :rtype: string
         """
         if self._comments is None:
-            comment_feed = yt_service.GetYouTubeVideoCommentFeed(video_id=self._video_id())
+            comment_feed = yt_service.GetYouTubeVideoCommentFeed(video_id=self.video_id())
             self._comments = []
             for comment in comment_feed.entry:
                 # Store comment body and author name
