@@ -23,7 +23,7 @@ def play(video,offset,duration):
     logger.info("play(video=%s,offset=%s,duration=%s)",video,offset,duration)
 
     # Inialise videocache.
-    videocache.initialise()
+    videocache.init()
 
     # Enforce minimum duration to make sure have time for OMXPlayer to start up
     # and begin playing.
@@ -33,6 +33,7 @@ def play(video,offset,duration):
 
     if pyomxplayer.is_omxplayer_available():
         video_path = videocache.get(video)
+        logger.info("OMXPlayer(%s)" % video_path)
         p = pyomxplayer.OMXPlayer(video_path)
         time.sleep(duration)
         p.stop()
