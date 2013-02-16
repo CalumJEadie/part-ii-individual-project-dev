@@ -55,19 +55,25 @@ def get(video):
         # Busy wait until file is ready.
         # Assume won't be ready immediately.
         time.sleep(5)
-        while not _is_ready(video_path):
-            logger.info("%s not ready, waiting." % video_path)
-            time.sleep(1)
+        _wait_until_ready(video_path)
         return video_path
 
-def _is_ready(path):
+def _is_ready(video_path):
     """
     Returns true if video at path is ready to be played.
     """
-    return os.path.exists(path) and \
-        os.path.isfile(path) and \
-        os.access(path, os.R_OK) and \
-        os.path.getsize(path) > MIN_VIDEO_READY_FILE_SIZE
+    return os.path.exists(video_path) and \
+        os.path.isfile(video_path) and \
+        os.access(video_path, os.R_OK) and \
+        os.path.getsize(video_path) > MIN_VIDEO_READY_FILE_SIZE
+
+def _wait_until_ready(video_path):
+    """
+    Busy wait until video is ready.
+    """
+    while not _is_ready(video_path):
+        logger.info("%s not ready, waiting." % video_path)
+        time.sleep(1)
 
 def _ensure_dir_exists(dir_):
     """
@@ -94,6 +100,10 @@ def _find(video):
     for cache_dir in [_CACHE_DIR]:
         video_path = _OUTPUT_TEMPLATE % {"cache_dir": cache_dir, "id": video.video_id()}
         if os.path.exists(video_path):
+            # To avoid race condition where download has only just started wait
+            # until video is ready. No guarantee video is being downloaded so
+            # may get stuck in infinite loop.
+            _wait_until_ready(video_path)
             return video_path
     return None
 
