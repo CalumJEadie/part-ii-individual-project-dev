@@ -20,11 +20,11 @@ logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(name)s - %(leveln
 from app.api import videocache
 from app.api.youtube import *
 
-# Constraints
-# Use seconds resolution as suffecient and difficult to time to greater accuracy.
-MAX_NOT_CACHED_GET_TIME = 10 # seconds
-MAX_CACHED_GET_TIME = 1 # seconds
-MIN_VIDEO_READY_FILE_SIZE = long(0.25 * 2**20) # bytes, 0.25 MB
+# Constraints. Make sure cache meets it's guarantees.
+# Seconds are used as resolution is suffcient and difficult to get better accuracy in timing.
+MAX_NOT_CACHED_GET_TIME = videocache.MAX_NOT_CACHED_GET_TIME
+MAX_CACHED_GET_TIME = videocache.MAX_CACHED_GET_TIME
+MIN_VIDEO_READY_FILE_SIZE = videocache.MIN_VIDEO_READY_FILE_SIZE
 
 # Test data - YouTube Music Top 30 Tracks - 08/02/2013
 # http://www.youtube.com/music

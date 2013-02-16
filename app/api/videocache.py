@@ -12,13 +12,24 @@ import time
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+# Guarantees provided by cache.
+MAX_NOT_CACHED_GET_TIME = 10 # seconds
+MAX_CACHED_GET_TIME = 1 # seconds
+MIN_VIDEO_READY_FILE_SIZE = long(0.25 * 2**20) # bytes, 0.25 MB
+
 _CACHE_DIR = "/tmp/diss/videocache"
 _OUTPUT_TEMPLATE = "%(cache_dir)s/%(id)s"
 
+_initialised = False
+
 def init():
     logger.info("Initialising video cache.")
-    for location in [_CACHE_DIR]:
-        _ensure_dir_exists(location)
+    global _initialised
+    if not _initialised:
+        logger.info("Not yet initialised, ensuring cache directories exist.")
+        for location in [_CACHE_DIR]:
+            _ensure_dir_exists(location)
+        _initialised = True
 
 def clear():
     logger.info("Cleared cache.")
