@@ -86,23 +86,6 @@ VideoSetWidget {
     background: white;
 }
 
-ScriptEdit {
-    background-image: url("res/paper4.jpg");
-}
-
-/* For some reason need to set background property on act widget
-to get script edit background image */
-ActWidget {
-    background: transparent;
-}
-
-TextSceneWidget,
-VideoSceneWidget,
-IfSceneWidget,
-WhileSceneWidget {
-    background-image: url("res/paper2.jpg");
-}
-
 VideoCollectionGapWidget > QLabel,
 VideoCollectionGetWidget,
 VideoCollectionSetWidget {
