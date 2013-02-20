@@ -29,21 +29,50 @@ class GraphicalEditor(QMainWindow):
     def __init__(self):
 
         super(GraphicalEditor, self).__init__()
-        self.setupUI()
-        self.show()
-        
-    def setupUI(self):
 
+        # Stylesheet
         with open("res/style.css", "r") as f:
             self.setStyleSheet(f.read())
+
+        # Looks awesome on Mac!
+        self.setUnifiedTitleAndToolBarOnMac(True)
         
-        self.setupWindow()
-        self.setupCentralWidget()
+        self._setupWindow()
+
+        # Set up palette, script edit and preview
+        self._setupCentralWidget()
+
         self.statusBar()
 
-        self.setupToolbar()
 
-    def setupCentralWidget(self):
+
+        # Actions
+        self._performAction = QAction('Perform', self)
+        self._performAction.setStatusTip('Perform script')
+        self._performAction.setToolTip('Perform script')
+        self._performAction.triggered.connect(self._perform)
+
+        self._clearAction = QAction('Clear', self)
+        self._clearAction.setStatusTip('Clear script')
+        self._clearAction.setToolTip('Clear script')
+        self._clearAction.triggered.connect(self._scriptEdit.clear)
+
+        self._loadExample1Action = QAction('Load example script 1', self)
+        self._loadExample1Action.setStatusTip('Replace current script with example script 1')
+        self._loadExample1Action.setToolTip('Replace current script with example script 1')
+        self._loadExample1Action.triggered.connect(self._loadExample1)
+
+        self._loadExample2Action = QAction('Load example script 2', self)
+        self._loadExample2Action.setStatusTip('Replace current script with example script 2')
+        self._loadExample2Action.setToolTip('Replace current script with example script 2')
+        self._loadExample2Action.triggered.connect(self._loadExample2)
+
+        self._setupMenubar()
+        self._setupToolbar()
+
+        self.show()
+
+    def _setupCentralWidget(self):
         
         # Set up layout
 
@@ -53,9 +82,9 @@ class GraphicalEditor(QMainWindow):
 
         # Add toolbar and editor pane
         
-        editorPane = self.createEditorPane(centralwidget)
+        editorPane = self._createEditorPane(centralwidget)
         palette = PaletteWidget(self._scriptEdit, self)
-        preview = self.createPreview(centralwidget)
+        preview = self._createPreview(centralwidget)
 
         splitter = QSplitter()
         splitter.addWidget(editorPane)
@@ -68,7 +97,7 @@ class GraphicalEditor(QMainWindow):
 
         self._scriptEdit.changed.connect(self._previewTextEdit.setPlainText)
 
-    def createEditorPane(self,parent):
+    def _createEditorPane(self,parent):
         """
         :type parent: QWidget
         :rtype: QWidget
@@ -88,7 +117,7 @@ class GraphicalEditor(QMainWindow):
 
         return editorPane
 
-    def createPreview(self, parent):
+    def _createPreview(self, parent):
         """
         :type parent: QWidget
         :rtype: QWidget
@@ -109,53 +138,51 @@ class GraphicalEditor(QMainWindow):
         
         return self._previewTextEdit
         
+    def _setupMenubar(self):
 
-    def setupToolbar(self):
+        # From docs: If you want all windows in a Mac application to share one menu bar,
+        # you must create a menu bar that does not have a parent
+        # http://srinikom.github.com/pyside-docs/PySide/QtGui/QMenuBar.html
+        menubar = QMenuBar()
 
-        performAction = QAction('Perform', self)
-        performAction.setStatusTip('Perform script')
-        performAction.setToolTip('Perform script')
-        performAction.triggered.connect(self.perform)
+        fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(self._loadExample1Action)
+        fileMenu.addAction(self._loadExample2Action)
 
-        clearAction = QAction('Clear', self)
-        clearAction.setStatusTip('Clear script')
-        clearAction.setToolTip('Clear script')
-        clearAction.triggered.connect(self._scriptEdit.clear)
+        editMenu = menubar.addMenu('&Edit')
+        editMenu.addAction(self._clearAction)
 
-        loadExample1Action = QAction('Load example script 1', self)
-        loadExample1Action.setStatusTip('Replace current script with example script 1')
-        loadExample1Action.setToolTip('Replace current script with example script 1')
-        loadExample1Action.triggered.connect(self.loadExample1)
+        performanceMenu = menubar.addMenu('&Performance')
+        performanceMenu.addAction(self._performAction)
 
-        loadExample2Action = QAction('Load example script 2', self)
-        loadExample2Action.setStatusTip('Replace current script with example script 2')
-        loadExample1Action.setToolTip('Replace current script with example script 2')
-        loadExample2Action.triggered.connect(self.loadExample2)
+        self.setMenuBar(menubar)
+
+    def _setupToolbar(self):
 
         toolbar = self.addToolBar('Tools')
         toolbar.setFloatable(False)
         toolbar.setMovable(False)
 
-        toolbar.addAction(performAction)
-        toolbar.addAction(clearAction)
+        toolbar.addAction(self._performAction)
+        toolbar.addAction(self._clearAction)
         toolbar.addSeparator()
-        toolbar.addAction(loadExample1Action)
-        toolbar.addAction(loadExample2Action)
+        toolbar.addAction(self._loadExample1Action)
+        toolbar.addAction(self._loadExample2Action)
 
-    def setupWindow(self):
+    def _setupWindow(self):
 
         # self.resize(1400,800)
-        self.center()
+        self._center()
         self.setWindowTitle('Graphical Editor')
         
-    def center(self):
+    def _center(self):
         
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
-    def translate(self):
+    def _translate(self):
         try:
             script = self._scriptEdit.toPython()
             self._previewTextEdit.setPlainText(script)
@@ -163,7 +190,7 @@ class GraphicalEditor(QMainWindow):
             QMessageBox.information(self, "Found a gap",
                 _TRANSLATE_GAP_ERROR_TEXT, QMessageBox.Ok)
 
-    def perform(self):
+    def _perform(self):
         try:
             script = self._scriptEdit.toPython()
             interpreter.interpret(script)
@@ -171,7 +198,7 @@ class GraphicalEditor(QMainWindow):
             QMessageBox.information(self, "Found a gap",
                 _PERFORM_GAP_ERROR_TEXT, QMessageBox.Ok)
 
-    def loadExample1(self):
+    def _loadExample1(self):
         example = language.Act([
             language.TextScene(
                 "Displays the title of a video, click `perform` to find out what it it!",
@@ -193,7 +220,7 @@ class GraphicalEditor(QMainWindow):
         ])
         self._scriptEdit.setScript(example)
 
-    def loadExample2(self):
+    def _loadExample2(self):
         example = language.Act([
             language.TextScene(
                 "Use this space to write about a scene, this one displays the title of Gangnam Style.",
