@@ -109,7 +109,8 @@ NumberValueWidget,
 NumberOperatorWidget,
 NumberGapWidget > QLabel,
 NumberGetWidget,
-NumberSetWidget {
+NumberSetWidget,
+YoutubeVideoGetDurationWidget {
     border-color: blue;
     border-width: 2px;
     border-style: solid;
@@ -200,6 +201,7 @@ SetWidget,
 GetWidget,
 NumberOperatorWidget,
 YoutubeVideoGetTitleWidget,
+YoutubeVideoGetDurationWidget,
 YoutubeVideoRandomCommentWidget,
 YoutubeVideoGetRelatedWidget,
 YoutubeVideoCollectionRandomWidget,
@@ -224,6 +226,7 @@ PaletteWidget SetWidget:hover,
 PaletteWidget GetWidget:hover,
 PaletteWidget NumberOperatorWidget:hover,
 PaletteWidget YoutubeVideoGetTitleWidget:hover,
+PaletteWidget YoutubeVideoGetDurationWidget:hover,
 PaletteWidget YoutubeVideoRandomCommentWidget:hover,
 PaletteWidget YoutubeVideoGetRelatedWidget:hover,
 PaletteWidget YoutubeVideoCollectionRandomWidget:hover,

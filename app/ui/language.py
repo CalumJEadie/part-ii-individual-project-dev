@@ -114,6 +114,7 @@ class LanguageWidgetFactory(object):
             language.IfScene: lambda lc, p: IfSceneWidget(lc, p),
             language.WhileScene: lambda lc, p: WhileSceneWidget(lc, p),
             language.YoutubeVideoGetTitle: lambda lc, p: YoutubeVideoGetTitleWidget(lc, p),
+            language.YoutubeVideoGetDuration: lambda lc, p: YoutubeVideoGetDurationWidget(lc, p),
             language.YoutubeVideoRandomComment: lambda lc, p: YoutubeVideoRandomCommentWidget(lc, p),
             language.YoutubeVideoGetRelated: lambda lc, p: YoutubeVideoGetRelatedWidget(lc, p),
             language.YoutubeVideoCollectionRandom: lambda lc, p: YoutubeVideoCollectionRandomWidget(lc, p),
@@ -1432,6 +1433,37 @@ class YoutubeVideoGetTitleWidget(DraggableMixin, QFrame):
         :rtype: models.language.YoutubeVideoGetTitle
         """
         return language.YoutubeVideoGetTitle(self._video.model())
+
+    def setReadOnly(self, ro):
+        """
+        :type ro: boolean
+        """
+        self._video.setReadOnly(ro)
+
+class YoutubeVideoGetDurationWidget(DraggableMixin, QFrame):
+
+    def __init__(self, videoGetDuration, parent):
+        """
+        :type videoGetDuration: language.YoutubeVideoGetDuration
+        """
+
+        super(YoutubeVideoGetDurationWidget, self).__init__(parent)
+
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+        self._video = VideoGapWidget(videoGetDuration.video, self)
+
+        layout = QHBoxLayout()
+        layout.addWidget(QLabel("duration\nof", self))
+        layout.addWidget(self._video)
+
+        self.setLayout(layout)
+
+    def model(self):
+        """
+        :rtype: models.language.YoutubeVideoGetDuration
+        """
+        return language.YoutubeVideoGetDuration(self._video.model())
 
     def setReadOnly(self, ro):
         """

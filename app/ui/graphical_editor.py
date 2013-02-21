@@ -486,7 +486,8 @@ class PaletteWidget(QToolBox):
                 "Numbers",
                 (
                     NumberValueWidget(language.NumberValue(0), self),
-                    NumberOperatorWidget("+", language.NumberGap(), language.NumberGap(), self)
+                    NumberOperatorWidget("+", language.NumberGap(), language.NumberGap(), self),
+                    YoutubeVideoGetDurationWidget(language.YoutubeVideoGetDuration(language.VideoGap()), self),
                 )
             ),
             (

@@ -857,6 +857,8 @@ class NumberExpression(Expression):
 
 class YoutubeVideoGetDuration(NumberExpression):
 
+    video = property(lambda self: self._video)
+
     def __init__(self,video):
         """
         :type video: <:VideoExpression
