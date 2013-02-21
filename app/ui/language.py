@@ -489,11 +489,11 @@ class VideoSceneWidget(ChangeableMixin, SceneWidget):
         self._volume = NumberGapWidget(scene.volume, self)
 
         self._speed = QComboBox()
-        self._speed.insertItem(Speed.Slow, "slow")
-        self._speed.insertItem(Speed.Normal, "normal")
-        self._speed.insertItem(Speed.Fast, "fast")
-        self._speed.insertItem(Speed.VFast, "very fast")
-        self._speed.setCurrentIndex(scene.speed.value)
+        self._speed.insertItem(Speed.Slow+1, "slow")
+        self._speed.insertItem(Speed.Normal+1, "normal")
+        self._speed.insertItem(Speed.Fast+1, "fast")
+        self._speed.insertItem(Speed.VFast+1, "very fast")
+        self._speed.setCurrentIndex(scene.speed.value+1)
         self._registerChangeSignal(self._speed.currentIndexChanged)
 
         videoControlsLayout.addWidget(QLabel("play"), 0, 0)
@@ -547,9 +547,9 @@ class VideoSceneWidget(ChangeableMixin, SceneWidget):
         return self._volume.model()
 
     def speed(self):
-        # By construction self.speed.currentIndex() will be one of the possible
-        # integers.
-        return language.SpeedValue(self._speed.currentIndex())
+        # By construction self.speed.currentIndex() uses the same range a Speed but
+        # shifted by one.
+        return language.SpeedValue(self._speed.currentIndex()-1)
 
 class TextSceneWidget(ChangeableMixin, SceneWidget):
 
