@@ -13,9 +13,12 @@ from app.api import videocache
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-MIN_DURATION = 5
-# Emperical time between starting OMXPlayer and it being able to process input
-OMXPLAYER_START_UP = 1.5
+MIN_DURATION = 5 # worst
+# MIN_DURATION = 15 # best
+# Empirical time needed between starting OMXPlayer and it being able to process input
+# Need rediculous wait for best quality video, presumably loading into memory
+OMXPLAYER_START_UP = 1.5 # worst
+# OMXPLAYER_START_UP = 9 # best
 assert OMXPLAYER_START_UP < MIN_DURATION
 
 # Use simple Python enum idiom to represent allows speeds.
