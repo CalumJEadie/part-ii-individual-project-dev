@@ -12,6 +12,7 @@ General principles:
 """
 
 from app.models.language import *
+from app.api.videoplayer import Speed
 
 # Important to have interesting examples to keep users interested.
 # Have used popularity, in particular view, to create a list of "interesting" videos.
@@ -71,15 +72,51 @@ acts = [
     ),
 
     # TODO: Introduce volume.
+    # Explanation: I like to listen to my music loud!
+    
+    Act(
+        "Volume",
+        [
+            VideoScene(
+                "Play Gangnam style for 10 seconds from offset of 0 seconds with volume 50 dB.",
+                "",
+                NumberValue(10),
+                CommandSequence([]),
+                CommandSequence([]),
+                NumberValue(0),
+                VideoValue(_GANGNAM_STYLE),
+                NumberValue(50)
+            )
+        ]
+    ),
     
     # TODO: Introduce speed.
+    # Explanation: I really like this video but it takes a while to get going, I
+    # want to play through it quickly.
+    
+    Act(
+        "Speed",
+        [
+            VideoScene(
+                "Play A DRAMATIC SURPRISE ON A QUIET SQUARE very fast.",
+                "",
+                NumberValue(10),
+                CommandSequence([]),
+                CommandSequence([]),
+                NumberValue(0),
+                VideoValue(_SURPRISE),
+                NumberValue(0),
+                SpeedValue(Speed.VFast)
+            )
+        ]
+    ),
 
     # Introduce: Offset.
     # Explanation: The introduction to Felix Baumgartner's supersonic freefall is really slow,
     # I want to skip it.
     
     Act(
-        "A single video with an offset",
+        "Offset",
         [
             VideoScene(
                 "Skip to the best bit of Felix Baumgartner's supersonic freefall",
