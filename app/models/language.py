@@ -342,8 +342,11 @@ class Act(SceneSequence):
     basic rules about new lines and indentation.
     """
 
-    def __init__(self, scenes):
+    title = property(lambda self: self._title)
+
+    def __init__(self, title, scenes):
         super(Act, self).__init__(scenes)
+        self._title = title
 
     def translate(self):
 

@@ -81,7 +81,8 @@ class SmartMusicPlayerTest(unittest.TestCase):
 
         curr_video = VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0") # PSY - GANGNAM STYLE
 
-        act1 = Act([
+        act1 = Act("",
+            [
 
             TextScene(
                 title = "Show video title",
@@ -311,7 +312,8 @@ command3"""),"""    command1
     def test_if_scene(self):
 
         # Simple if scene
-        act = Act([
+        act = Act("",
+            [
             IfScene("Simple If Scene", "",
                 TextValue("question?"),
                 SceneSequence([
@@ -325,7 +327,8 @@ command3"""),"""    command1
         # If scene with complex question and scene sequence in both branches.
         curr_video = VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0") # PSY - GANGNAM STYLE
 
-        act = Act([
+        act = Act("",
+            [
             IfScene("Complex If Scene", "",
                 GetVariableExpression(Type.TEXT, "question"),
                 SceneSequence([
@@ -355,7 +358,8 @@ command3"""),"""    command1
     def test_while_scene(self):
 
         # Simple while scene
-        act = Act([
+        act = Act("",
+            [
             WhileScene("Simple While Scene", "",
                 TextValue("question?"),
                 SceneSequence([
@@ -367,7 +371,8 @@ command3"""),"""    command1
         # If scene with complex question and scene sequence in both branches.
         curr_video = VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0") # PSY - GANGNAM STYLE
 
-        act = Act([
+        act = Act("",
+            [
             WhileScene("Complex While Scene", "",
                 GetVariableExpression(Type.TEXT, "question"),
                 SceneSequence([

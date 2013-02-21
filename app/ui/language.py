@@ -326,7 +326,7 @@ class ActWidget(SceneSequenceWidget):
         """
         :rtype: models.language.Act
         """
-        return language.Act(map(lambda x: x.model(), self._scenes))
+        return language.Act("", map(lambda x: x.model(), self._scenes))
 
 class SceneWidget(QFrame):
 

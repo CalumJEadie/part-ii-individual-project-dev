@@ -12,7 +12,8 @@ from app.models.language import *
 
 curr_video = VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0") # PSY - GANGNAM STYLE
 
-smart_music_player = Act([
+smart_music_player = Act("",
+    [
 
     TextScene(
         title = "Show video title",

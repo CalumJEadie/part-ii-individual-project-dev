@@ -8,6 +8,7 @@ import logging
 from app.ui.language import *
 from app.interpreter import interpreter
 from app.models import language
+from app.models import examples
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -36,8 +37,6 @@ class GraphicalEditor(QMainWindow):
 
         # Looks awesome on Mac!
         self.setUnifiedTitleAndToolBarOnMac(True)
-        
-        self._setupWindow()
 
         # Set up palette, script edit and preview
         self._setupCentralWidget()
@@ -67,8 +66,27 @@ class GraphicalEditor(QMainWindow):
         self._loadExample2Action.setToolTip('Replace current script with example script 2')
         self._loadExample2Action.triggered.connect(self._loadExample2)
 
+        # Lambda not working so using inner function.
+        def loadExample(self, n):
+            def f():
+                self._loadExample(n)
+            return f
+
+        self._loadExampleActions = []
+        for i in range(0,len(examples.acts)):
+            act = examples.acts[i]
+
+            action = QAction('Load example #%s: %s' % (str(i+1), act.title), self)
+            action.setStatusTip('Replace current script with example #%s: %s' % (str(i+1), act.title))
+            action.setToolTip('Replace current script with example #%s: %s' % (str(i+1), act.title))
+            action.triggered.connect(loadExample(self, i))
+            self._loadExampleActions.append(action)
+
         self._setupMenubar()
         self._setupToolbar()
+
+        # Do at end to size is correct.
+        self._setupWindow()
 
         self.show()
 
@@ -146,8 +164,10 @@ class GraphicalEditor(QMainWindow):
         menubar = QMenuBar()
 
         fileMenu = menubar.addMenu('&File')
-        fileMenu.addAction(self._loadExample1Action)
-        fileMenu.addAction(self._loadExample2Action)
+        # fileMenu.addAction(self._loadExample1Action)
+        # fileMenu.addAction(self._loadExample2Action)
+        for action in self._loadExampleActions:
+            fileMenu.addAction(action)
 
         editMenu = menubar.addMenu('&Edit')
         editMenu.addAction(self._clearAction)
@@ -166,14 +186,17 @@ class GraphicalEditor(QMainWindow):
         toolbar.addAction(self._performAction)
         toolbar.addAction(self._clearAction)
         toolbar.addSeparator()
-        toolbar.addAction(self._loadExample1Action)
-        toolbar.addAction(self._loadExample2Action)
+        # toolbar.addAction(self._loadExample1Action)
+        # toolbar.addAction(self._loadExample2Action)
+        # for action in self._loadExampleActions:
+        #     toolbar.addAction(action)
 
     def _setupWindow(self):
 
         # self.resize(1400,800)
-        self._center()
+        # self._center()
         self.setWindowTitle('Graphical Editor')
+        self.showMaximized()  
         
     def _center(self):
         
@@ -199,79 +222,13 @@ class GraphicalEditor(QMainWindow):
                 _PERFORM_GAP_ERROR_TEXT, QMessageBox.Ok)
 
     def _loadExample1(self):
-        example = language.Act([
-            language.TextScene(
-                "Displays the title of a video, click `perform` to find out what it it!",
-                "",
-                language.NumberValue(2),
-                language.CommandSequence([]),
-                language.CommandSequence([]),
-                language.YoutubeVideoGetTitle(language.VideoValue("http://www.youtube.com/watch?v=uweWiCLT8Eg")) # David Guetta - She Wolf (Lyrics Video) ft. Sia
-            ),
-            language.VideoScene(
-                "Plays the video.",
-                "",
-                language.NumberValue(2),
-                language.CommandSequence([]),
-                language.CommandSequence([]),
-                language.NumberValue(0),
-                language.VideoValue("http://www.youtube.com/watch?v=uweWiCLT8Eg") # David Guetta - She Wolf (Lyrics Video) ft. Sia
-            )
-        ])
-        self._scriptEdit.setScript(example)
+        self._scriptEdit.setScript(examples.acts[0])
 
     def _loadExample2(self):
-        example = language.Act([
-            language.TextScene(
-                "Use this space to write about a scene, this one displays the title of Gangnam Style.",
-                "The Gangnam Style video is identified by it's web page and saved for later in the variable `curr video`.",
-                language.NumberValue(2),
-                language.CommandSequence([
-                    language.VideoSetVariableStatement(
-                        "curr video",
-                        language.VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0")
-                    )
-                ]),
-                language.CommandSequence([]),
-                language.YoutubeVideoGetTitle(language.VideoGetVariableExpression("curr video"))
-            ),
-            language.VideoScene(
-                "This scene plays Gangnam Style.",
-                "We get hold of the video by using the variable we stored it in earlier.",
-                language.NumberValue(10),
-                language.CommandSequence([]),
-                language.CommandSequence([]),
-                language.NumberValue(0),
-                language.VideoGetVariableExpression("curr video")
-            ),
-            language.TextScene(
-                "Display title of a related video.",
-                "We select a random related video and use that from now on.",
-                language.NumberValue(2),
-                language.CommandSequence([
-                    language.VideoSetVariableStatement(
-                        "curr video",
-                        language.YoutubeVideoCollectionRandom(
-                            language.YoutubeVideoGetRelated(
-                                language.VideoGetVariableExpression("curr video")
-                            )
-                        )
-                    )
-                ]),
-                language.CommandSequence([]),
-                language.YoutubeVideoGetTitle(language.VideoGetVariableExpression("curr video"))
-            ),
-            language.VideoScene(
-                "This scene plays the related video.",
-                "",
-                language.NumberValue(10),
-                language.CommandSequence([]),
-                language.CommandSequence([]),
-                language.NumberValue(0),
-                language.VideoGetVariableExpression("curr video")
-            )
-        ])
-        self._scriptEdit.setScript(example)
+        self._scriptEdit.setScript(examples.acts[1])
+
+    def _loadExample(self, n):
+        self._scriptEdit.setScript(examples.acts[n])
 
 class ScriptEdit(QScrollArea):
     """
@@ -348,7 +305,7 @@ class ScriptEdit(QScrollArea):
         """
         Sets script to act with no scenes.
         """
-        script = language.Act([])
+        script = language.Act("", [])
         self.setScript(script)
 
     @Slot(language.LanguageComponent)
