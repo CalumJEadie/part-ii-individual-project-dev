@@ -20,37 +20,37 @@ from app.api.videoplayer import Speed
 
 # http://news.sky.com/story/1027734/youtubes-top-10-videos-of-2012-revealed
 
-_GANGNAM_STYLE = "http://www.youtube.com/watch?v=9bZkp7q19f0"
+GANGNAM_STYLE = "http://www.youtube.com/watch?v=9bZkp7q19f0"
 # Somebody That I Used to Know - Walk off the Earth (Gotye - Cover)
-_SOMEBODY = "http://www.youtube.com/watch?v=d9NF2edxy-M"
+SOMEBODY = "http://www.youtube.com/watch?v=d9NF2edxy-M"
 # "Call Me Maybe" by Carly Rae Jepsen - Feat. Justin Bieber, Selena, Ash
-_CALL_ME_MAYBE = "http://www.youtube.com/watch?v=AsBsBU3vn6M"
+CALL_ME_MAYBE = "http://www.youtube.com/watch?v=AsBsBU3vn6M"
 # A DRAMATIC SURPRISE ON A QUIET SQUARE
-_SURPRISE = "http://www.youtube.com/watch?v=316AzLYfAzw"
+SURPRISE = "http://www.youtube.com/watch?v=316AzLYfAzw"
 # Dubstep Violin Original- Lindsey Stirling- Crystallize
-_DUBSTEP_VIOLIN = "http://www.youtube.com/watch?v=aHjpOzsQ9YI"
+DUBSTEP_VIOLIN = "http://www.youtube.com/watch?v=aHjpOzsQ9YI"
 # Felix Baumgartner's supersonic freefall from 128k' - Mission Highlights
-_FREEFALL = "http://www.youtube.com/watch?v=FHtvDA0W34I"
+FREEFALL = "http://www.youtube.com/watch?v=FHtvDA0W34I"
 
 # YouTube Interactive Timeline
 
 # Isaac's Live Lip-Dub Proposal
-_PROPOSAL = "http://www.youtube.com/watch?v=DTCmHC8IuuI"
+PROPOSAL = "http://www.youtube.com/watch?v=DTCmHC8IuuI"
 # San Diego Fireworks 2012, LOUD and up close
-_FIREWORKS = "http://www.youtube.com/watch?v=ndVhgq1yHdA"
+FIREWORKS = "http://www.youtube.com/watch?v=ndVhgq1yHdA"
 
 # Others
 
 # David Guetta - She Wolf (Lyrics Video) ft. Sia
-_SHE_WOLF = "http://www.youtube.com/watch?v=uweWiCLT8Eg"
+SHE_WOLF = "http://www.youtube.com/watch?v=uweWiCLT8Eg"
 # THE BEARDS - If Your Dad Doesn't Have a Beard, You've Got Two Mums
-_YOUVE_GOT_TWO_MUMS = "http://www.youtube.com/watch?v=RmFnarFSj_U"
+YOUVE_GOT_TWO_MUMS = "http://www.youtube.com/watch?v=RmFnarFSj_U"
 # A Pep Talk from Kid President to You
-_PEP_TALK = "http://www.youtube.com/watch?v=l-gQLqv9f4o"
+PEP_TALK = "http://www.youtube.com/watch?v=l-gQLqv9f4o"
 # World's Largest Rope Swing
-_ROPE_SWING = "http://www.youtube.com/watch?v=4B36Lr0Unp4"
+ROPE_SWING = "http://www.youtube.com/watch?v=4B36Lr0Unp4"
 # Danny MacAskill - "Way Back Home"
-_MAC_ASKILL = "http://www.youtube.com/watch?v=Cj6ho1-G6tw"
+MAC_ASKILL = "http://www.youtube.com/watch?v=Cj6ho1-G6tw"
 
 acts = [
 
@@ -66,7 +66,7 @@ acts = [
                 CommandSequence([]),
                 CommandSequence([]),
                 NumberValue(0),
-                VideoValue(_GANGNAM_STYLE) 
+                VideoValue(GANGNAM_STYLE) 
         )
         ]
     ),
@@ -84,7 +84,7 @@ acts = [
                 CommandSequence([]),
                 CommandSequence([]),
                 NumberValue(0),
-                VideoValue(_GANGNAM_STYLE),
+                VideoValue(GANGNAM_STYLE),
                 NumberValue(50)
             )
         ]
@@ -104,7 +104,7 @@ acts = [
                 CommandSequence([]),
                 CommandSequence([]),
                 NumberValue(0),
-                VideoValue(_SURPRISE),
+                VideoValue(SURPRISE),
                 NumberValue(0),
                 SpeedValue(Speed.VFast)
             )
@@ -125,7 +125,7 @@ acts = [
                 CommandSequence([]),
                 CommandSequence([]),
                 NumberValue(60),
-                VideoValue(_FREEFALL) 
+                VideoValue(FREEFALL) 
         )
         ]
     ),
@@ -166,8 +166,10 @@ acts = [
                 CommandSequence([]),
                 CommandSequence([]),
                 NumberValue(0),
-                YoutubeVideoGetRelated(
-                    VideoValue(_PEP_TALK) 
+                YoutubeVideoCollectionRandom(
+                    YoutubeVideoGetRelated(
+                        VideoValue(PEP_TALK) 
+                    )
                 )
             )
         ]
@@ -187,7 +189,7 @@ acts = [
                 CommandSequence([]),
                 CommandSequence([]),
                 NumberValue(0),
-                VideoValue(_ROPE_SWING)
+                VideoValue(ROPE_SWING)
             ),
             VideoScene(
                 "Play video related to the Worlds Largest Rope Swing video.",
@@ -196,8 +198,10 @@ acts = [
                 CommandSequence([]),
                 CommandSequence([]),
                 NumberValue(0),
-                YoutubeVideoGetRelated(
-                    VideoValue(_ROPE_SWING) 
+                YoutubeVideoCollectionRandom(
+                    YoutubeVideoGetRelated(
+                        VideoValue(ROPE_SWING) 
+                    )
                 )
             ),
             VideoScene(
@@ -207,8 +211,10 @@ acts = [
                 CommandSequence([]),
                 CommandSequence([]),
                 NumberValue(0),
-                YoutubeVideoGetRelated(
-                    VideoValue(_ROPE_SWING) 
+                YoutubeVideoCollectionRandom(
+                    YoutubeVideoGetRelated(
+                        VideoValue(ROPE_SWING) 
+                    )
                 )
             )
         ]
@@ -230,7 +236,7 @@ acts = [
     #             CommandSequence([]),
     #             CommandSequence([]),
     #             NumberValue(0),
-    #             VideoValue(_ROPE_SWING)
+    #             VideoValue(ROPE_SWING)
     #         ),
     #         VideoScene(
     #             "Play video related to the Worlds Largest Rope Swing video.",
@@ -240,7 +246,7 @@ acts = [
     #             CommandSequence([]),
     #             NumberValue(0),
     #             YoutubeVideoGetRelated(
-    #                 VideoValue(_ROPE_SWING) 
+    #                 VideoValue(ROPE_SWING) 
     #             )
     #         ),
     #         VideoScene(
@@ -251,7 +257,7 @@ acts = [
     #             CommandSequence([]),
     #             NumberValue(0),
     #             YoutubeVideoGetRelated(
-    #                 VideoValue(_ROPE_SWING) 
+    #                 VideoValue(ROPE_SWING) 
     #             )
     #         )
     #     ]
@@ -271,7 +277,7 @@ acts = [
                 NumberValue(5),
                 CommandSequence([]),
                 CommandSequence([]),
-                YoutubeVideoGetTitle(VideoValue(_MAC_ASKILL))
+                YoutubeVideoGetTitle(VideoValue(MAC_ASKILL))
             ),
             VideoScene(
                 "Play some of Danny MacAskill's - Way Back Home video.",
@@ -280,7 +286,7 @@ acts = [
                 CommandSequence([]),
                 CommandSequence([]),
                 NumberValue(90),
-                VideoValue(_MAC_ASKILL)
+                VideoValue(MAC_ASKILL)
             ),
             TextScene(
                 "Display a comment from Danny MacAskill's - Way Back Home video.",
@@ -288,7 +294,7 @@ acts = [
                 NumberValue(5),
                 CommandSequence([]),
                 CommandSequence([]),
-                YoutubeVideoRandomComment(VideoValue(_MAC_ASKILL))
+                YoutubeVideoRandomComment(VideoValue(MAC_ASKILL))
             ),
             TextScene(
                 "Display another comment from Danny MacAskill's - Way Back Home video.",
@@ -296,7 +302,7 @@ acts = [
                 NumberValue(5),
                 CommandSequence([]),
                 CommandSequence([]),
-                YoutubeVideoRandomComment(VideoValue(_MAC_ASKILL))
+                YoutubeVideoRandomComment(VideoValue(MAC_ASKILL))
             ),
             TextScene(
                 "Display another comment from Danny MacAskill's - Way Back Home video.",
@@ -304,7 +310,7 @@ acts = [
                 NumberValue(5),
                 CommandSequence([]),
                 CommandSequence([]),
-                YoutubeVideoRandomComment(VideoValue(_MAC_ASKILL))
+                YoutubeVideoRandomComment(VideoValue(MAC_ASKILL))
             ),
             VideoScene(
                 "Play some more of Danny MacAskill's - Way Back Home video.",
@@ -313,7 +319,7 @@ acts = [
                 CommandSequence([]),
                 CommandSequence([]),
                 NumberValue(110),
-                VideoValue(_MAC_ASKILL)
+                VideoValue(MAC_ASKILL)
             ),
         ]
     ),
@@ -332,7 +338,7 @@ acts = [
                 CommandSequence([]),
                 CommandSequence([]),
                 NumberValue(60),
-                VideoValue(_GANGNAM_STYLE) 
+                VideoValue(GANGNAM_STYLE) 
         )
         ]
     ),

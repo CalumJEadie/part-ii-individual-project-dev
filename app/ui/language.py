@@ -1012,6 +1012,37 @@ class VideoValueWidget(ChangeableMixin, DraggableMixin, QFrame):
         """
         self._value.setReadOnly(ro)
 
+class MiniVideoValueWidget(DraggableMixin, QFrame):
+
+    def __init__(self, label, value, parent):
+        """
+        :type label: string
+        :type value: string
+        """
+        super(MiniVideoValueWidget, self).__init__(parent)
+
+        self._value = value
+
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+                
+        layout = QHBoxLayout()
+
+        icon = QLabel(self)
+        icon.setPixmap(QPixmap("res/video-64-64.png"))
+        layout.addWidget(icon)
+        layout.addWidget(QLabel(label))
+
+        self.setLayout(layout)
+
+    def model(self):
+        """
+        :rtype: models.language.VideoValue
+        """
+        return language.VideoValue(self._value)
+
+    def setReadOnly(self, ro):
+        pass
+
 class GapWidget(ChangeableMixin, QStackedWidget):
     """
     Provides a gap that language components can be dragged into and represented

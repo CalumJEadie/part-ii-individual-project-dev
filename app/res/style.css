@@ -128,7 +128,8 @@ NumberValueWidget > QLineEdit {
 }
 
 VideoValueWidget,
-YoutubeVideoCollectionRandomWidget {
+YoutubeVideoCollectionRandomWidget,
+MiniVideoValueWidget {
     border-color: #FF0000;
     border-width: 2px;
     border-style: solid;
@@ -197,6 +198,7 @@ ListGapWidget,
 TextValueWidget,
 NumberValueWidget,
 VideoValueWidget,
+MiniVideoValueWidget,
 VideoCollectionValueWidget,
 SetWidget,
 GetWidget,
@@ -222,6 +224,7 @@ PaletteWidget MiniIfSceneWidget:hover,
 PaletteWidget MiniWhileSceneWidget:hover,
 PaletteWidget TextValueWidget:hover,
 PaletteWidget NumberValueWidget:hover,
+PaletteWidget VideoValueWidget:hover,
 PaletteWidget VideoValueWidget:hover,
 PaletteWidget VideoCollectionValueWidget:hover,
 PaletteWidget SetWidget:hover,
