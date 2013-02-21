@@ -15,12 +15,15 @@ logger.setLevel(logging.INFO)
 
 MIN_DURATION = 5
 
-def play(video,offset,duration):
+def play(video, offset, duration, volume):
     """
     :type video: youtube.Video
+    :type offset: int
+    :type duration: int
+    :type volume: int
     """
 
-    logger.info("play(video=%s,offset=%s,duration=%s)",video,offset,duration)
+    logger.info("play(video=%s, offset=%s, duration=%s, volume=%s)",video,offset,duration)
 
     # Inialise videocache.
     videocache.init()
@@ -35,6 +38,7 @@ def play(video,offset,duration):
         video_path = videocache.get(video)
         logger.info("OMXPlayer(%s)" % video_path)
         p = pyomxplayer.OMXPlayer(video_path)
+        p.set_volume(volume)
         time.sleep(duration)
         p.stop()
     else:

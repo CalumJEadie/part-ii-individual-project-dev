@@ -108,6 +108,21 @@ def translate_function_3(function_name, operand1, operand2, operand3):
         operand2_var_name, operand3_var_name)
     return code
 
+def translate_function_4(function_name, operand1, operand2, operand3, operand4):
+    """Generates code for 4-ary function application."""
+    code = ""
+    operand1_var_name = get_fresh_variable_name()
+    code += SetVariableStatement(operand1_var_name,operand1).translate()
+    operand2_var_name = get_fresh_variable_name()
+    code += SetVariableStatement(operand2_var_name,operand2).translate()
+    operand3_var_name = get_fresh_variable_name()
+    code += SetVariableStatement(operand3_var_name,operand3).translate()
+    operand4_var_name = get_fresh_variable_name()
+    code += SetVariableStatement(operand4_var_name,operand4).translate()
+    code += "%s(%s, %s, %s, %s)" % (function_name, operand1_var_name, 
+        operand2_var_name, operand3_var_name, operand4_var_name)
+    return code
+
 def translate_operator_2(operator_name, operand1, operand2):
     """Generates code for 2-ary infix operator application."""
 
@@ -486,8 +501,9 @@ class VideoScene(Scene):
 
     offset = property(lambda self: self._offset)
     source = property(lambda self: self._source)
+    volume = property(lambda self: self._volume)
 
-    def __init__(self, title, comment, duration, pre_commands, post_commands, offset, source):
+    def __init__(self, title, comment, duration, pre_commands, post_commands, offset, source, volume=None):
         """
         :type title: string
         :type comment: string
@@ -496,14 +512,16 @@ class VideoScene(Scene):
         :type post_commands: CommandSequence
         :type offset: <:NumberExpression
         :type source: <:VideoExpression
+        :type volume: <:NumberExpression
         """
         super(VideoScene, self).__init__(title, comment, duration, pre_commands, post_commands)
         self._children.extend([offset, source])
         self._offset = offset
         self._source = source
+        self._volume = volume if volume is not None else NumberValue(0)
 
     def translate_content(self):
-        return translate_function_3("videoplayer.play", self._source, self._offset, self._duration) + "\n"
+        return translate_function_4("videoplayer.play", self._source, self._offset, self._duration, self._volume) + "\n"
 
 class ImageScene(Scene):
 

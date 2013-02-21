@@ -485,7 +485,7 @@ class VideoSceneWidget(ChangeableMixin, SceneWidget):
         self._source = VideoGapWidget(scene.source, self)
         self._duration = NumberGapWidget(scene.duration, self)
         self._offset = NumberGapWidget(scene.offset, self)
-        # self._volume = NumberGapWidget()
+        self._volume = NumberGapWidget(scene.volume, self)
 
         videoControlsLayout.addWidget(QLabel("play"), 0, 0)
         videoControlsLayout.addWidget(self._source, 0, 1, 1, 2)
@@ -495,8 +495,9 @@ class VideoSceneWidget(ChangeableMixin, SceneWidget):
         videoControlsLayout.addWidget(QLabel("from offset"), 2, 0)
         videoControlsLayout.addWidget(self._offset, 2, 1)
         videoControlsLayout.addWidget(QLabel("seconds"), 2, 2)
-        # videoControlsLayout.addWidget(QLabel("at volume"), 3, 0)
-        # videoControlsLayout.addWidget(self._volume, 3, 1)
+        videoControlsLayout.addWidget(QLabel("at volume"), 3, 0)
+        videoControlsLayout.addWidget(self._volume, 3, 1)
+        videoControlsLayout.addWidget(QLabel("dB"), 3, 2)
 
         videoControls.setLayout(videoControlsLayout)
 
@@ -519,7 +520,8 @@ class VideoSceneWidget(ChangeableMixin, SceneWidget):
             self.preCommands(),
             self.postCommands(),
             self.offset(),
-            self.source()
+            self.source(),
+            self.volume()
         )
 
     def offset(self):
@@ -527,6 +529,9 @@ class VideoSceneWidget(ChangeableMixin, SceneWidget):
 
     def source(self):
         return self._source.model()
+
+    def volume(self):
+        return self._volume.model()
 
 class TextSceneWidget(ChangeableMixin, SceneWidget):
 
