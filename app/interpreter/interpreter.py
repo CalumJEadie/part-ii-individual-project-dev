@@ -67,7 +67,8 @@ from api import youtube,videoplayer"""
             "ask_yes_no": app.api.core.ask_yes_no,
             "display": app.api.core.display,
             "youtube": app.api.youtube,
-            "videoplayer": app.api.videoplayer
+            "videoplayer": app.api.videoplayer,
+            "Speed": app.api.videoplayer.Speed
         }
         exec(code, globals_, globals_)
 

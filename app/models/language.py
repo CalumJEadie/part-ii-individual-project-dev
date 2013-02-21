@@ -22,12 +22,14 @@ Hence the language is dynamically typed.
 Function class based on Scala's anonymous functions.
 """
 
-import app.api.youtube
 import collections
 import logging
-import show
 import re
 import collections
+
+import app.api.youtube
+import app.api.videoplayer
+from app.api.videoplayer import Speed
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -121,6 +123,23 @@ def translate_function_4(function_name, operand1, operand2, operand3, operand4):
     code += SetVariableStatement(operand4_var_name,operand4).translate()
     code += "%s(%s, %s, %s, %s)" % (function_name, operand1_var_name, 
         operand2_var_name, operand3_var_name, operand4_var_name)
+    return 
+
+def translate_function_5(function_name, operand1, operand2, operand3, operand4, operand5):
+    """Generates code for 5-ary function application."""
+    code = ""
+    operand1_var_name = get_fresh_variable_name()
+    code += SetVariableStatement(operand1_var_name,operand1).translate()
+    operand2_var_name = get_fresh_variable_name()
+    code += SetVariableStatement(operand2_var_name,operand2).translate()
+    operand3_var_name = get_fresh_variable_name()
+    code += SetVariableStatement(operand3_var_name,operand3).translate()
+    operand4_var_name = get_fresh_variable_name()
+    code += SetVariableStatement(operand4_var_name,operand4).translate()
+    operand5_var_name = get_fresh_variable_name()
+    code += SetVariableStatement(operand5_var_name,operand5).translate()
+    code += "%s(%s, %s, %s, %s, %s)" % (function_name, operand1_var_name, 
+        operand2_var_name, operand3_var_name, operand4_var_name, operand5_var_name)
     return code
 
 def translate_operator_2(operator_name, operand1, operand2):
@@ -497,13 +516,35 @@ class Scene(LanguageComponent):
             code = "\n"
         return code
 
+class SpeedValue(LanguageComponent):
+
+    value = property(lambda self: self._value)
+
+    def __init__(self, value):
+        """
+        :type value: app.api.videoplayer.Speed
+        """
+        assert value in (Speed.Slow, Speed.Normal,
+            Speed.Fast, Speed.VFast)
+        super(SpeedValue, self).__init__()
+        self._value = value
+
+    def translate(self):
+        return {
+            Speed.Slow : "Speed.Slow",
+            Speed.Normal : "Speed.Normal",
+            Speed.Fast : "Speed.Fast",
+            Speed.VFast : "Speed.VFast"
+        }[self._value]
+
 class VideoScene(Scene):
 
     offset = property(lambda self: self._offset)
     source = property(lambda self: self._source)
     volume = property(lambda self: self._volume)
+    speed = property(lambda self: self._speed)
 
-    def __init__(self, title, comment, duration, pre_commands, post_commands, offset, source, volume=None):
+    def __init__(self, title, comment, duration, pre_commands, post_commands, offset, source, volume=None, speed=None):
         """
         :type title: string
         :type comment: string
@@ -513,15 +554,17 @@ class VideoScene(Scene):
         :type offset: <:NumberExpression
         :type source: <:VideoExpression
         :type volume: <:NumberExpression
+        :type speed: SpeedValue
         """
         super(VideoScene, self).__init__(title, comment, duration, pre_commands, post_commands)
-        self._children.extend([offset, source])
+        self._children.extend([offset, source, volume, speed])
         self._offset = offset
         self._source = source
         self._volume = volume if volume is not None else NumberValue(0)
+        self._speed = speed if speed is not None else SpeedValue(Speed.Normal)
 
     def translate_content(self):
-        return translate_function_4("videoplayer.play", self._source, self._offset, self._duration, self._volume) + "\n"
+        return translate_function_5("videoplayer.play", self._source, self._offset, self._duration, self._volume, self._speed) + "\n"
 
 class ImageScene(Scene):
 

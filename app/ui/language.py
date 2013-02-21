@@ -17,6 +17,7 @@ import cPickle
 from app.models import language
 from app.models.language import Type
 from app.api import youtube
+from app.api.videoplayer import Speed
 from app.ui import core, events
 
 from show import show
@@ -487,6 +488,14 @@ class VideoSceneWidget(ChangeableMixin, SceneWidget):
         self._offset = NumberGapWidget(scene.offset, self)
         self._volume = NumberGapWidget(scene.volume, self)
 
+        self._speed = QComboBox()
+        self._speed.insertItem(Speed.Slow, "slow")
+        self._speed.insertItem(Speed.Normal, "normal")
+        self._speed.insertItem(Speed.Fast, "fast")
+        self._speed.insertItem(Speed.VFast, "very fast")
+        self._speed.setCurrentIndex(scene.speed.value)
+        self._registerChangeSignal(self._speed.currentIndexChanged)
+
         videoControlsLayout.addWidget(QLabel("play"), 0, 0)
         videoControlsLayout.addWidget(self._source, 0, 1, 1, 2)
         videoControlsLayout.addWidget(QLabel("for"), 1, 0)
@@ -498,6 +507,9 @@ class VideoSceneWidget(ChangeableMixin, SceneWidget):
         videoControlsLayout.addWidget(QLabel("at volume"), 3, 0)
         videoControlsLayout.addWidget(self._volume, 3, 1)
         videoControlsLayout.addWidget(QLabel("dB"), 3, 2)
+        videoControlsLayout.addWidget(QLabel("at"), 4, 0)
+        videoControlsLayout.addWidget(self._speed, 4, 1)
+        videoControlsLayout.addWidget(QLabel("speed"), 4, 2)
 
         videoControls.setLayout(videoControlsLayout)
 
@@ -521,7 +533,8 @@ class VideoSceneWidget(ChangeableMixin, SceneWidget):
             self.postCommands(),
             self.offset(),
             self.source(),
-            self.volume()
+            self.volume(),
+            self.speed()
         )
 
     def offset(self):
@@ -532,6 +545,11 @@ class VideoSceneWidget(ChangeableMixin, SceneWidget):
 
     def volume(self):
         return self._volume.model()
+
+    def speed(self):
+        # By construction self.speed.currentIndex() will be one of the possible
+        # integers.
+        return language.SpeedValue(self._speed.currentIndex())
 
 class TextSceneWidget(ChangeableMixin, SceneWidget):
 
@@ -1391,6 +1409,7 @@ class NumberOperatorWidget(ChangeableMixin, DraggableMixin, QFrame):
         self._operator.addItem("+")
         self._operator.addItem("-")
         self._operator.addItem("*")
+        self._operator.setCurrentIndex(self._operator.findText(operator))
         self._registerChangeSignal(self._operator.currentIndexChanged)
 
         layout = QHBoxLayout()
