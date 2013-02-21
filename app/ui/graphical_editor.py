@@ -186,10 +186,23 @@ class GraphicalEditor(QMainWindow):
         toolbar.addAction(self._performAction)
         toolbar.addAction(self._clearAction)
         toolbar.addSeparator()
+
+        loadMenu = QMenu()
+
         # toolbar.addAction(self._loadExample1Action)
         # toolbar.addAction(self._loadExample2Action)
-        # for action in self._loadExampleActions:
-        #     toolbar.addAction(action)
+        for action in self._loadExampleActions:
+            # toolbar.addAction(action)
+            loadMenu.addAction(action)
+
+        loadButton = QToolButton(self)
+        loadButton.setText("Load Example")
+        loadButton.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        loadButton.setMenu(loadMenu)
+        loadButton.setPopupMode(QToolButton.InstantPopup)
+        # loadButton.triggered.connect(lambda:)
+
+        toolbar.addWidget(loadButton)
 
     def _setupWindow(self):
 
