@@ -98,6 +98,7 @@ class LanguageWidgetFactory(object):
             language.Add: lambda lc, p: NumberOperatorWidget("+", lc.op1, lc.op2, p),
             language.Subtract: lambda lc, p: NumberOperatorWidget("-", lc.op1, lc.op2, p),
             language.Multiply: lambda lc, p: NumberOperatorWidget("*", lc.op1, lc.op2, p),
+            language.GetRandomNumberBetweenInterval: lambda lc, p: GetRandomNumberBetweenIntervalWidget(lc.op1, lc.op2, p),
             language.TextValue: lambda lc, p: TextValueWidget(lc, p),
             language.VideoValue: lambda lc, p: VideoValueWidget(lc, p),
             language.NumberGetVariableExpression: lambda lc, p: NumberGetWidget(lc, p),
@@ -1409,6 +1410,46 @@ class NumberOperatorWidget(ChangeableMixin, DraggableMixin, QFrame):
         :type ro: boolean
         """
         # Can't set combo box read only.
+        self._operand1.setReadOnly(ro)
+        self._operand2.setReadOnly(ro)
+
+
+
+class GetRandomNumberBetweenIntervalWidget(DraggableMixin, QFrame):
+
+    def __init__(self, operand1, operand2, parent):
+        """
+        :type operand1: language.NumberExpression
+        :type operand2: language.NumberExpression
+        """
+        super(GetRandomNumberBetweenIntervalWidget, self).__init__(parent)
+
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+        self._operand1 = NumberGapWidget(operand1, self)
+        self._operand2 = NumberGapWidget(operand2, self)
+
+        layout = QHBoxLayout()
+        layout.addWidget(QLabel("random\nfrom", self))
+        layout.addWidget(self._operand1)
+        layout.addWidget(QLabel("to", self))
+        layout.addWidget(self._operand2)
+
+        self.setLayout(layout)
+
+    def model(self):
+        """
+        :rtype: models.language.GetRandomNumberBetweenInterval
+        """
+        return language.GetRandomNumberBetweenInterval(
+            self._operand1.model(),
+            self._operand2.model()
+        )
+
+    def setReadOnly(self, ro):
+        """
+        :type ro: boolean
+        """
         self._operand1.setReadOnly(ro)
         self._operand2.setReadOnly(ro)
 

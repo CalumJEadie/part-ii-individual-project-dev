@@ -48,6 +48,8 @@ from api import youtube,videoplayer"""
     # Previous approach didn't work either.
     
     def run(code):
+        import random
+
         import app.api.core
         import app.api.youtube
         import app.api.videoplayer
@@ -61,6 +63,7 @@ from api import youtube,videoplayer"""
         # which wasn't accessible in the local scope of the function.
         # See: http://stackoverflow.com/questions/871887/using-exec-with-recursive-functions
         globals_ = {
+            "random": random,
             "ask_yes_no": app.api.core.ask_yes_no,
             "display": app.api.core.display,
             "youtube": app.api.youtube,

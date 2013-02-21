@@ -890,6 +890,9 @@ class NumberValue(NumberExpression):
 
 class GetRandomNumberBetweenInterval(NumberExpression):
 
+    op1 = property(lambda self: self._lower_number_expr)
+    op2 = property(lambda self: self._higher_number_expr)
+
     def __init__(self,lower_number_expr,higher_number_expr):
         """
         :type lower_number_expr: <:NumberExpression
