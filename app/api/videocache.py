@@ -19,6 +19,8 @@ MIN_VIDEO_READY_FILE_SIZE = long(0.1 * 2**20) # bytes, 0.1 MB
 
 _CACHE_DIR = "/tmp/diss/videocache"
 _OUTPUT_TEMPLATE = "%(cache_dir)s/%(id)s"
+_FORMAT = "worst"
+# _FORMAT = "best"
 
 _initialised = False
 
@@ -123,7 +125,7 @@ def _download(video, cache_dir):
     # Need to leave id unchanged.
     output_template = _OUTPUT_TEMPLATE % {"cache_dir": cache_dir, "id": "%(id)s"}
 
-    format = "worst"
+    format = _FORMAT
 
     web_url = video.web_url()
     video_id = video.video_id()
