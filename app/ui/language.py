@@ -487,11 +487,13 @@ class VideoSceneWidget(ChangeableMixin, SceneWidget):
         # self._volume = NumberGapWidget()
 
         videoControlsLayout.addWidget(QLabel("play"), 0, 0)
-        videoControlsLayout.addWidget(self._source, 0, 1)
+        videoControlsLayout.addWidget(self._source, 0, 1, 1, 2)
         videoControlsLayout.addWidget(QLabel("for"), 1, 0)
         videoControlsLayout.addWidget(self._duration, 1, 1)
+        videoControlsLayout.addWidget(QLabel("seconds"), 1, 2)
         videoControlsLayout.addWidget(QLabel("from offset"), 2, 0)
         videoControlsLayout.addWidget(self._offset, 2, 1)
+        videoControlsLayout.addWidget(QLabel("seconds"), 2, 2)
         # videoControlsLayout.addWidget(QLabel("at volume"), 3, 0)
         # videoControlsLayout.addWidget(self._volume, 3, 1)
 
@@ -549,9 +551,10 @@ class TextSceneWidget(ChangeableMixin, SceneWidget):
         self._duration = NumberGapWidget(scene.duration, self)
 
         textControlsLayout.addWidget(QLabel("display"), 0, 0)
-        textControlsLayout.addWidget(self._text, 0, 1)
+        textControlsLayout.addWidget(self._text, 0, 1, 1, 2)
         textControlsLayout.addWidget(QLabel("for"), 1, 0)
         textControlsLayout.addWidget(self._duration, 1, 1)
+        textControlsLayout.addWidget(QLabel("seconds"), 1, 2)
 
         textControls.setLayout(textControlsLayout)
 
