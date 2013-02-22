@@ -538,7 +538,7 @@ class VideoSceneWidget(ChangeableMixin, SceneWidget):
         )
 
     def offset(self):
-        return self._duration.model()
+        return self._offset.model()
 
     def source(self):
         return self._source.model()

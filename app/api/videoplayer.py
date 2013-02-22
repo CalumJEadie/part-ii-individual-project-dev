@@ -14,11 +14,11 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 MIN_DURATION = 5 # worst
-# MIN_DURATION = 15 # best
+#MIN_DURATION = 15 # best
 # Empirical time needed between starting OMXPlayer and it being able to process input
 # Need rediculous wait for best quality video, presumably loading into memory
 OMXPLAYER_START_UP = 1.5 # worst
-# OMXPLAYER_START_UP = 9 # best
+#OMXPLAYER_START_UP = 9 # best
 assert OMXPLAYER_START_UP < MIN_DURATION
 
 # Use simple Python enum idiom to represent allows speeds.
@@ -54,6 +54,7 @@ def play(video, offset, duration, volume, speed):
         p = pyomxplayer.OMXPlayer(video_path)
         # Delaying changes to give OMXPlayer time to set up and be ready to accept input
         time.sleep(OMXPLAYER_START_UP)
+        p.seek(offset)
         p.set_volume(volume)
         p.set_speed(speed)
         time.sleep(duration-OMXPLAYER_START_UP)
