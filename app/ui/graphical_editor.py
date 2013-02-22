@@ -484,6 +484,7 @@ class PaletteWidget(QToolBox):
                     YoutubeVideoCollectionRandomWidget(language.YoutubeVideoCollectionRandom(language.VideoGap()), self),
                     MiniVideoValueWidget("Gangnam Style", examples.GANGNAM_STYLE, self),
                     MiniVideoValueWidget("Rope Swing", examples.ROPE_SWING, self),
+                    MiniVideoValueWidget("Cambridge Harlem", examples.CAMBRIDGE_HARLEM, self),
                 )
             ),
             (

@@ -51,6 +51,8 @@ PEP_TALK = "http://www.youtube.com/watch?v=l-gQLqv9f4o"
 ROPE_SWING = "http://www.youtube.com/watch?v=4B36Lr0Unp4"
 # Danny MacAskill - "Way Back Home"
 MAC_ASKILL = "http://www.youtube.com/watch?v=Cj6ho1-G6tw"
+# Cambridge Does The Harlem Shake
+CAMBRIDGE_HARLEM = "http://www.youtube.com/watch?v=n7--QRhePBg"
 
 acts = [
 
