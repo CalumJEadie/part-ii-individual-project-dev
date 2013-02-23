@@ -506,7 +506,8 @@ class VideoSceneWidget(ChangeableMixin, SceneWidget):
         videoControlsLayout.addWidget(QLabel("seconds"), 2, 2)
         videoControlsLayout.addWidget(QLabel("at volume"), 3, 0)
         videoControlsLayout.addWidget(self._volume, 3, 1)
-        videoControlsLayout.addWidget(QLabel("dB"), 3, 2)
+        # dB misleading
+        # videoControlsLayout.addWidget(QLabel("dB"), 3, 2)
         videoControlsLayout.addWidget(QLabel("at"), 4, 0)
         videoControlsLayout.addWidget(self._speed, 4, 1)
         videoControlsLayout.addWidget(QLabel("speed"), 4, 2)
