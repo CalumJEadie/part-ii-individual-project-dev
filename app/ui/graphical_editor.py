@@ -75,6 +75,11 @@ class GraphicalEditor(QMainWindow):
         self._openAction.setToolTip('Open script from file')
         self._openAction.triggered.connect(self._open)
 
+        self._screenshotAction = QAction('Take screenshot', self)
+        self._screenshotAction.setStatusTip('Take screenshot of desktop')
+        self._screenshotAction.setToolTip('Take screenshot of desktop')
+        self._screenshotAction.triggered.connect(self._screenshot)
+
         # Lambda not working so using inner function.
         def loadExample(self, n):
             def f():
@@ -176,6 +181,7 @@ class GraphicalEditor(QMainWindow):
 
         fileMenu.addAction(self._openAction)
         fileMenu.addAction(self._saveAction)
+        fileMenu.addAction(self._screenshotAction)
 
         fileMenu.addSeparator()
 
@@ -261,17 +267,29 @@ class GraphicalEditor(QMainWindow):
     def _save(self):
         now = datetime.datetime.now()
 
-        filePath = "%s/%s.%s" % (config.APP_DIR, now.strftime("%Y-%m-%d-%H-%M-%S"), config.FILE_EXTENSION)
+        filePath = "%s/%s.%s" % (config.APP_DIR, now.strftime("%Y-%m-%d-%H-%M-%S"), config.SCRIPT_EXTENSION)
         
         with open(filePath, 'w') as f:
             cPickle.dump(self._scriptEdit.toModel(), f)
 
+        QMessageBox.information(self, "Save", "Script saved to %s" % filePath, QMessageBox.Ok)
+
     def _open(self):
         filePath, _ = QFileDialog.getOpenFileName(self, 'Open script from file',
-            config.APP_DIR, "Script files (*.%s)" % config.FILE_EXTENSION)
+            config.APP_DIR, "Script files (*.%s)" % config.SCRIPT_EXTENSION)
         
         with open(filePath, 'r') as f:
             self._scriptEdit.setScript(cPickle.load(f))
+
+    def _screenshot(self):
+        now = datetime.datetime.now()
+        filePath = "%s/%s.%s" % (config.APP_DIR, now.strftime("%Y-%m-%d-%H-%M-%S"), config.SCREENSHOT_FORMAT)
+
+        screenPixmap = QPixmap.grabWindow(QApplication.desktop().winId())
+
+        screenPixmap.save(filePath, config.SCREENSHOT_FORMAT)
+
+        QMessageBox.information(self, "Screenshot", "Screenshot saved to %s" % filePath, QMessageBox.Ok)
 
 class ScriptEdit(QScrollArea):
     """

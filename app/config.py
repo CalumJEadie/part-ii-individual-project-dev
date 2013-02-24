@@ -7,8 +7,9 @@ import os.path
 # General
 
 APP_NAME = "Evelyn"
-FILE_EXTENSION = "ev"
+SCRIPT_EXTENSION = "ev"
 APP_DIR = os.path.expanduser("~/evelyn")
+SCREENSHOT_FORMAT = "png"
 
 # UI - Graphical Editor
 
