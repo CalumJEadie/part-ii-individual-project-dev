@@ -177,6 +177,53 @@ class DraggableMixin(object):
         self.startDrag()
         QWidget.mouseMoveEvent(self, event)
 
+class DroppableMixin(object):
+    """
+    Provides droppable behavior to a child class.
+
+    Child class:
+    - Should subclass QWidget.
+    - Should put DraggableMixin earlier in the Method Resolution Order so override
+      methods of parent class.
+    - Should call self.setAcceptDrops(True)
+    - Should implement isAcceptable()
+    - Should implement dropEvent()
+    - Should have property self._readOnly
+    """
+
+    def _extractLanguageComponent(self, event):
+        """
+        :type event: QDragDropEvent
+        :rtype: language.LanguageComponent
+        """
+        return cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))   
+
+    def dragEnterEvent(self, event):
+        if not self._readOnly:
+            if event.mimeData().hasFormat(LC_MIME_FORMAT):
+                languageComponent = self._extractLanguageComponent(event)
+                if self.isAcceptable(languageComponent):
+                    event.accept()
+                else:
+                    event.ignore()
+            else:
+                event.ignore()
+        else:
+            event.ignore() 
+
+    def isAcceptable(self, component):
+        """
+        Uses template design pattern.
+
+        :type component: language.LanguageComponent
+        :rtype: boolean
+        :return: True, if gap accepts components of the type of `component`.
+        """
+        raise NotImplementedError
+
+    def dropEvent(self, event):
+        raise NotImplementedError
+
 class ChangeableMixin(object):
     """
     Provides changeable behavior to child class.
@@ -262,7 +309,7 @@ class ChangeableMixin(object):
 #             # of event() that overrides QWidget.event().
 #             return QWidget.event(self, event)
 
-class SceneSequenceWidget(ChangeableMixin, QWidget):
+class SceneSequenceWidget(DroppableMixin, ChangeableMixin, QWidget):
     """
     Basic implementation of drag and drop. Append only.
     """
@@ -273,6 +320,9 @@ class SceneSequenceWidget(ChangeableMixin, QWidget):
         """
 
         super(SceneSequenceWidget, self).__init__(parent)
+
+        self.setAcceptDrops(True)
+        self._readOnly = False
 
         self._scenes = []
         self._gap = SceneGapWidget(self)
@@ -313,6 +363,15 @@ class SceneSequenceWidget(ChangeableMixin, QWidget):
         # Place scene in center of act
         self._layout.insertWidget(self._layout.indexOf(self._gap), widget, alignment=Qt.AlignHCenter)
         # self.updateGeometry()
+ 
+    def isAcceptable(self, component):
+        return isinstance(component, language.Scene) or \
+            isinstance(component, language.IfScene) or \
+            isinstance(component, language.WhileScene)
+
+    def dropEvent(self, event):
+        lc = cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
+        self.addScene(lc)
 
 class ActWidget(SceneSequenceWidget):
     """
