@@ -268,6 +268,26 @@ class ChangeableMixin(object):
             # of event() that overrides QWidget.event().
             return QWidget.event(self, event)
 
+class DeletableMixin(object):
+    """
+    Provides deletable to a child class.
+
+    Child class:
+    - Should subclass QWidget.
+    - Should put DeleteableMixin earlier in the Method Resolution Order so override
+      methods of parent class.
+    - Should have a parent with deleteScene(scene)
+    """    
+        
+    def delete(self):
+        # Use parent scene sequence widget to delete.
+        self.parent().deleteScene(self)
+
+    def contextMenuEvent(self, event):
+        menu = QMenu(self)
+        menu.addAction("Delete", self.delete)
+        menu.exec_(event.globalPos())
+
 # class SignalEventMappingMixin(object):
 #     """
 #     Provides ability for a widget to post an event in response to recieving a signal.
@@ -373,6 +393,20 @@ class SceneSequenceWidget(DroppableMixin, ChangeableMixin, QWidget):
         lc = cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
         self.addScene(lc)
 
+    def deleteScene(self, sceneWidget):
+        """
+        :type sceneWidget: QWidget
+        """
+        # Remove from layout.
+        # Ownership reverts to application.
+        self._layout.removeWidget(sceneWidget)
+        # Delete from application
+        sceneWidget.setParent(None)
+        # Remove references
+        self._scenes.remove(sceneWidget)
+
+        self._postScriptChangeEvent()
+
 class ActWidget(SceneSequenceWidget):
     """
     Basic implementation of drag and drop. Append only.
@@ -390,7 +424,7 @@ class ActWidget(SceneSequenceWidget):
         """
         return language.Act("", map(lambda x: x.model(), self._scenes))
 
-class SceneWidget(QFrame):
+class SceneWidget(DeletableMixin, QFrame):
 
     def __init__(self,parent):
         super(SceneWidget, self).__init__(parent)
@@ -666,7 +700,7 @@ class TextSceneWidget(ChangeableMixin, SceneWidget):
     def text(self):
         return self._text.model()
 
-class IfSceneWidget(ChangeableMixin, QFrame):
+class IfSceneWidget(DeletableMixin, ChangeableMixin, QFrame):
 
     def __init__(self, scene, parent):
         """
@@ -733,7 +767,7 @@ class IfSceneWidget(ChangeableMixin, QFrame):
             self.false_scene_sequence()
         )
 
-class WhileSceneWidget(ChangeableMixin, QFrame):
+class WhileSceneWidget(DeletableMixin, ChangeableMixin, QFrame):
 
     def __init__(self, scene, parent):
         """
