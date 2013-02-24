@@ -1,39 +1,31 @@
 import sys
-from PySide import QtGui
 import logging
-import logging.config
 import argparse
 
-import ui.text_editor
+import config
 import ui.graphical_editor
-import ui.basic_graphical_editor
-import ui.title_editor
 
-logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+def _ensure_dir_exists(dir_):
+    """
+    :type _dir: string
+    """
+    if not os.path.exists(dir_):
+        os.makedirs(dir_)
 
-# Possible editors.
-TEXT_EDITOR = "text"
-GRAPHICAL_EDITOR = "graphical"
-BASIC_GRAPHICAL_EDITOR = "basic_graphical"
-TITLE_EDITOR = "title"
-        
 def main():
 
-    # Process command line.
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--editor",default=TEXT_EDITOR,choices=[TEXT_EDITOR, GRAPHICAL_EDITOR, BASIC_GRAPHICAL_EDITOR, TITLE_EDITOR],help="specifies type of editor")
-    args = parser.parse_args(sys.argv[1:])
+    # Logging
+    logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    # Start application
+    # Prepare environment
+    _ensure_dir_exists(config.APP_DIR)
+
+    # Start Qt
     app = QtGui.QApplication(sys.argv)
-    if args.editor == TEXT_EDITOR:
-        e = ui.text_editor.TextEditor()
-    elif args.editor == GRAPHICAL_EDITOR:
-        e = ui.graphical_editor.GraphicalEditor()
-    elif args.editor == BASIC_GRAPHICAL_EDITOR:
-        e = ui.basic_graphical_editor.BasicGraphicalEditor()
-    else:
-        e = ui.title_editor.TitleEditor()
+
+    # Fire up graphical editor
+    editor = ui.graphical_editor.GraphicalEditor()
+
     sys.exit(app.exec_())
 
 if __name__ == '__main__':

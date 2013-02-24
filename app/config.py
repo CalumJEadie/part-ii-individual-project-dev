@@ -2,9 +2,15 @@
 Application configuration.
 """
 
-APP_NAME = "Evelyn"
+import os.path
 
+# General
+
+APP_NAME = "Evelyn"
 FILE_EXTENSION = "ev"
+APP_DIR = os.path.expanduser("~/evelyn")
+
+# UI - Graphical Editor
 
 EMPTY_GAP_ANIMATION_INTERVAL = 2000
 PALETTE_WIDTH = 350
