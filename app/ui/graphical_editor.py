@@ -5,6 +5,7 @@ import os.path
 from os.path import join
 import logging
 import cPickle
+import datetime
 
 from app import config
 from app.ui.language import *
@@ -84,7 +85,7 @@ class GraphicalEditor(QMainWindow):
         for i in range(0,len(examples.acts)):
             act = examples.acts[i]
 
-            action = QAction('Load example #%s: %s' % (str(i+1), act.title), self)
+            action = QAction('Open example #%s: %s' % (str(i+1), act.title), self)
             action.setStatusTip('Replace current script with example #%s: %s' % (str(i+1), act.title))
             action.setToolTip('Replace current script with example #%s: %s' % (str(i+1), act.title))
             action.triggered.connect(loadExample(self, i))
@@ -210,7 +211,7 @@ class GraphicalEditor(QMainWindow):
             loadMenu.addAction(action)
 
         loadButton = QToolButton(self)
-        loadButton.setText("Load Example")
+        loadButton.setText("Open Example")
         loadButton.setToolButtonStyle(Qt.ToolButtonTextOnly)
         loadButton.setMenu(loadMenu)
         loadButton.setPopupMode(QToolButton.InstantPopup)
@@ -258,10 +259,19 @@ class GraphicalEditor(QMainWindow):
         self._scriptEdit.setScript(examples.acts[n])
 
     def _save(self):
-        pass
+        now = datetime.datetime.now()
+
+        filePath = "%s/%s.%s" % (config.APP_DIR, now.strftime("%Y-%m-%d-%H-%M-%S"), config.FILE_EXTENSION)
+        
+        with open(filePath, 'w') as f:
+            cPickle.dump(self._scriptEdit.toModel(), f)
 
     def _open(self):
-        pass
+        filePath, _ = QFileDialog.getOpenFileName(self, 'Open script from file',
+            config.APP_DIR, "Script files (*.%s)" % config.FILE_EXTENSION)
+        
+        with open(filePath, 'r') as f:
+            self._scriptEdit.setScript(cPickle.load(f))
 
 class ScriptEdit(QScrollArea):
     """
