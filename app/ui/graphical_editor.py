@@ -4,7 +4,9 @@ from PySide.QtGui import *
 import os.path
 from os.path import join
 import logging
+import cPickle
 
+from app import config
 from app.ui.language import *
 from app.interpreter import interpreter
 from app.models import language
@@ -18,12 +20,6 @@ _GAP_ERROR_TEXT = """Your script could not be %s because there's a gap that need
 You can spot a gap that needs to be filled by it's thick border. Fill it in by dragging blocks of the same type onto it."""
 _TRANSLATE_GAP_ERROR_TEXT = _GAP_ERROR_TEXT % "translated"
 _PERFORM_GAP_ERROR_TEXT = _GAP_ERROR_TEXT % "performed"
-
-# Externalise key behavior
-EMPTY_GAP_ANIMATION_INTERVAL = 2000
-PALETTE_WIDTH = 350
-SCRIPT_EDIT_MIN_WIDTH = 700
-PREVIEW_WIDTH = 350
 
 class GraphicalEditor(QMainWindow):
     
@@ -65,6 +61,18 @@ class GraphicalEditor(QMainWindow):
         self._loadExample2Action.setStatusTip('Replace current script with example script 2')
         self._loadExample2Action.setToolTip('Replace current script with example script 2')
         self._loadExample2Action.triggered.connect(self._loadExample2)
+
+        self._saveAction = QAction('Save', self)
+        self._saveAction.setShortcut(QKeySequence.Save)
+        self._saveAction.setStatusTip('Save script to file')
+        self._saveAction.setToolTip('Save script to file')
+        self._saveAction.triggered.connect(self._save)
+
+        self._openAction = QAction('Open', self)
+        self._openAction.setShortcut(QKeySequence.Open)
+        self._openAction.setStatusTip('Open script from file')
+        self._openAction.setToolTip('Open script from file')
+        self._openAction.triggered.connect(self._open)
 
         # Lambda not working so using inner function.
         def loadExample(self, n):
@@ -142,7 +150,7 @@ class GraphicalEditor(QMainWindow):
         """
 
         self._previewTextEdit = QPlainTextEdit()
-        self._previewTextEdit.setFixedWidth(PREVIEW_WIDTH)
+        self._previewTextEdit.setFixedWidth(config.PREVIEW_WIDTH)
         self._previewTextEdit.setReadOnly(True)
 
         # previewBox = QGroupBox("Preview")
@@ -164,6 +172,12 @@ class GraphicalEditor(QMainWindow):
         menubar = QMenuBar()
 
         fileMenu = menubar.addMenu('&File')
+
+        fileMenu.addAction(self._openAction)
+        fileMenu.addAction(self._saveAction)
+
+        fileMenu.addSeparator()
+
         # fileMenu.addAction(self._loadExample1Action)
         # fileMenu.addAction(self._loadExample2Action)
         for action in self._loadExampleActions:
@@ -208,7 +222,7 @@ class GraphicalEditor(QMainWindow):
 
         # self.resize(1400,800)
         # self._center()
-        self.setWindowTitle('Graphical Editor')
+        self.setWindowTitle('%s - Graphical Editor' % config.APP_NAME)
         self.showMaximized()  
         
     def _center(self):
@@ -243,6 +257,12 @@ class GraphicalEditor(QMainWindow):
     def _loadExample(self, n):
         self._scriptEdit.setScript(examples.acts[n])
 
+    def _save(self):
+        pass
+
+    def _open(self):
+        pass
+
 class ScriptEdit(QScrollArea):
     """
     Component of interface that provides an editor for the language.
@@ -262,14 +282,14 @@ class ScriptEdit(QScrollArea):
 
     def __init__(self, parent=None):
         super(ScriptEdit, self).__init__(parent)
-        self.setMinimumWidth(SCRIPT_EDIT_MIN_WIDTH)
+        self.setMinimumWidth(config.SCRIPT_EDIT_MIN_WIDTH)
         self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         self.setAlignment(Qt.AlignHCenter) # Place script in center of edit
         self.setWidgetResizable(True) # Neccessary to take advantage of available space.
         self.clear()
 
         self._emptyGapsAnimationTimer = QTimer()
-        self._emptyGapsAnimationTimer.setInterval(EMPTY_GAP_ANIMATION_INTERVAL)
+        self._emptyGapsAnimationTimer.setInterval(config.EMPTY_GAP_ANIMATION_INTERVAL)
         self._emptyGapsAnimationTimer.timeout.connect(self._animateEmptyGaps)
         self._gapsHighlighted = False
 
@@ -462,7 +482,7 @@ class PaletteWidget(QToolBox):
 
     def setupUI(self):
 
-        self.setFixedWidth(PALETTE_WIDTH)
+        self.setFixedWidth(config.PALETTE_WIDTH)
 
         # Rather than use a lot of boiler plate code define abstract
         # structure of the palette and take care of layout later.
