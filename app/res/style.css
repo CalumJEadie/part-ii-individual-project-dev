@@ -151,9 +151,17 @@ VideoCollectionFunction0Widget {
     background: white;
 }
 
+ListGapWidget {
+    border-style: ridge;
+    border-width: 3px;
+}
+
 SceneGapWidget {
-    font-size: 36px;
+    font-size: 24px;
     text-align: center;
+    border-color: black;
+    border-style: solid;
+    background: white;
 }
 
 CommandGapWidget {
@@ -161,12 +169,6 @@ CommandGapWidget {
     border-style: solid;
     background: white;
     color: grey;
-}
-
-SceneGapWidget {
-    border-color: black;
-    border-style: solid;
-    background: white;
 }
 
 CommentWidget {
@@ -178,11 +180,6 @@ CommentWidget {
 GapWidget > QLabel {
     border-style: ridge;
     border-width: 8px;
-}
-
-ListGapWidget {
-    border-style: ridge;
-    border-width: 5px;
 }
 
 TextSceneWidget,

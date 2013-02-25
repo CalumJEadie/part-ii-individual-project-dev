@@ -332,6 +332,12 @@ class DeletableMixin(object):
 class SceneSequenceWidget(DroppableMixin, ChangeableMixin, QWidget):
     """
     Basic implementation of drag and drop. Append only.
+
+     <gap>  <-- insert after the gap
+    <scene>
+     <gap>
+    <scene>
+     <gap>  <-- self._endGap, inserts before rather than inserting after
     """
 
     def __init__(self, sceneSequence, parent):
@@ -345,11 +351,11 @@ class SceneSequenceWidget(DroppableMixin, ChangeableMixin, QWidget):
         self._readOnly = False
 
         self._scenes = []
-        self._gap = SceneGapWidget(self)
+        self._endGap = SceneGapWidget(self)
 
         self._layout = QVBoxLayout()
         self._layout.addSpacing(10)
-        self._layout.addWidget(self._gap)
+        self._layout.addWidget(self._endGap)
         for scene in sceneSequence.scenes:
             self.addScene(scene)
         self._layout.addStretch(10)
@@ -364,25 +370,40 @@ class SceneSequenceWidget(DroppableMixin, ChangeableMixin, QWidget):
 
     def addScene(self, scene):
         """
+        Appends scene to the end of the script, just before the last gap.
+
+        :type scene: language.Scene
+        """
+        self.insertScene(self._endGap, scene)
+
+    def insertScene(self, gap, scene):
+        """
+        Inserts scene after the gap.
+
+        :type gap: SceneGapWidget
         :type scene: language.Scene
         """
 
         sceneWidget = LanguageWidgetFactory.build(scene, self)
 
-        self._addAtEnd(sceneWidget)
+        self._insertBeforeGap(gap, sceneWidget)
         self._scenes.append(sceneWidget)
 
         self._postScriptChangeEvent()
 
-    def _addAtEnd(self, widget):
+    def _insertBeforeGap(self, gap, widget):
         """
-        Adds widget to end of layout but before gap.
+        Inserts a widget into the layout before a gap.
 
+        Adds a gap before the widget.
+
+        :type gap: SceneGapWidget
         :type widget: QWidget
         """
-        # Place scene in center of act
-        self._layout.insertWidget(self._layout.indexOf(self._gap), widget, alignment=Qt.AlignHCenter)
-        # self.updateGeometry()
+        gapBefore = SceneGapWidget(self)
+        self._layout.insertWidget(self._layout.indexOf(gap), widget, alignment=Qt.AlignHCenter)
+        self._layout.insertWidget(self._layout.indexOf(widget), gapBefore)
+        self.updateGeometry()
  
     def isAcceptable(self, component):
         return isinstance(component, language.Scene) or \
@@ -397,12 +418,14 @@ class SceneSequenceWidget(DroppableMixin, ChangeableMixin, QWidget):
         """
         :type sceneWidget: QWidget
         """
-        # Remove from layout.
-        # Ownership reverts to application.
+        sceneIndex = self._layout.indexOf(sceneWidget)
+        gapBefore = self._layout.itemAt(sceneIndex-1).widget()
+
+        self._layout.removeWidget(gapBefore)
+        gapBefore.setParent(None)
+
         self._layout.removeWidget(sceneWidget)
-        # Delete from application
         sceneWidget.setParent(None)
-        # Remove references
         self._scenes.remove(sceneWidget)
 
         self._postScriptChangeEvent()
@@ -1496,11 +1519,11 @@ class SceneGapWidget(ListGapWidget):
         :type parent: ActWidget
         """
         super(SceneGapWidget, self).__init__("drag text or video scene here", parent)
-        self.setMinimumHeight(50)
+        self.setMinimumHeight(40)
 
     def dropEvent(self, event):
         lc = cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
-        self.parent().addScene(lc)
+        self.parent().insertScene(self, lc)
 
     def isAcceptable(self, component):
         return isinstance(component, language.Scene) or \
