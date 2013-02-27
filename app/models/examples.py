@@ -222,48 +222,66 @@ acts = [
         ]
     ),
 
-    # Introduce: Arithmetic
+    # Introduce: Arithmetic and variables
     # Explanation: I like the adventure sports videos but want to get straight into the action.
-    
-    # TODO: add get duration and random
-    # TODO: play from random parts of video
+    # I'm going to play videos for 10 seconds from a random offset.
 
-    # Act(
-    #     "Scenes",
-    #     [
-    #         VideoScene(
-    #             "Play Worlds Largest Rope Swing video.",
-    #             "",
-    #             NumberValue(5),
-    #             CommandSequence([]),
-    #             CommandSequence([]),
-    #             NumberValue(0),
-    #             VideoValue(ROPE_SWING)
-    #         ),
-    #         VideoScene(
-    #             "Play video related to the Worlds Largest Rope Swing video.",
-    #             "",
-    #             NumberValue(5),
-    #             CommandSequence([]),
-    #             CommandSequence([]),
-    #             NumberValue(0),
-    #             YoutubeVideoGetRelated(
-    #                 VideoValue(ROPE_SWING) 
-    #             )
-    #         ),
-    #         VideoScene(
-    #             "Play another video related to the Worlds Largest Rope Swing video.",
-    #             "",
-    #             NumberValue(5),
-    #             CommandSequence([]),
-    #             CommandSequence([]),
-    #             NumberValue(0),
-    #             YoutubeVideoGetRelated(
-    #                 VideoValue(ROPE_SWING) 
-    #             )
-    #         )
-    #     ]
-    # ),
+    Act(
+        "Arithmetic and variables",
+        [
+            VideoScene(
+                "Play Worlds Largest Rope Swing video.",
+                "",
+                NumberValue(10),
+                CommandSequence([
+                    VideoSetVariableStatement("curr video", VideoValue(ROPE_SWING))
+                ]),
+                CommandSequence([]),
+                GetRandomNumberBetweenInterval(
+                    NumberValue(0),
+                    Subtract(
+                        YoutubeVideoGetDuration(VideoGetVariableExpression("curr video")),
+                        NumberValue(30)
+                    )
+                ),
+                VideoGetVariableExpression("curr video")
+            ),
+            VideoScene(
+                "Play video related to the Worlds Largest Rope Swing video.",
+                "",
+                NumberValue(10),
+                CommandSequence([
+                    VideoSetVariableStatement("curr video", YoutubeVideoGetRelated(VideoGetVariableExpression("curr video")))
+                ]),
+                CommandSequence([]),
+                GetRandomNumberBetweenInterval(
+                    NumberValue(0),
+                    Subtract(
+                        YoutubeVideoGetDuration(VideoGetVariableExpression("curr video")),
+                        NumberValue(30)
+                    )
+                ),
+                VideoGetVariableExpression("curr video")
+            ),
+            VideoScene(
+                "Play another video related to the Worlds Largest Rope Swing video.",
+                "",
+                NumberValue(10),
+                CommandSequence([
+                    VideoSetVariableStatement("curr video", YoutubeVideoGetRelated(VideoGetVariableExpression("curr video")))
+                ]),
+                CommandSequence([]),
+                GetRandomNumberBetweenInterval(
+                    NumberValue(0),
+                    Subtract(
+                        YoutubeVideoGetDuration(VideoGetVariableExpression("curr video")),
+                        NumberValue(30)
+                    )
+                ),
+                VideoGetVariableExpression("curr video")
+            )
+        ]
+    ),
 
     
     # Introduce: Text scene, title and comments
@@ -326,95 +344,91 @@ acts = [
         ]
     ),
 
-
-
-
-
+    # Introduce:
+    # Explanation: I like listening to music on my computer or on YouTube but
+    # neither of them react to what I'm interested in. I'd like a Smart Music
+    # Player that reacts to my taste.
+    
     Act(
-        "",
+        "Smart Music Player",
         [
-            VideoScene(
-                "Play Gangnam style for 5 seconds from offset of 0 seconds.",
+            TextScene(
+                "Set up variables.",
                 "",
                 NumberValue(5),
+                CommandSequence([
+                    VideoSetVariableStatement("curr video", VideoValue(GANGNAM_STYLE))
+                ]),
                 CommandSequence([]),
-                CommandSequence([]),
-                NumberValue(60),
-                VideoValue(GANGNAM_STYLE) 
-        )
+                TextValue("Smart Music Player")
+            ),
+            WhileScene(
+                "",
+                "",
+                TextValue("Would you like to continue the Smart Music Player?"),
+                SceneSequence([
+                    TextScene(
+                        "Display title of music video",
+                        "",
+                        NumberValue(3),
+                        CommandSequence([]),
+                        CommandSequence([]),
+                        YoutubeVideoGetTitle(VideoGetVariableExpression("curr video"))
+                    ),
+                    VideoScene(
+                        "Play a section of the music video",
+                        "",
+                        NumberValue(15),
+                        CommandSequence([]),
+                        CommandSequence([]),
+                        VideoGetVariableExpression("curr video"),
+                        GetRandomNumberBetweenInterval(
+                            NumberValue(30),
+                            NumberValue(60)
+                        )
+                    ),
+                    IfScene(
+                        "",
+                        "",
+                        TextValue("Did you like that video?"),
+                        SceneSequence([
+                            TextScene(
+                                "Change to a related video",
+                                "",
+                                NumberValue(0),
+                                CommandSequence([
+                                    VideoSetVariableStatement(
+                                        "curr video",
+                                        YoutubeVideoGetRelated(
+                                            VideoGetVariableExpression("curr video")
+                                        )
+                                    )
+                                ]),
+                                CommandSequence([]),
+                                TextValue("Changed to a related video")
+                            )
+                        ]),
+                        SceneSequence([
+                            TextScene(
+                                "Change to a completey different music video",
+                                "",
+                                NumberValue(0),
+                                CommandSequence([
+                                    VideoSetVariableStatement(
+                                        "curr video",
+                                        YoutubeVideoCollectionRandom(
+                                            YoutubeSearch(TextValue("music video"))
+                                        )
+                                    )
+                                ]),
+                                CommandSequence([]),
+                                TextValue("Changed to a related video")
+                            )
+                        ])
+                    )
+                ])
+            )
         ]
     ),
-    Act(
-        "",
-        [
-            TextScene(
-                "Displays the title of a video, click `perform` to find out what it it!",
-                "",
-                NumberValue(2),
-                CommandSequence([]),
-                CommandSequence([]),
-                YoutubeVideoGetTitle(VideoValue("http://www.youtube.com/watch?v=uweWiCLT8Eg")) # David Guetta - She Wolf (Lyrics Video) ft. Sia
-            ),
-            VideoScene(
-                "Plays the video.",
-                "",
-                NumberValue(2),
-                CommandSequence([]),
-                CommandSequence([]),
-                NumberValue(0),
-                VideoValue("http://www.youtube.com/watch?v=uweWiCLT8Eg") # David Guetta - She Wolf (Lyrics Video) ft. Sia
-            )
-    ]),
-    Act(
-        "",
-        [
-            TextScene(
-                "Use this space to write about a scene, this one displays the title of Gangnam Style.",
-                "The Gangnam Style video is identified by it's web page and saved for later in the variable `curr video`.",
-                NumberValue(2),
-                CommandSequence([
-                    VideoSetVariableStatement(
-                        "curr video",
-                        VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0")
-                    )
-                ]),
-                CommandSequence([]),
-                YoutubeVideoGetTitle(VideoGetVariableExpression("curr video"))
-            ),
-            VideoScene(
-                "This scene plays Gangnam Style.",
-                "We get hold of the video by using the variable we stored it in earlier.",
-                NumberValue(5),
-                CommandSequence([]),
-                CommandSequence([]),
-                NumberValue(0),
-                VideoGetVariableExpression("curr video")
-            ),
-            TextScene(
-                "Display title of a related video.",
-                "We select a random related video and use that from now on.",
-                NumberValue(2),
-                CommandSequence([
-                    VideoSetVariableStatement(
-                        "curr video",
-                        YoutubeVideoCollectionRandom(
-                            YoutubeVideoGetRelated(
-                                VideoGetVariableExpression("curr video")
-                            )
-                        )
-                    )
-                ]),
-                CommandSequence([]),
-                YoutubeVideoGetTitle(VideoGetVariableExpression("curr video"))
-            ),
-            VideoScene(
-                "This scene plays the related video.",
-                "",
-                NumberValue(5),
-                CommandSequence([]),
-                CommandSequence([]),
-                NumberValue(0),
-                VideoGetVariableExpression("curr video")
-            )
-    ])
+
 ]
