@@ -47,6 +47,8 @@ MiniWhileSceneWidget {
     padding: 1px 10px 1px 3px;
 }*/
 
+
+
 MiniIfSceneWidget,
 IfSceneWidget,
 MiniWhileSceneWidget,
@@ -84,6 +86,14 @@ VideoSetWidget {
     border-width: 2px;
     border-style: solid;
     background: white;
+}
+
+TextSceneWidget,
+VideoSceneWidget,
+IfSceneWidget,
+WhileSceneWidget {
+    border-style: double;
+    border-width: 6px;
 }
 
 VideoCollectionGapWidget > QLabel,
