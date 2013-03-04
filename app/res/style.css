@@ -31,6 +31,37 @@ QWidget {
     font-size: 18px;
 }
 
+
+
+TextSceneWidget,
+VideoSceneWidget,
+IfSceneWidget,
+WhileSceneWidget,
+MiniTextSceneWidget,
+MiniVideoSceneWidget,
+MiniIfSceneWidget,
+MiniWhileSceneWidget,
+GapWidget > QLabel,
+ListGapWidget,
+TextValueWidget,
+NumberValueWidget,
+VideoValueWidget,
+MiniVideoValueWidget,
+VideoCollectionValueWidget,
+SetWidget,
+GetWidget,
+NumberOperatorWidget,
+GetRandomNumberBetweenIntervalWidget,
+YoutubeVideoGetTitleWidget,
+YoutubeVideoGetDurationWidget,
+YoutubeVideoRandomCommentWidget,
+YoutubeVideoGetRelatedWidget,
+YoutubeVideoCollectionRandomWidget,
+YoutubeSearchWidget,
+VideoCollectionFunction0Widget {
+    border-radius: 5px;
+}
+
 MiniTextSceneWidget,
 MiniVideoSceneWidget,
 MiniIfSceneWidget,
@@ -86,14 +117,6 @@ VideoSetWidget {
     border-width: 2px;
     border-style: solid;
     background: white;
-}
-
-TextSceneWidget,
-VideoSceneWidget,
-IfSceneWidget,
-WhileSceneWidget {
-    border-style: double;
-    border-width: 6px;
 }
 
 VideoCollectionGapWidget > QLabel,
@@ -200,25 +223,14 @@ MiniTextSceneWidget,
 MiniVideoSceneWidget,
 MiniIfSceneWidget,
 MiniWhileSceneWidget,
-GapWidget > QLabel,
-ListGapWidget,
-TextValueWidget,
-NumberValueWidget,
-VideoValueWidget,
-MiniVideoValueWidget,
-VideoCollectionValueWidget,
-SetWidget,
-GetWidget,
-NumberOperatorWidget,
-GetRandomNumberBetweenIntervalWidget,
-YoutubeVideoGetTitleWidget,
-YoutubeVideoGetDurationWidget,
-YoutubeVideoRandomCommentWidget,
-YoutubeVideoGetRelatedWidget,
-YoutubeVideoCollectionRandomWidget,
-YoutubeSearchWidget,
-VideoCollectionFunction0Widget {
-    border-radius: 5px;
+SceneGapWidget
+{
+    border-style: solid;
+    border-top-width: 3px;
+    border-bottom-width: 3px;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-radius: 0px;
 }
 
 /* Highlight draggable widgets */

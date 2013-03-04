@@ -355,7 +355,7 @@ class SceneSequenceWidget(DroppableMixin, ChangeableMixin, QWidget):
 
         self._layout = QVBoxLayout()
         self._layout.addSpacing(10)
-        self._layout.addWidget(self._endGap)
+        self._layout.addWidget(self._endGap, alignment=Qt.AlignHCenter)
         for scene in sceneSequence.scenes:
             self.addScene(scene)
         self._layout.addStretch(10)
@@ -402,7 +402,7 @@ class SceneSequenceWidget(DroppableMixin, ChangeableMixin, QWidget):
         """
         gapBefore = SceneGapWidget(self)
         self._layout.insertWidget(self._layout.indexOf(gap), widget, alignment=Qt.AlignHCenter)
-        self._layout.insertWidget(self._layout.indexOf(widget), gapBefore)
+        self._layout.insertWidget(self._layout.indexOf(widget), gapBefore, alignment=Qt.AlignHCenter)
         self.updateGeometry()
  
     def isAcceptable(self, component):
@@ -1521,6 +1521,7 @@ class SceneGapWidget(ListGapWidget):
         """
         super(SceneGapWidget, self).__init__("drag scene here", parent)
         self.setMinimumHeight(40)
+        self.setMinimumWidth(300)
 
     def dropEvent(self, event):
         lc = cPickle.loads(str(event.mimeData().data(LC_MIME_FORMAT)))
