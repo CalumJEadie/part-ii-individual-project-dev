@@ -192,7 +192,8 @@ ListGapWidget {
 SceneGapWidget {
     font-size: 24px;
     text-align: center;
-    border-color: black;
+    border-color: darkslategrey;
+    color: darkslategrey;
     border-style: solid;
     background: white;
 }
