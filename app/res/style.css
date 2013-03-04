@@ -228,9 +228,9 @@ SceneGapWidget
     border-style: solid;
     border-top-width: 3px;
     border-bottom-width: 3px;
-    border-left-width: 0px;
-    border-right-width: 0px;
-    border-radius: 0px;
+    border-left-width: 3px;
+    border-right-width: 3px;
+    border-radius: 20px;
 }
 
 /* Highlight draggable widgets */
