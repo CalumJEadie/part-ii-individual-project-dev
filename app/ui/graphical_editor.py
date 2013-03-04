@@ -66,6 +66,7 @@ class GraphicalEditor(QMainWindow):
         self._openAction.triggered.connect(self._open)
 
         self._screenshotAction = QAction('Take screenshot', self)
+        self._screenshotAction.setShortcut(QKeySequence("Ctrl+T"))
         self._screenshotAction.setStatusTip('Take screenshot of desktop')
         self._screenshotAction.setToolTip('Take screenshot of desktop')
         self._screenshotAction.triggered.connect(self._screenshot)
