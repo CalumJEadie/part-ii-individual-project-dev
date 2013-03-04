@@ -43,25 +43,15 @@ class GraphicalEditor(QMainWindow):
 
 
         # Actions
-        self._performAction = QAction('Perform', self)
-        self._performAction.setStatusTip('Perform script')
-        self._performAction.setToolTip('Perform script')
-        self._performAction.triggered.connect(self._perform)
+        self._playAction = QAction('Play script', self)
+        self._playAction.setStatusTip('Play script')
+        self._playAction.setToolTip('play script')
+        self._playAction.triggered.connect(self._perform)
 
-        self._clearAction = QAction('Clear', self)
-        self._clearAction.setStatusTip('Clear script')
-        self._clearAction.setToolTip('Clear script')
+        self._clearAction = QAction('New script', self)
+        self._clearAction.setStatusTip('Replace current script with an empty script')
+        self._clearAction.setToolTip('Replace current script with an empty script')
         self._clearAction.triggered.connect(self._scriptEdit.clear)
-
-        self._loadExample1Action = QAction('Load example script 1', self)
-        self._loadExample1Action.setStatusTip('Replace current script with example script 1')
-        self._loadExample1Action.setToolTip('Replace current script with example script 1')
-        self._loadExample1Action.triggered.connect(self._loadExample1)
-
-        self._loadExample2Action = QAction('Load example script 2', self)
-        self._loadExample2Action.setStatusTip('Replace current script with example script 2')
-        self._loadExample2Action.setToolTip('Replace current script with example script 2')
-        self._loadExample2Action.triggered.connect(self._loadExample2)
 
         self._saveAction = QAction('Save', self)
         self._saveAction.setShortcut(QKeySequence.Save)
@@ -90,9 +80,9 @@ class GraphicalEditor(QMainWindow):
         for i in range(0,len(examples.acts)):
             act = examples.acts[i]
 
-            action = QAction('Open example #%s: %s' % (str(i+1), act.title), self)
-            action.setStatusTip('Replace current script with example #%s: %s' % (str(i+1), act.title))
-            action.setToolTip('Replace current script with example #%s: %s' % (str(i+1), act.title))
+            action = QAction('Open example script #%s: %s' % (str(i+1), act.title), self)
+            action.setStatusTip('Replace current script with example script #%s: %s' % (str(i+1), act.title))
+            action.setToolTip('Replace current script with example script #%s: %s' % (str(i+1), act.title))
             action.triggered.connect(loadExample(self, i))
             self._loadExampleActions.append(action)
 
@@ -194,7 +184,7 @@ class GraphicalEditor(QMainWindow):
         editMenu.addAction(self._clearAction)
 
         performanceMenu = menubar.addMenu('&Performance')
-        performanceMenu.addAction(self._performAction)
+        performanceMenu.addAction(self._playAction)
 
         self.setMenuBar(menubar)
 
@@ -204,8 +194,9 @@ class GraphicalEditor(QMainWindow):
         toolbar.setFloatable(False)
         toolbar.setMovable(False)
 
-        toolbar.addAction(self._performAction)
         toolbar.addAction(self._clearAction)
+        toolbar.addSeparator()
+        toolbar.addAction(self._playAction)
         toolbar.addSeparator()
 
         loadMenu = QMenu()
@@ -217,7 +208,7 @@ class GraphicalEditor(QMainWindow):
             loadMenu.addAction(action)
 
         loadButton = QToolButton(self)
-        loadButton.setText("Open Example")
+        loadButton.setText("Open an example script")
         loadButton.setToolButtonStyle(Qt.ToolButtonTextOnly)
         loadButton.setMenu(loadMenu)
         loadButton.setPopupMode(QToolButton.InstantPopup)
@@ -564,21 +555,21 @@ class PaletteWidget(QToolBox):
                 )
             ),
             (
-                "Variable Values",
-                (
-                    NumberGetWidget(language.NumberGetVariableExpression("number 1"), self),
-                    TextGetWidget(language.TextGetVariableExpression("text 1"), self),
-                    VideoGetWidget(language.VideoGetVariableExpression("curr video"), self),
-                    VideoCollectionGetWidget(language.VideoCollectionGetVariableExpression("collection 1"), self),
-                )
-            ),
-            (
-                "Variable Commands",
+                "Store value commands",
                 (
                     NumberSetWidget(language.NumberSetVariableStatement("number 1", language.NumberGap()), self),
                     TextSetWidget(language.TextSetVariableStatement("text 1", language.TextGap()), self),
                     VideoSetWidget(language.VideoSetVariableStatement("curr video", language.VideoGap()), self),
                     VideoCollectionSetWidget(language.VideoCollectionSetVariableStatement("collection 1", language.VideoCollectionGap()), self),
+                )
+            ),
+            (
+                "Get stored values",
+                (
+                    NumberGetWidget(language.NumberGetVariableExpression("number 1"), self),
+                    TextGetWidget(language.TextGetVariableExpression("text 1"), self),
+                    VideoGetWidget(language.VideoGetVariableExpression("curr video"), self),
+                    VideoCollectionGetWidget(language.VideoCollectionGetVariableExpression("collection 1"), self),
                 )
             )
         )

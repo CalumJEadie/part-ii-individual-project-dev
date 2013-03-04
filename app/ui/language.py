@@ -488,7 +488,7 @@ class MiniVideoSceneWidget(DraggableMixin, QLabel):
         """
         return language.VideoScene(
             "Example Video Scene",
-            "Displays Gangnan Style video for 10 seconds from offset 0 seconds.",
+            "Displays Gangnam Style video for 10 seconds from offset 0 seconds.",
             language.NumberValue(10),
             language.CommandSequence([]),
             language.CommandSequence([]),
@@ -515,7 +515,7 @@ class MiniTextSceneWidget(DraggableMixin, QLabel):
         """
         return language.TextScene(
             "Example Text Scene",
-            "Displays title of Gangnan Style video for 2 seconds.",
+            "Displays title of Gangnam Style video for 2 seconds.",
             language.NumberValue(2),
             language.CommandSequence([]),
             language.CommandSequence([]),
@@ -535,14 +535,14 @@ class MiniIfSceneWidget(DraggableMixin, QLabel):
     def __init__(self, parent):
         super(MiniIfSceneWidget, self).__init__(parent)
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.setText("Decision Scene")
+        self.setText("Alternative Scene")
 
     def model(self):
         """
         :rtype: models.language.IfScene
         """
         return language.IfScene(
-            "Example Decision Scene",
+            "Example Alternative Scene",
             "",
             language.TextGap(),
             language.SceneSequence([]),
@@ -1499,7 +1499,7 @@ class CommandGapWidget(ListGapWidget):
         :param parent: Used to call back to for modifying commands.
         :type parent: CommandSequenceWidget
         """
-        super(CommandGapWidget, self).__init__("drag command here", parent)
+        super(CommandGapWidget, self).__init__("drag store value command here", parent)
         # self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.setMaximumWidth(300)
         self.setMargin(5)
@@ -1518,7 +1518,7 @@ class SceneGapWidget(ListGapWidget):
         :param parent: Used to call back to for modifying commands.
         :type parent: ActWidget
         """
-        super(SceneGapWidget, self).__init__("drag text or video scene here", parent)
+        super(SceneGapWidget, self).__init__("drag scene here", parent)
         self.setMinimumHeight(40)
 
     def dropEvent(self, event):
