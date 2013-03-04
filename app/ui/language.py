@@ -467,7 +467,8 @@ class SceneWidget(DeletableMixin, QFrame):
         return self._preCommands.model()
 
     def postCommands(self):
-        return self._postCommands.model()
+        # return self._postCommands.model()
+        return language.CommandSequence([])
 
 class CommentWidget(core.VerticallyGrowingPlainTextEdit):
 
@@ -594,7 +595,7 @@ class VideoSceneWidget(ChangeableMixin, SceneWidget):
         self._comment.setMaximumHeight(50)
         self._registerChangeSignal(self._comment.textChanged)
         self._preCommands = CommandSequenceWidget(scene.pre_commands, self)
-        self._postCommands = CommandSequenceWidget(scene.post_commands, self)
+        # self._postCommands = CommandSequenceWidget(scene.post_commands, self)
 
         videoControls = QWidget(self)
         videoControlsLayout = QGridLayout()
@@ -634,7 +635,7 @@ class VideoSceneWidget(ChangeableMixin, SceneWidget):
         layout.addWidget(self._comment)
         layout.addWidget(self._preCommands)
         layout.addWidget(videoControls)
-        layout.addWidget(self._postCommands)
+        # layout.addWidget(self._postCommands)
 
         self.setLayout(layout)
 
@@ -683,7 +684,7 @@ class TextSceneWidget(ChangeableMixin, SceneWidget):
         self._comment.setMaximumHeight(50)
         self._registerChangeSignal(self._comment.textChanged)
         self._preCommands = CommandSequenceWidget(scene.pre_commands, self)
-        self._postCommands = CommandSequenceWidget(scene.post_commands, self)
+        # self._postCommands = CommandSequenceWidget(scene.post_commands, self)
 
         textControls = QWidget(self)
         textControlsLayout = QGridLayout()
@@ -703,7 +704,7 @@ class TextSceneWidget(ChangeableMixin, SceneWidget):
         layout.addWidget(self._comment)
         layout.addWidget(self._preCommands)
         layout.addWidget(textControls)
-        layout.addWidget(self._postCommands)
+        # layout.addWidget(self._postCommands)
 
         self.setLayout(layout)
 
