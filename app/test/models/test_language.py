@@ -389,6 +389,26 @@ command3"""),"""    command1
         ])
         print act.translate()
 
+    def test_variable_name_generator(self):
+        """
+        Test extreme variable names.
+        """
+
+        g = VariableNameGenerator.get_instance()
+        g.reset()
+
+        for i in range(0,26):
+            g.generate()
+
+        self.assertEqual(
+            g.generate(),
+            "store_aa"
+        )
+
+        self.assertEqual(
+            g.generate(),
+            "store_ab"
+        )        
 
 if __name__ == "__main__":
     unittest.main()

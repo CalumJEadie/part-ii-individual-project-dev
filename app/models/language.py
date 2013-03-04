@@ -69,10 +69,69 @@ def partition_on_last_newline(text):
     before,sep,after = text.rpartition("\n")
     return before,after
 
+# def get_fresh_variable_name():
+#     get_fresh_variable_name.count += 1
+#     return "tmp_%s" % get_fresh_variable_name.count
+# get_fresh_variable_name.count = 0
+
+class VariableNameGenerator(object):
+    """
+    Use Singleton design pattern.
+
+    >>> g1 = VariableNameGenerator.get_instance()
+    >>> g1.reset()
+    >>> g1.generate()
+    'store_a'
+    >>> g1.generate()
+    'store_b'
+    >>> g2 = VariableNameGenerator.get_instance()
+    >>> g2.generate()
+    'store_c'
+    >>> g2.reset()
+    >>> g2.generate()
+    'store_a'
+    """
+
+    _instance = None
+
+    def __init__(self):
+        if self._instance is not None:
+            raise ValueError("An instantiation already exists!")
+        self._count = 0
+
+    @classmethod
+    def get_instance(cls):
+        if cls._instance is None:
+            cls._instance = VariableNameGenerator()
+        return cls._instance
+
+    def generate(self):
+        """
+        Generate a variable name. Use alphabetical characters to make variable unique.
+        Start with one character and increase length as count increases.
+
+        Supports up to 26**2 identifiers. Splits identifier into base 26.
+
+        store_ id1 id0
+        """ 
+        self._count += 1
+        assert self._count <= 26**2
+
+        id1_count = self._count / 26
+        id0_count = self._count % 26
+
+        # ord("a") = 97
+        id1 = '' if id1_count == 0 else chr(96 + id1_count)
+        id0 = chr(96 + id0_count)
+
+        return "store_%s%s" % (id1, id0)
+
+    def reset(self):
+        self._count = 0
+
 def get_fresh_variable_name():
-    get_fresh_variable_name.count += 1
-    return "tmp_%s" % get_fresh_variable_name.count
-get_fresh_variable_name.count = 0
+    generator = VariableNameGenerator.get_instance()
+    return generator.generate()
 
 def translate_function_0(function_name):
     """Generates code for 0-ary function application."""
@@ -386,6 +445,9 @@ class Act(SceneSequence):
 
         # Handle empty act
         if len(self._children) > 0:
+
+            # Reset variable name generator
+            VariableNameGenerator.get_instance().reset()
 
             code = ""
 
