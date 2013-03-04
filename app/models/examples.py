@@ -222,6 +222,54 @@ acts = [
         ]
     ),
 
+    # Introduce: Variables
+    # Explanation: If I want to change the video I have to change it in a load of place,
+    # I'd like to save myself work by setting it in one place and referring to it later.
+    # I'm going to take the previous example and use variables instead.
+
+    Act(
+        "Variables",
+        [
+            VideoScene(
+                "Play Worlds Largest Rope Swing video.",
+                "",
+                NumberValue(5),
+                CommandSequence([
+                    VideoSetVariableStatement("curr video", VideoValue(ROPE_SWING))
+                ]),
+                CommandSequence([]),
+                NumberValue(0),
+                VideoGetVariableExpression("curr video")
+            ),
+            VideoScene(
+                "Play video related to the Worlds Largest Rope Swing video.",
+                "",
+                NumberValue(5),
+                CommandSequence([]),
+                CommandSequence([]),
+                NumberValue(0),
+                YoutubeVideoCollectionRandom(
+                    YoutubeVideoGetRelated(
+                        VideoGetVariableExpression("curr video") 
+                    )
+                )
+            ),
+            VideoScene(
+                "Play another video related to the Worlds Largest Rope Swing video.",
+                "",
+                NumberValue(5),
+                CommandSequence([]),
+                CommandSequence([]),
+                NumberValue(0),
+                YoutubeVideoCollectionRandom(
+                    YoutubeVideoGetRelated(
+                        VideoGetVariableExpression("curr video") 
+                    )
+                )
+            )
+        ]
+    ),
+
     # Introduce: Arithmetic and variables
     # Explanation: I like the adventure sports videos but want to get straight into the action.
     # I'm going to play videos for 10 seconds from a random offset.
