@@ -580,6 +580,12 @@ class MiniWhileSceneWidget(DraggableMixin, QLabel):
         """
         pass
 
+class SeperatorWidget(QFrame):
+
+    def __init__(self, parent):
+        super(SeperatorWidget, self).__init__(parent)
+        self.setFrameShape(QFrame.HLine)
+
 class VideoSceneWidget(ChangeableMixin, SceneWidget):
 
     def __init__(self, scene, parent):
@@ -633,7 +639,9 @@ class VideoSceneWidget(ChangeableMixin, SceneWidget):
 
         layout = QVBoxLayout()
         layout.addWidget(self._comment)
+        layout.addWidget(SeperatorWidget(self))
         layout.addWidget(self._preCommands)
+        layout.addWidget(SeperatorWidget(self))
         layout.addWidget(videoControls)
         # layout.addWidget(self._postCommands)
 
@@ -702,7 +710,9 @@ class TextSceneWidget(ChangeableMixin, SceneWidget):
 
         layout = QVBoxLayout()
         layout.addWidget(self._comment)
+        layout.addWidget(SeperatorWidget(self))
         layout.addWidget(self._preCommands)
+        layout.addWidget(SeperatorWidget(self))
         layout.addWidget(textControls)
         # layout.addWidget(self._postCommands)
 
@@ -869,7 +879,7 @@ class CommandSequenceWidget(ChangeableMixin, QWidget):
         self._layout = QVBoxLayout()
         self._layout.addWidget(self._gap, alignment=Qt.AlignHCenter)
         for command in commands:
-            self.addCommand(command, alignment=Qt.AlignHCenter)
+            self.addCommand(command)
         self.setLayout(self._layout)
 
     def model(self):
