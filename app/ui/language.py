@@ -867,9 +867,9 @@ class CommandSequenceWidget(ChangeableMixin, QWidget):
         self._gap = CommandGapWidget(self)
 
         self._layout = QVBoxLayout()
-        self._layout.addWidget(self._gap)
+        self._layout.addWidget(self._gap, alignment=Qt.AlignHCenter)
         for command in commands:
-            self.addCommand(command)
+            self.addCommand(command, alignment=Qt.AlignHCenter)
         self.setLayout(self._layout)
 
     def model(self):
@@ -894,7 +894,7 @@ class CommandSequenceWidget(ChangeableMixin, QWidget):
 
         :type widget: QWidget
         """
-        self._layout.insertWidget(self._layout.indexOf(self._gap), widget)
+        self._layout.insertWidget(self._layout.indexOf(self._gap), widget, alignment=Qt.AlignHCenter)
 
 class GetWidget(ChangeableMixin, DraggableMixin, QFrame):
 
@@ -1502,7 +1502,7 @@ class CommandGapWidget(ListGapWidget):
         """
         super(CommandGapWidget, self).__init__("drag store value command here", parent)
         # self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        self.setMaximumWidth(300)
+        self.setMinimumWidth(350)
         self.setMargin(5)
 
     def dropEvent(self, event):
