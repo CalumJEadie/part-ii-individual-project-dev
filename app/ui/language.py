@@ -1547,7 +1547,7 @@ class NumberOperatorWidget(ChangeableMixin, DraggableMixin, QFrame):
     OPERATORS = {
         "+": language.Add,
         "-": language.Subtract,
-        "/": language.Multiply
+        "*": language.Multiply
     }
 
     def __init__(self, operator, operand1, operand2, parent):

@@ -285,12 +285,17 @@ acts = [
                     VideoSetVariableStatement("curr video", VideoValue(ROPE_SWING))
                 ]),
                 CommandSequence([]),
-                GetRandomNumberBetweenInterval(
-                    NumberValue(0),
-                    Subtract(
-                        YoutubeVideoGetDuration(VideoGetVariableExpression("curr video")),
-                        NumberValue(30)
-                    )
+                # This example is probably too complicated to introduce this early.
+                # GetRandomNumberBetweenInterval(
+                #     NumberValue(0),
+                #     Subtract(
+                #         YoutubeVideoGetDuration(VideoGetVariableExpression("curr video")),
+                #         NumberValue(30)
+                #     )
+                # ),
+                Multiply(
+                    YoutubeVideoGetDuration(VideoGetVariableExpression("curr video")),
+                    NumberValue(0.5)
                 ),
                 VideoGetVariableExpression("curr video")
             ),
@@ -302,12 +307,17 @@ acts = [
                     VideoSetVariableStatement("curr video", YoutubeVideoGetRelated(VideoGetVariableExpression("curr video")))
                 ]),
                 CommandSequence([]),
-                GetRandomNumberBetweenInterval(
-                    NumberValue(0),
-                    Subtract(
-                        YoutubeVideoGetDuration(VideoGetVariableExpression("curr video")),
-                        NumberValue(30)
-                    )
+                # This example is probably too complicated to introduce this early.
+                # GetRandomNumberBetweenInterval(
+                #     NumberValue(0),
+                #     Subtract(
+                #         YoutubeVideoGetDuration(VideoGetVariableExpression("curr video")),
+                #         NumberValue(30)
+                #     )
+                # ),
+                Multiply(
+                    YoutubeVideoGetDuration(VideoGetVariableExpression("curr video")),
+                    NumberValue(0.5)
                 ),
                 VideoGetVariableExpression("curr video")
             ),
@@ -319,12 +329,17 @@ acts = [
                     VideoSetVariableStatement("curr video", YoutubeVideoGetRelated(VideoGetVariableExpression("curr video")))
                 ]),
                 CommandSequence([]),
-                GetRandomNumberBetweenInterval(
-                    NumberValue(0),
-                    Subtract(
-                        YoutubeVideoGetDuration(VideoGetVariableExpression("curr video")),
-                        NumberValue(30)
-                    )
+                # This example is probably too complicated to introduce this early.
+                # GetRandomNumberBetweenInterval(
+                #     NumberValue(0),
+                #     Subtract(
+                #         YoutubeVideoGetDuration(VideoGetVariableExpression("curr video")),
+                #         NumberValue(30)
+                #     )
+                # ),
+                Multiply(
+                    YoutubeVideoGetDuration(VideoGetVariableExpression("curr video")),
+                    NumberValue(0.5)
                 ),
                 VideoGetVariableExpression("curr video")
             )
