@@ -26,9 +26,7 @@ show - Python debugging library
 pip install show
 ```
 
-### Using
-
-Running the editor
+### Running
 
 ```sh
 cd app
