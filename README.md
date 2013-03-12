@@ -17,7 +17,8 @@ pip install gdata
 pyomxplayer - Python bindings for OMXPlayer
 
 ```sh
-pip install pyomxplayer
+git clone https://github.com/CalumJEadie/pyomxplayer
+python pyomxplayer/setup.py install
 ```
 
 show - Python debugging library
