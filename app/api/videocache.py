@@ -9,6 +9,8 @@ import logging
 import subprocess
 import time
 
+from app import config
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -17,10 +19,10 @@ MAX_NOT_CACHED_GET_TIME = 20 # seconds
 MAX_CACHED_GET_TIME = 1 # seconds
 MIN_VIDEO_READY_FILE_SIZE = long(0.1 * 2**20) # bytes, 0.1 MB
 
-_CACHE_DIR = "/tmp/diss/videocache"
+# Configuration partly externalised:
+# config.CACHE_DIR
+# config.FORMAT
 _OUTPUT_TEMPLATE = "%(cache_dir)s/%(id)s"
-_FORMAT = "worst"
-# _FORMAT = "best"
 
 _initialised = False
 
@@ -29,7 +31,7 @@ def init():
     global _initialised
     if not _initialised:
         logger.info("Not yet initialised, ensuring cache directories exist.")
-        for location in [_CACHE_DIR]:
+        for location in [config.CACHE_DIR]:
             _ensure_dir_exists(location)
         _initialised = True
 
@@ -53,7 +55,7 @@ def get(video):
     if video_path is not None:
         return video_path
     else:
-        video_path = _download(video, _CACHE_DIR)
+        video_path = _download(video, config.CACHE_DIR)
         # Busy wait until file is ready.
         # Assume won't be ready immediately.
         time.sleep(5)
@@ -89,7 +91,7 @@ def _get_all_cached_files():
     :return: iterable of full path to cached files
     """
     files = []
-    for location in [_CACHE_DIR]:
+    for location in [config.CACHE_DIR]:
         files.extend(map(lambda f: os.path.join(location, f), os.listdir(location)))
     return files
 
@@ -99,7 +101,7 @@ def _find(video):
     """
     # Peform a niave search, don't cache file paths.
     # Assume that file system lookup will be fast.
-    for cache_dir in [_CACHE_DIR]:
+    for cache_dir in [config.CACHE_DIR]:
         video_path = _OUTPUT_TEMPLATE % {"cache_dir": cache_dir, "id": video.video_id()}
         if os.path.exists(video_path):
             # To avoid race condition where download has only just started wait
@@ -125,7 +127,7 @@ def _download(video, cache_dir):
     # Need to leave id unchanged.
     output_template = _OUTPUT_TEMPLATE % {"cache_dir": cache_dir, "id": "%(id)s"}
 
-    format = _FORMAT
+    format = config.FORMAT
 
     web_url = video.web_url()
     video_id = video.video_id()
