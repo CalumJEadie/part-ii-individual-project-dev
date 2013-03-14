@@ -444,11 +444,11 @@ acts = [
                         NumberValue(15),
                         CommandSequence([]),
                         CommandSequence([]),
-                        VideoGetVariableExpression("curr video"),
                         GetRandomNumberBetweenInterval(
                             NumberValue(30),
                             NumberValue(60)
-                        )
+                        ),
+                        VideoGetVariableExpression("curr video"),
                     ),
                     IfScene(
                         "",

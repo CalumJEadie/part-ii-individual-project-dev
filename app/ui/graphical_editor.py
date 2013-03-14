@@ -523,7 +523,12 @@ class PaletteWidget(QToolBox):
                     VideoValueWidget(language.VideoValue("http://www.youtube.com/watch?v=9bZkp7q19f0"), self),
                     YoutubeVideoCollectionRandomWidget(language.YoutubeVideoCollectionRandom(language.VideoGap()), self),
                     MiniVideoValueWidget("Gangnam Style", examples.GANGNAM_STYLE, self),
-                    MiniVideoValueWidget("Rope Swing", examples.ROPE_SWING, self),
+                    MiniVideoValueWidget("Dramatic Suprise\non a quiet square", examples.SURPRISE, self),
+                    MiniVideoValueWidget("Felix's freefall\nfrom 128k", examples.FREEFALL, self),
+                    MiniVideoValueWidget("Kid President's\nPep Talk", examples.PEP_TALK, self),
+                    MiniVideoValueWidget("World's Largest\nRope Swing", examples.ROPE_SWING, self),
+                    MiniVideoValueWidget("Fireworks", examples.FIREWORKS, self),
+                    MiniVideoValueWidget("Mountain Biking", examples.MAC_ASKILL, self),
                     MiniVideoValueWidget("Cambridge Harlem", examples.CAMBRIDGE_HARLEM, self),
                 )
             ),
