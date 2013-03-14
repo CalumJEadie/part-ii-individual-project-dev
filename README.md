@@ -5,6 +5,7 @@
 PySide - LGPL Python binding for Qt
 
 ```sh
+apt-get install python-pyside
 port install py-pyside
 ```
 
@@ -37,6 +38,12 @@ pexpect - interprocess communication
 
 ```sh
 pip install pexpect
+```
+
+youtube-dl
+
+```sh
+apt-get install youtube-dl
 ```
 
 
