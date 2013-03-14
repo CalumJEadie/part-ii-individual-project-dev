@@ -27,6 +27,19 @@ show - Python debugging library
 pip install show
 ```
 
+nose - Python unit testing framework
+
+```sh
+pip install nose
+```
+
+pexpect - interprocess communication
+
+```sh
+pip install pexpect
+```
+
+
 ### Running
 
 ```sh
