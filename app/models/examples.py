@@ -304,7 +304,9 @@ acts = [
                 "",
                 NumberValue(10),
                 CommandSequence([
-                    VideoSetVariableStatement("curr video", YoutubeVideoGetRelated(VideoGetVariableExpression("curr video")))
+                    VideoSetVariableStatement("curr video", 
+                        YoutubeVideoGetRelated(VideoGetVariableExpression("curr video")))
+                    )
                 ]),
                 CommandSequence([]),
                 # This example is probably too complicated to introduce this early.
@@ -326,7 +328,9 @@ acts = [
                 "",
                 NumberValue(10),
                 CommandSequence([
-                    VideoSetVariableStatement("curr video", YoutubeVideoGetRelated(VideoGetVariableExpression("curr video")))
+                    VideoSetVariableStatement("curr video",
+                        YoutubeVideoGetRelated(VideoGetVariableExpression("curr video")))
+                    )
                 ]),
                 CommandSequence([]),
                 # This example is probably too complicated to introduce this early.
