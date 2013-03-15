@@ -49,6 +49,7 @@ from api import youtube,videoplayer"""
     
     def run(code):
         import random
+        import time
 
         import app.api.core
         import app.api.youtube
@@ -66,10 +67,19 @@ from api import youtube,videoplayer"""
             "random": random,
             "ask_yes_no": app.api.core.ask_yes_no,
             "display": app.api.core.display,
+            "display_loading": app.api.core.display_loading,
             "youtube": app.api.youtube,
             "videoplayer": app.api.videoplayer,
-            "Speed": app.api.videoplayer.Speed
+            "Speed": app.api.videoplayer.Speed,
+            "sleep": time.sleep
         }
+
+        code = """loading_dialog = display_loading()
+# Sleep to give time for loading dialog thread to run before omxplayer takes over
+sleep(4)
+%s
+loading_dialog.close()""" % code
+
         exec(code, globals_, globals_)
 
     run(code)

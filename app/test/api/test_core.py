@@ -7,6 +7,7 @@ Unit tests for Core API.
 import unittest
 import logging
 from PySide import QtGui
+import time
 
 from app.api import core
 
@@ -32,6 +33,17 @@ class Test(unittest.TestCase):
         res = core.ask_yes_no("Question (yes/no)? Enter no.")
         self.assertIsInstance(res,bool)
         self.assertFalse(res)
+
+    def test_loading(self):
+
+        loading_dialog = core.display_loading()
+        time.sleep(2)
+        core.display("message 1", 2)
+        time.sleep(2)
+        core.display("message 2", 2)
+        time.sleep(2)
+        loading_dialog.close()
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -6,6 +6,7 @@ import time
 import logging
 from PySide import QtGui, QtCore
 import functools
+from threading import Thread
 
 from app.ui import core
 
@@ -27,6 +28,24 @@ def display(text,duration):
 
     # app.exec_()
     # time.sleep(duration)
+
+def display_loading():
+    """
+    Display a loading message. Returns widget which can be closed using
+    .close()
+
+    :rtype: FullscreenDisplayDialog
+    """
+
+    logger.info("display_loading")
+
+    app = _initialise_qt()
+    dialog = core.FullscreenDisplayDialog("loading...")
+
+    # Run event loop in another thread.
+    Thread(target=dialog.exec_).start()
+        
+    return dialog
 
 def ask_yes_no(text):
     """
