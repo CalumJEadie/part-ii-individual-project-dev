@@ -9,7 +9,8 @@ from os.path import join
 
 APP_NAME = "Evelyn"
 SCRIPT_EXTENSION = "ev"
-APP_DIR = os.path.expanduser("~/evelyn")
+#APP_DIR = os.path.expanduser("~/evelyn")
+APP_DIR = "/media/NARSIL/evelyn"
 SCREENSHOT_FORMAT = "png"
 
 # API - Video Cache
