@@ -75,8 +75,6 @@ from api import youtube,videoplayer"""
         }
 
         code = """loading_dialog = display_loading()
-# Sleep to give time for loading dialog thread to run before omxplayer takes over
-sleep(4)
 %s
 loading_dialog.close()""" % code
 

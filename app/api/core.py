@@ -44,6 +44,11 @@ def display_loading():
 
     # Run event loop in another thread.
     Thread(target=dialog.exec_).start()
+
+    # Problem, if display_loading is not followed by a display() call
+    # the loading screen does not display.
+    # Call display as a work around.
+    display("", 0)
         
     return dialog
 
