@@ -5,6 +5,7 @@ Core API.
 import time
 import logging
 from PySide import QtGui, QtCore
+import functools
 
 from app.ui import core
 
@@ -15,12 +16,17 @@ def display(text,duration):
 
     logger.info("display(text=%s,duration=%s)",text,duration)
 
-    # Display does not work on Pi so use ask_yes_no as substitute.
-    ask_yes_no(text)
-#    app = _initialise_qt()
+    app = _initialise_qt()
+    # dialog = core.FullscreenDisplayDialog(text)
+    core.FullscreenDisplayDialog.display(text, duration)
 
-#    d = core.FullscreenDisplayDialog(text)
-#    time.sleep(duration)
+    # Close after duration
+    # QtCore.QTimer.singleShot(duration*1000, d.close)
+
+    # dialog.exec_()
+
+    # app.exec_()
+    # time.sleep(duration)
 
 def ask_yes_no(text):
     """

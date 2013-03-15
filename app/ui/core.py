@@ -9,10 +9,42 @@ from app.ui import events
 class FullscreenDialog(object):
 
     def fullscreen(self):
-        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        # self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        # self.setWindowFlags(QtCore.Qt.X11BypassWindowManagerHint)
+        # self.setWindowFlags(QtCore.Qt.Window)
+
+        # self.setWindowState(QtCore.Qt.WindowFullScreen)
+        
         self.showFullScreen()
 
-class FullscreenDisplayDialog(QtGui.QWidget,FullscreenDialog):
+# class FullscreenDisplayDialog(QtGui.QWidget,FullscreenDialog):
+    
+#     def __init__(self,text):
+
+#         super(FullscreenDisplayDialog, self).__init__()
+#         self.setupUI(text)
+#         self.show()
+
+#     def setupUI(self,text):
+
+#         grid_layout = QtGui.QGridLayout(self)
+
+#         message_label = QtGui.QLabel(text,self)
+#         message_label.setAlignment(QtCore.Qt.AlignCenter)
+#         message_label.setWordWrap(True)
+#         message_label.setMargin(200)
+#         font = QtGui.QFont("serif",80)
+#         message_label.setFont(font)
+
+#         grid_layout.addWidget(message_label)
+
+#         self.setLayout(grid_layout)
+
+#         self.setStyleSheet("background: black; color: white;")
+
+#         self.fullscreen()
+
+class FullscreenDisplayDialog(QtGui.QDialog,FullscreenDialog):
     
     def __init__(self,text):
 
@@ -23,7 +55,12 @@ class FullscreenDisplayDialog(QtGui.QWidget,FullscreenDialog):
     def setupUI(self,text):
 
         grid_layout = QtGui.QGridLayout(self)
+        self.setLayout(grid_layout)
 
+        self.setStyleSheet("background: black; color: white;")
+        self.fullscreen()        
+
+        # Message
         message_label = QtGui.QLabel(text,self)
         message_label.setAlignment(QtCore.Qt.AlignCenter)
         message_label.setWordWrap(True)
@@ -31,13 +68,16 @@ class FullscreenDisplayDialog(QtGui.QWidget,FullscreenDialog):
         font = QtGui.QFont("serif",80)
         message_label.setFont(font)
 
-        grid_layout.addWidget(message_label)
+        grid_layout.addWidget(message_label,0,0,1,2)
 
-        self.setLayout(grid_layout)
-
-        self.setStyleSheet("background: black; color: white;")
-
-        self.fullscreen()
+    @classmethod
+    def display(cls, text, duration):
+        """
+        Static convenience method. Display text for duration seconds.
+        """
+        dialog = cls(text)
+        QtCore.QTimer.singleShot(duration*1000, dialog.close)
+        dialog.exec_()
 
 class FullscreenBooleanDialog(QtGui.QDialog,FullscreenDialog):
     

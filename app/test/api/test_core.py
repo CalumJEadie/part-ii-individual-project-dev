@@ -14,8 +14,7 @@ logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(name)s - %(leveln
 
 class Test(unittest.TestCase):
 
-    duration = 1
-
+    duration = 4
 
     app = QtGui.QApplication([])
 
