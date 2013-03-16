@@ -17,8 +17,8 @@ SCREENSHOT_FORMAT = "png"
 
 #CACHE_DIR = "/tmp/diss/videocache"
 CACHE_DIR = join(APP_DIR, "videocache")
-FORMAT = "worst"
-# FORMAT = "best"
+# FORMAT = "worst"
+FORMAT = "best"
 
 # UI - Graphical Editor
 
