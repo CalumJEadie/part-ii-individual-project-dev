@@ -24,6 +24,8 @@ MIN_VIDEO_READY_FILE_SIZE = long(0.1 * 2**20) # bytes, 0.1 MB
 # config.CACHE_DIR
 # config.FORMAT
 _OUTPUT_TEMPLATE = "%(cache_dir)s/%(id)s.%(format)s"
+_PRIMING_BATCH_SIZE = 1
+_PRIMING_TIMEOUT = 60
 
 _initialised = False
 
@@ -76,8 +78,8 @@ def prime(videos):
         for i in xrange(0, len(l), n):
             yield l[i:i+n]
 
-    # Get 5 videos at a time.
-    for videos_chunk in chunks(list(videos), 5):
+    # Download _PRIMING_BATCH_SIZE videos at a time.
+    for videos_chunk in chunks(list(videos), _PRIMING_BATCH_SIZE):
         threads = []
         for video in videos_chunk:
             print video
@@ -85,7 +87,7 @@ def prime(videos):
             threads.append(thread)
             thread.start()
         for thread in threads:
-            thread.join()
+            thread.join(_PRIMING_TIMEOUT)
 
     for video in videos:
         get(video)
