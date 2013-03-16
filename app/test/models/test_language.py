@@ -397,8 +397,18 @@ command3"""),"""    command1
         g = VariableNameGenerator.get_instance()
         g.reset()
 
-        for i in range(0,26):
+        self.assertEqual(
+            g.generate(),
+            "store_a"
+        )
+
+        for i in range(0,24):
             g.generate()
+
+        self.assertEqual(
+            g.generate(),
+            "store_z"
+        )
 
         self.assertEqual(
             g.generate(),

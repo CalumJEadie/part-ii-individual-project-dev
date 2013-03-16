@@ -8,6 +8,7 @@ import os
 import logging
 import subprocess
 import time
+import threading
 
 from app import config
 
@@ -22,7 +23,9 @@ MIN_VIDEO_READY_FILE_SIZE = long(0.1 * 2**20) # bytes, 0.1 MB
 # Configuration partly externalised:
 # config.CACHE_DIR
 # config.FORMAT
-_OUTPUT_TEMPLATE = "%(cache_dir)s/%(id)s"
+_OUTPUT_TEMPLATE = "%(cache_dir)s/%(id)s.%(format)s"
+_PRIMING_BATCH_SIZE = 1
+_PRIMING_TIMEOUT = 60
 
 _initialised = False
 
@@ -62,6 +65,33 @@ def get(video):
         _wait_until_ready(video_path)
         return video_path
 
+def prime(videos):
+    """
+    Prime the cache by pre loading a collection of videos.
+
+    :type videos: youtube.Video iterable
+    """
+    logger.info("prime(%s)" % videos)
+
+    def chunks(l, n):
+        """Yield successive n-sized chunks from l."""
+        for i in xrange(0, len(l), n):
+            yield l[i:i+n]
+
+    # Download _PRIMING_BATCH_SIZE videos at a time.
+    for videos_chunk in chunks(list(videos), _PRIMING_BATCH_SIZE):
+        threads = []
+        for video in videos_chunk:
+            print video
+            thread = threading.Thread(target=get, args=[video])
+            threads.append(thread)
+            thread.start()
+        for thread in threads:
+            thread.join(_PRIMING_TIMEOUT)
+
+    for video in videos:
+        get(video)
+
 def _is_ready(video_path):
     """
     Returns true if video at path is ready to be played.
@@ -99,10 +129,12 @@ def _find(video):
     """
     :return: Path to local copy of video if in cache. Otherwise, None.
     """
+    format = config.FORMAT
+
     # Peform a niave search, don't cache file paths.
     # Assume that file system lookup will be fast.
     for cache_dir in [config.CACHE_DIR]:
-        video_path = _OUTPUT_TEMPLATE % {"cache_dir": cache_dir, "id": video.video_id()}
+        video_path = _OUTPUT_TEMPLATE % {"cache_dir": cache_dir, "id": video.video_id(), "format": format}
         if os.path.exists(video_path):
             # To avoid race condition where download has only just started wait
             # until video is ready. No guarantee video is being downloaded so
@@ -124,10 +156,10 @@ def _download(video, cache_dir):
     """
     logger.info("_download(%s, %s)" % (video, cache_dir))
 
-    # Need to leave id unchanged.
-    output_template = _OUTPUT_TEMPLATE % {"cache_dir": cache_dir, "id": "%(id)s"}
-
     format = config.FORMAT
+
+    # Need to leave id unchanged.
+    output_template = _OUTPUT_TEMPLATE % {"cache_dir": cache_dir, "id": "%(id)s", "format": format}
 
     web_url = video.web_url()
     video_id = video.video_id()

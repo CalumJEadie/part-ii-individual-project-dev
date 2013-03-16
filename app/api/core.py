@@ -5,6 +5,8 @@ Core API.
 import time
 import logging
 from PySide import QtGui, QtCore
+import functools
+from threading import Thread
 
 from app.ui import core
 
@@ -15,12 +17,40 @@ def display(text,duration):
 
     logger.info("display(text=%s,duration=%s)",text,duration)
 
-    # Display does not work on Pi so use ask_yes_no as substitute.
-    ask_yes_no(text)
-#    app = _initialise_qt()
+    app = _initialise_qt()
+    # dialog = core.FullscreenDisplayDialog(text)
+    core.FullscreenDisplayDialog.display(text, duration)
 
-#    d = core.FullscreenDisplayDialog(text)
-#    time.sleep(duration)
+    # Close after duration
+    # QtCore.QTimer.singleShot(duration*1000, d.close)
+
+    # dialog.exec_()
+
+    # app.exec_()
+    # time.sleep(duration)
+
+def display_loading():
+    """
+    Display a loading message. Returns widget which can be closed using
+    .close()
+
+    :rtype: FullscreenDisplayDialog
+    """
+
+    logger.info("display_loading")
+
+    app = _initialise_qt()
+    dialog = core.FullscreenDisplayDialog("loading...")
+
+    # Run event loop in another thread.
+    Thread(target=dialog.exec_).start()
+
+    # Problem, if display_loading is not followed by a display() call
+    # the loading screen does not display.
+    # Call display as a work around.
+    display("", 0)
+        
+    return dialog
 
 def ask_yes_no(text):
     """

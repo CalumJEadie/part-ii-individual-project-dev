@@ -44,6 +44,8 @@ youtube-dl
 
 ```sh
 apt-get install youtube-dl
+# Update to make sure up to date with YouTube API
+youtube-dl -U
 ```
 
 

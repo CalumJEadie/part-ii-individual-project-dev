@@ -31,6 +31,10 @@ yt_service = gdata.youtube.service.YouTubeService()
 # Based on http://rubular.com/r/M9PJYcQxRW and http://stackoverflow.com/questions/3392993/php-regex-to-get-youtube-video-id
 VIDEO_ID_RE = '(?<=(?:v|i)=)[a-zA-Z0-9-]+(?=&)|(?<=(?:v|i)\/)[^&\n]+|(?<=embed\/)[^"&\n]+|(?<=(?:v|i)=)[^&\n]+|(?<=youtu.be\/)[^&\n]+'
 
+# Max feed collection size can be used to reduce the space of videos resulting from a search
+# to increases cache hit probability.
+MAX_FEED_COLLECTION_SIZE = 3
+
 def extract_video_id_from_web_url(url):
     """
     Extracts video identifier from web url.
@@ -202,6 +206,8 @@ class VideoCollection(collections.Sequence):
 
     def __init__(self,videos=[]):
         """
+        Does not enforce a maximum size.
+
         :type videos: Video iterable
         :rtype: VideoCollection
         """
@@ -214,17 +220,25 @@ class VideoCollection(collections.Sequence):
         """
         Constructs a VideoCollection object from a YouTubeVideoFeed object.
 
+        Enforces a maximum feed size.
+
         :type feed: gdata.youtube.YouTubeVideoFeed
         :rtype: VideoCollection
         """
         videos = []
+        i = 0
         for entry in feed.entry:
+            if i >= MAX_FEED_COLLECTION_SIZE:
+                break
             videos.append(Video(entry))
+            i += 1
         return cls(videos)
 
     @classmethod
     def from_web_urls(cls,urls):
         """
+        Does not enforce a maximum size.
+
         :param urls: YouTube video web urls
         :type urls: String iterable
         :rtype: VideoCollection

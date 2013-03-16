@@ -114,15 +114,23 @@ class VariableNameGenerator(object):
 
         store_ id1 id0
         """ 
+        # assert self._count <= 26**2
+        assert self._count <= 26*2
+
+        # id1_count = self._count / 26
+        # id0_count = self._count % 26
+
+        # # ord("a") = 97
+        # id1 = '' if id1_count == 0 else chr(97 + id1_count)
+        # id0 = chr(97 + id0_count)
+        if self._count < 26:
+            id1 = ""
+            id0 = chr(97 + self._count)
+        else:
+            id1 = "a"
+            id0 = chr(97 + self._count - 26)
+
         self._count += 1
-        assert self._count <= 26**2
-
-        id1_count = self._count / 26
-        id0_count = self._count % 26
-
-        # ord("a") = 97
-        id1 = '' if id1_count == 0 else chr(96 + id1_count)
-        id0 = chr(96 + id0_count)
 
         return "store_%s%s" % (id1, id0)
 
