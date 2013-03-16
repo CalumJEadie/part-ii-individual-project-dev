@@ -6,7 +6,7 @@ import os.path
 from os.path import join
 
 WINTERFELL,ED,AL = range(0,3)
-env = ED
+env = AL
 
 # General
 
@@ -33,7 +33,7 @@ CACHE_DIR = join(APP_DIR, "videocache")
 FORMAT = {
     WINTERFELL: "worst",
     ED: "18",
-    AL: "worst",
+    AL: "18",
 }[env]
 
 # UI - Graphical Editor
