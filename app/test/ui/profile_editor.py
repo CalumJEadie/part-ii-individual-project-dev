@@ -3,6 +3,7 @@ Profiling of the editor.
 
 http://docs.python.org/2/library/profile.html
 http://pymotw.com/2/profile/
+http://stackoverflow.com/questions/582336/how-can-you-profile-a-python-script
 """
 
 import unittest
@@ -35,7 +36,7 @@ class Test(unittest.TestCase):
         app = _setup_qt()
         e = GraphicalEditor()
 
-        stat_file_path = tempfile.mkstemp(prefix="evelyn_profile")[1]
+        stat_file_path = tempfile.mkstemp(".pstats", prefix="evelyn_profile")[1]
         print stat_file_path
         # Explicitly build local context as app not in context
         # used by cProfile.run()
