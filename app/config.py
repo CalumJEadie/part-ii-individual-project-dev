@@ -6,7 +6,7 @@ import os.path
 from os.path import join
 
 WINTERFELL,ED,AL = range(0,3)
-env = WINTERFELL
+env = ED
 
 # General
 
@@ -27,9 +27,12 @@ SCREENSHOT_FORMAT = "png"
 CACHE_DIR = join(APP_DIR, "videocache")
 #FORMAT = "worst"
 #FORMAT = "best"
+# "17" : "mp4 [144x176]",
+# "18" : "mp4 [360x640]",
+# "22" : "mp4 [720x1280]"
 FORMAT = {
     WINTERFELL: "worst",
-    ED: "worst",
+    ED: "18",
     AL: "worst",
 }[env]
 
