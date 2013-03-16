@@ -38,25 +38,26 @@ VIDEOS = [Video.from_web_url("http://www.youtube.com/watch?v=QK8mJJJvaes"),
     Video.from_web_url("http://www.youtube.com/watch?v=ifRoMGG8Wvs"),
     Video.from_web_url("http://www.youtube.com/watch?v=D1gl46hh3sQ"),
     Video.from_web_url("http://www.youtube.com/watch?v=lWA2pjMjpBs"),
-    Video.from_web_url("http://www.youtube.com/watch?v=JHDbvMtMsbg"),
-    Video.from_web_url("http://www.youtube.com/watch?v=Ys7-6_t7OEQ"),
-    Video.from_web_url("http://www.youtube.com/watch?v=bek1y2uiQGA"),
-    Video.from_web_url("http://www.youtube.com/watch?v=xGPeNN9S0Fg"),
-    Video.from_web_url("http://www.youtube.com/watch?v=cN4fNaUAMbA"),
-    Video.from_web_url("http://www.youtube.com/watch?v=CqPU7NSVQwY"),
-    Video.from_web_url("http://www.youtube.com/watch?v=e-fA-gBCkj0"),
-    Video.from_web_url("http://www.youtube.com/watch?v=FOjdXSrtUxA"),
-    Video.from_web_url("http://www.youtube.com/watch?v=bqIxCtEveG8"),
-    Video.from_web_url("http://www.youtube.com/watch?v=-6YLi0GNBTk"),
-    Video.from_web_url("http://www.youtube.com/watch?v=F90Cw4l-8NY"),
-    Video.from_web_url("http://www.youtube.com/watch?v=WA4iX5D9Z64"),
-    Video.from_web_url("http://www.youtube.com/watch?v=cOQDsmEqVt8"),
-    Video.from_web_url("http://www.youtube.com/watch?v=G_miGclPFGs"),
-    Video.from_web_url("http://www.youtube.com/watch?v=4aQDOUbErNg"),
-    Video.from_web_url("http://www.youtube.com/watch?v=1y6smkh6c-0"),
-    Video.from_web_url("http://www.youtube.com/watch?v=fwK7ggA3-bU"),
-    Video.from_web_url("http://www.youtube.com/watch?v=dPKG1-3LXBs"),
-    Video.from_web_url("http://www.youtube.com/watch?v=R4em3LKQCAQ"),
+    #Video.from_web_url("http://www.youtube.com/watch?v=JHDbvMtMsbg"), private
+    # Removing for performance
+    # Video.from_web_url("http://www.youtube.com/watch?v=Ys7-6_t7OEQ"),
+    # Video.from_web_url("http://www.youtube.com/watch?v=bek1y2uiQGA"),
+    # Video.from_web_url("http://www.youtube.com/watch?v=xGPeNN9S0Fg"),
+    # Video.from_web_url("http://www.youtube.com/watch?v=cN4fNaUAMbA"),
+    # Video.from_web_url("http://www.youtube.com/watch?v=CqPU7NSVQwY"),
+    # Video.from_web_url("http://www.youtube.com/watch?v=e-fA-gBCkj0"),
+    # Video.from_web_url("http://www.youtube.com/watch?v=FOjdXSrtUxA"),
+    # Video.from_web_url("http://www.youtube.com/watch?v=bqIxCtEveG8"),
+    # Video.from_web_url("http://www.youtube.com/watch?v=-6YLi0GNBTk"),
+    # Video.from_web_url("http://www.youtube.com/watch?v=F90Cw4l-8NY"),
+    # Video.from_web_url("http://www.youtube.com/watch?v=WA4iX5D9Z64"),
+    # Video.from_web_url("http://www.youtube.com/watch?v=cOQDsmEqVt8"),
+    # Video.from_web_url("http://www.youtube.com/watch?v=G_miGclPFGs"),
+    # Video.from_web_url("http://www.youtube.com/watch?v=4aQDOUbErNg"),
+    # Video.from_web_url("http://www.youtube.com/watch?v=1y6smkh6c-0"),
+    # Video.from_web_url("http://www.youtube.com/watch?v=fwK7ggA3-bU"),
+    # Video.from_web_url("http://www.youtube.com/watch?v=dPKG1-3LXBs"),
+    # Video.from_web_url("http://www.youtube.com/watch?v=R4em3LKQCAQ"),
     #Video.from_web_url("http://www.youtube.com/watch?v=7iHd6uOGqII") UMG
 ]
 
@@ -127,6 +128,36 @@ class Test(unittest.TestCase, AssertionMixin):
 
             # Offset downloads.
             time.sleep(2)
+
+class TestPreload(unittest.TestCase):
+
+    def test_preload(self):
+
+        import app.api.youtube
+        from app.models import examples
+
+        videocache.init()
+
+        # Every video value that occurs in an example or the editor interface.
+        seed_videos_urls = [
+            examples.GANGNAM_STYLE,
+            examples.SURPRISE,
+            examples.FREEFALL,
+            examples.PEP_TALK,
+            examples.ROPE_SWING,
+            examples.FIREWORKS,
+            examples.MAC_ASKILL,
+            examples.CAMBRIDGE_HARLEM
+        ]
+        seed_videos = map(Video.from_web_url, seed_videos_urls)
+
+        # Derive set of videos likely to be returned by related to.
+        related_videos = set()
+        for seed_video in seed_videos:
+            related_videos |= set(seed_video.related())
+
+        videocache.prime(seed_videos)
+        videocache.prime(related_videos)
 
 if __name__ == "__main__":
     unittest.main()
