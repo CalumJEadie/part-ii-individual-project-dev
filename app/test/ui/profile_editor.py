@@ -9,6 +9,8 @@ import unittest
 import logging
 import cProfile
 from PySide import QtGui, QtCore
+import tempfile
+import pstats
 
 from show import show
 
@@ -33,9 +35,19 @@ class Test(unittest.TestCase):
         app = _setup_qt()
         e = GraphicalEditor()
 
+        stat_file_path = tempfile.mkstemp(prefix="evelyn_profile")[1]
+        print stat_file_path
         # Explicitly build local context as app not in context
         # used by cProfile.run()
-        cProfile.runctx("app.exec_()", globals(), {"app": app})
+        cProfile.runctx("app.exec_()", globals(), {"app": app}, stat_file_path)
+        stats = pstats.Stats(stat_file_path)
+
+        # show by cumulative time - is the total time spent in this and all
+        # subfunctions (from invocation till exit)
+        stats.strip_dirs().sort_stats('cumulative').print_stats(40)
+
+        # show by internal time - excl. some functions        
+        stats.strip_dirs().sort_stats('time').print_stats(40)
 
 if __name__ == "__main__":
     unittest.main()
