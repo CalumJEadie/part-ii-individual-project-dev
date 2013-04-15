@@ -22,10 +22,10 @@ def interpret(code):
     Executes code without modification or validation.
     """
 
-    setup_code = """from api.core import display,ask_yes_no_prompt
-from api import youtube,videoplayer"""
+    # setup_code = """from api.core import display,ask_yes_no_prompt
+# from api import youtube,videoplayer"""
 
-    program = setup_code + '\n' + code
+    # program = setup_code + '\n' + code
 
     # `exec` approach not working - have problems with package/module imports
     # 
