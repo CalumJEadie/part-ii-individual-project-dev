@@ -71,6 +71,9 @@ class GraphicalEditor(QMainWindow):
         self._screenshotAction.setToolTip('Take screenshot of desktop')
         self._screenshotAction.triggered.connect(self._screenshot)
 
+        self._evaluateLoadPerformanceAction = QAction("Evaluate load performance", self)
+        self._evaluateLoadPerformanceAction.triggered.connect(self._evaluateLoadPerformance)        
+
         # Lambda not working so using inner function.
         def loadExample(self, n):
             def f():
@@ -187,6 +190,9 @@ class GraphicalEditor(QMainWindow):
         performanceMenu = menubar.addMenu('&Performance')
         performanceMenu.addAction(self._playAction)
 
+        evaluationMenu = menubar.addMenu("Evaluation")
+        evaluationMenu.addAction(self._evaluateLoadPerformanceAction)
+
         self.setMenuBar(menubar)
 
     def _setupToolbar(self):
@@ -282,6 +288,21 @@ class GraphicalEditor(QMainWindow):
         screenPixmap.save(filePath, config.SCREENSHOT_FORMAT)
 
         QMessageBox.information(self, "Screenshot", "Screenshot saved to %s" % filePath, QMessageBox.Ok)
+
+    def _evaluateLoadPerformance(self):
+        logger.info("Starting evaluation of load performance.")
+
+        for i in range(0,len(examples.acts)):
+            act = examples.acts[i]
+
+            logger.info("Script #: %s" % str(i+1))
+            logger.info("Title: %s" % act.title)
+
+            logger.info("Loading example...")
+            self._loadExample(i)
+            logger.info("Example loading...")
+
+        logger.info("Completed evaluation of load performance.")
 
 class ScriptEdit(QScrollArea):
     """
