@@ -1,14 +1,17 @@
-# Video Processing Language for the Raspberry Pi
+===================
+Source Code Package
+===================
 
-**Calum J. Eadie**
+Video Processing Language for the Raspberry Pi
 
-**Computer Science Tripos, Part II**
+Calum J. Eadie
 
-**Girton College**
+Computer Science Tripos, Part II
 
-## Part II Individual Project - Development Repository
+Girton College
 
-### Dependancies
+Dependancies
+------------
 
 PySide - LGPL Python binding for Qt
 
@@ -56,8 +59,8 @@ apt-get install youtube-dl
 youtube-dl -U
 ```
 
-
-### Running
+Running
+-------
 
 ```sh
 cd app
