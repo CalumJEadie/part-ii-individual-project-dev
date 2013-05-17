@@ -2,8 +2,6 @@
 
 **Calum J. Eadie**
 
-**Video Processing Language for the Raspberry Pi**
-
 **Computer Science Tripos, Part II**
 
 **Girton College**
