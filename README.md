@@ -1,3 +1,11 @@
+
+# Source Code Package
+
+## Calum J. Eadie
+## Video Processing Language for the Raspberry Pi
+## Computer Science Tripos, Part II
+## Girton College
+
 ## Part II Individual Project - Development Repository
 
 ### Dependancies
