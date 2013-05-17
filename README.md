@@ -9,6 +9,28 @@ Computer Science Tripos, Part II
 
 Girton College
 
+Folder structure
+----------------
+
+- app
+    - Corresponds to the Implementation chapter. Language, Editor and Capability APIs.
+- deploy
+    - Deployment software, for setting up development environment on the Raspberry Pi.
+- research
+    - Corresponds to the Preparation chapter. Experiments, tools and annotated source code.
+- tools
+    - Supporting scripts.
+
+Running
+-------
+
+```sh
+cd app
+# nosetests.sh makes sure MacPorts Python version is used rather than Mac version
+# to make sure PySide available
+../tools/nosetests.sh test/ui/test_editor.py
+```
+
 Dependancies
 ------------
 
@@ -56,14 +78,4 @@ youtube-dl
 apt-get install youtube-dl
 # Update to make sure up to date with YouTube API
 youtube-dl -U
-```
-
-Running
--------
-
-```sh
-cd app
-# nosetests.sh makes sure MacPorts Python version is used rather than Mac version
-# to make sure PySide available
-../tools/nosetests.sh test/ui/test_editor.py
 ```
